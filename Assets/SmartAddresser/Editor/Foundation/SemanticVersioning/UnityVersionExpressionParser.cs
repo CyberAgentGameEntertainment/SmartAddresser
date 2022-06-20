@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace SmartAddresser.Runtime.Foundation.SemanticVersioning
+namespace SmartAddresser.Editor.Foundation.SemanticVersioning
 {
     /// <summary>
     ///     <see cref="IVersionExpressionParser" /> implementation like Unity's Version Define expressions

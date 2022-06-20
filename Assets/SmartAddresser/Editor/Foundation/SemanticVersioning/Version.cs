@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace SmartAddresser.Runtime.Foundation.SemanticVersioning
+namespace SmartAddresser.Editor.Foundation.SemanticVersioning
 {
     /// <summary>
     ///     Version based on Semantic Versioning (https://semver.org/).
