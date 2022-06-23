@@ -40,7 +40,7 @@ namespace SmartAddresser.Tests.Editor
         }
 
         /// <inheritdoc />
-        public List<string> GetLabels()
+        public IReadOnlyList<string> GetLabels()
         {
             return _labels;
         }

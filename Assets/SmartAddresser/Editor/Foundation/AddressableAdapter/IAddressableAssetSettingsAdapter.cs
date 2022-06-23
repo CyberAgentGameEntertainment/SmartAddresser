@@ -11,7 +11,7 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         ///     Find and asset entry by guid.
         /// </summary>
         /// <param name="guid">The asset guid.</param>
-        /// <returns></returns>
+        /// <returns>The found entry adapter or null.</returns>
         IAddressableAssetEntryAdapter FindAssetEntry(string guid);
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         /// </summary>
         /// <param name="groupName"></param>
         /// <param name="guid">The asset guid.</param>
-        /// <returns></returns>
+        /// <returns>The created entry adapter.</returns>
         IAddressableAssetEntryAdapter CreateOrMoveEntry(string groupName, string guid);
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         ///     Gets the list of all defined labels.
         /// </summary>
         /// <returns>Returns a list of all defined labels.</returns>
-        List<string> GetLabels();
+        IReadOnlyList<string> GetLabels();
 
         /// <summary>
         ///     Add a new label.

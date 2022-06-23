@@ -34,7 +34,7 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         }
 
         /// <inheritdoc />
-        public List<string> GetLabels()
+        public IReadOnlyList<string> GetLabels()
         {
             return _settings.GetLabels();
         }
