@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using SmartAddresser.Runtime.Foundation.SemanticVersioning;
+using SmartAddresser.Editor.Foundation.SemanticVersioning;
 
-namespace SmartAddresser.Tests.Runtime.Foundation.SemanticVersioning
+namespace SmartAddresser.Tests.Editor.Foundation.SemanticVersioning
 {
     internal sealed class PrereleaseComparisonTest
     {

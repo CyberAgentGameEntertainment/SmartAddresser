@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SmartAddresser.Runtime.Foundation.SemanticVersioning
+namespace SmartAddresser.Editor.Foundation.SemanticVersioning
 {
     /// <summary>
     ///     Class that handle multiple <see cref="VersionComparator" />s transparently.

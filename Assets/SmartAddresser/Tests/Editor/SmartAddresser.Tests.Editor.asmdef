@@ -1,11 +1,13 @@
 {
-    "name": "SmartAddresser.Tests",
+    "name": "SmartAddresser.Tests.Editor",
     "rootNamespace": "",
     "references": [
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:0d9d9745b6663412690572ec8a4c3bc7"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

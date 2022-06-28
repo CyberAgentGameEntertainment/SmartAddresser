@@ -1,9 +1,9 @@
 using System;
 using NUnit.Framework;
-using SmartAddresser.Runtime.Foundation.SemanticVersioning;
-using Version = SmartAddresser.Runtime.Foundation.SemanticVersioning.Version;
+using SmartAddresser.Editor.Foundation.SemanticVersioning;
+using Version = SmartAddresser.Editor.Foundation.SemanticVersioning.Version;
 
-namespace SmartAddresser.Tests.Runtime.Foundation.SemanticVersioning
+namespace SmartAddresser.Tests.Editor.Foundation.SemanticVersioning
 {
     internal sealed class UnityVersionExpressionParserTest
     {

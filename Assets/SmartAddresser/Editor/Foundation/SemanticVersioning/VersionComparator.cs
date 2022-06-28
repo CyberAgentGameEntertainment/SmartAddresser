@@ -1,6 +1,6 @@
 using System;
 
-namespace SmartAddresser.Runtime.Foundation.SemanticVersioning
+namespace SmartAddresser.Editor.Foundation.SemanticVersioning
 {
     public sealed class VersionComparator
     {

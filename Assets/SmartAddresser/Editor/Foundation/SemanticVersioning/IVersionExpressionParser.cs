@@ -1,4 +1,4 @@
-namespace SmartAddresser.Runtime.Foundation.SemanticVersioning
+namespace SmartAddresser.Editor.Foundation.SemanticVersioning
 {
     /// <summary>
     ///     Interface to parse version expression string to <see cref="CompositeVersionComparator" />.
