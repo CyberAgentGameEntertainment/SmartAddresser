@@ -40,7 +40,7 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
         public void Setup()
         {
             _assetGroups.Setup();
-            AddressProvider.Setup();
+            _addressProvider.Setup();
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
                 return false;
             }
 
-            address = AddressProvider.CreateAddress(assetPath, assetType, isFolder);
+            address = _addressProvider.CreateAddress(assetPath, assetType, isFolder);
             return true;
         }
     }
