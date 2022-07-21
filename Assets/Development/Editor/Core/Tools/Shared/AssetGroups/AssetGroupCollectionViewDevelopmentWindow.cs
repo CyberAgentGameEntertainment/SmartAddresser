@@ -28,7 +28,7 @@ namespace Development.Editor.Core.Tools.Shared.AssetGroups
             _disposables = new CompositeDisposable();
             _view = new AssetGroupCollectionView(_groupCollection);
             _presenter =
-                new AssetGroupCollectionViewPresenter(_groupCollection, _view, _history, new FakeObjectSaveService());
+                new AssetGroupCollectionViewPresenter(_groupCollection, _view, _history, new FakeAssetSaveService());
         }
 
         private void OnDisable()

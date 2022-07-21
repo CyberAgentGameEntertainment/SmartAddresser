@@ -1,39 +1,26 @@
 using System;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
-using UnityEditor;
-using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Development.Editor.Core.Tools
 {
     internal sealed class FakeAssetSaveService : IAssetSaveService, IDisposable
     {
         private readonly ObservableProperty<bool> _isDirty;
-        private bool _saveReserved;
 
         public FakeAssetSaveService()
         {
             _isDirty = new ObservableProperty<bool>(false);
-            EditorApplication.update += OnUpdate;
         }
 
-        public void Dispose()
-        {
-            if (_saveReserved)
-                SaveImmediate();
-
-            _isDirty.Dispose();
-            EditorApplication.update -= OnUpdate;
-        }
-
-        public int SaveIntervalFrame { get; set; } = 10;
-
+        public Object Asset => null;
         public IReadOnlyObservableProperty<bool> IsDirty => _isDirty;
 
         public void Save()
         {
             MarkAsDirty();
-            _saveReserved = true;
+            SaveImmediate();
         }
 
         public void SaveImmediate()
@@ -51,13 +38,9 @@ namespace Development.Editor.Core.Tools
             _isDirty.Value = false;
         }
 
-        private void OnUpdate()
+        public void Dispose()
         {
-            if (_saveReserved && Time.frameCount % SaveIntervalFrame == 0)
-            {
-                SaveImmediate();
-                _saveReserved = false;
-            }
+            _isDirty.Dispose();
         }
     }
 }
