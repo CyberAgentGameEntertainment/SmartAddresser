@@ -75,6 +75,17 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
             return _replaceWithRegex ? _regex.Replace(sourceValue, _replacement) : sourceValue;
         }
 
+        public string GetDescription()
+        {
+            var result = $"Source: {_source.ToString()}";
+            if (_replaceWithRegex)
+            {
+                result += $", Regex: Replace \"{_pattern}\" with \"{_replacement}\"";
+            }
+
+            return result;
+        }
+
         private static string CreateSourceValue(SourceType self, string assetPath)
         {
             Assert.IsFalse(string.IsNullOrEmpty(assetPath));
