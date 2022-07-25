@@ -1,7 +1,6 @@
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
-using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using UnityEditor;
 using UnityEngine;
@@ -11,21 +10,17 @@ namespace Development.Editor.Core.Tools.Shared.AssetGroups
     internal sealed class AssetGroupCollectionViewDevelopmentWindow : EditorWindow
     {
         private const string WindowName = "[Dev] Asset Group Collection View";
-        private CompositeDisposable _disposables;
 
         private ObservableList<AssetGroup> _groupCollection;
         private AutoIncrementHistory _history;
         private AssetGroupCollectionViewPresenter _presenter;
-        private AssetGroupCollectionView _view;
         private Vector2 _scrollPos;
+        private AssetGroupCollectionView _view;
 
         private void OnEnable()
         {
             _history = new AutoIncrementHistory();
-            if (_groupCollection == null)
-                _groupCollection = new ObservableList<AssetGroup>();
-
-            _disposables = new CompositeDisposable();
+            _groupCollection ??= new ObservableList<AssetGroup>();
             _view = new AssetGroupCollectionView(_groupCollection);
             _presenter =
                 new AssetGroupCollectionViewPresenter(_groupCollection, _view, _history, new FakeAssetSaveService());
@@ -33,7 +28,6 @@ namespace Development.Editor.Core.Tools.Shared.AssetGroups
 
         private void OnDisable()
         {
-            _disposables.Dispose();
             _view.Dispose();
             _presenter.Dispose();
         }
@@ -56,7 +50,7 @@ namespace Development.Editor.Core.Tools.Shared.AssetGroups
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
 
             _view.DoLayout();
-            
+
             EditorGUILayout.EndScrollView();
         }
 

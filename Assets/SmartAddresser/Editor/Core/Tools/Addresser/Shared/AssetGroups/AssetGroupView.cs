@@ -87,8 +87,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             _pasteGroupMenuExecutedSubject.Dispose();
             _pasteGroupValuesMenuExecutedSubject.Dispose();
             _removeGroupMenuExecutedSubject.Dispose();
-            _moveUpMenuExecutedSubject.Dispose();
-            _moveDownMenuExecutedSubject.Dispose();
             _pasteFilterMenuExecutedSubject.Dispose();
         }
 
