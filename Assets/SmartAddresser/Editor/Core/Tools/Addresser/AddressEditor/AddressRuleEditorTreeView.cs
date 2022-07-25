@@ -100,7 +100,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
                 case Columns.Groups:
                     return item.Rule.AddressableGroup == null
                         ? "[Missing Reference]"
-                        : item.Rule.AddressableGroup.Name;
+                        : item.Rule.AddressableGroup.name;
                 case Columns.Control:
                     return item.Rule.Control.ToString();
                 case Columns.AssetGroups:
