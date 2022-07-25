@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SmartAddresser.Editor.Core.Models.Layouts;
-using SmartAddresser.Editor.Core.Tools.Addresser.AddressLayoutViewer;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
@@ -18,10 +18,10 @@ namespace Development.Editor.Core.Tools.Addresser
 
         private const string WindowName = "[Dev] Address Viewer View";
 
-        [SerializeField] private AddressLayoutViewerTreeView.State _treeViewState;
+        [SerializeField] private LayoutViewerTreeView.State _treeViewState;
         private readonly List<Group> _groups = new List<Group>();
-        private AddressLayoutViewerViewPresenter _presenter;
-        private AddressLayoutViewerView _view;
+        private LayoutViewerViewPresenter _presenter;
+        private LayoutViewerView _view;
 
         private void OnEnable()
         {
@@ -80,9 +80,9 @@ namespace Development.Editor.Core.Tools.Addresser
             }
 
             if (_treeViewState == null)
-                _treeViewState = new AddressLayoutViewerTreeView.State();
-            _view = new AddressLayoutViewerView(_treeViewState);
-            _presenter = new AddressLayoutViewerViewPresenter(_groups, _view);
+                _treeViewState = new LayoutViewerTreeView.State();
+            _view = new LayoutViewerView(_treeViewState);
+            _presenter = new LayoutViewerViewPresenter(_groups, _view);
         }
 
         private void OnDisable()

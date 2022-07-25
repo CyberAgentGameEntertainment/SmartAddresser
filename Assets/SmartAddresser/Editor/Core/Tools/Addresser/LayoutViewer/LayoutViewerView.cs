@@ -2,22 +2,22 @@ using SmartAddresser.Editor.Foundation.EasyTreeView;
 using UnityEditor;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 {
     /// <summary>
-    ///     View for the left side of the address editor.
+    ///     View for the address viewer.
     /// </summary>
-    internal sealed class AddressEditorListView
+    internal sealed class LayoutViewerView
     {
         private readonly TreeViewSearchField _searchField;
 
-        public AddressEditorListView(AddressEditorTreeViewState treeViewState)
+        public LayoutViewerView(LayoutViewerTreeView.State treeViewState)
         {
-            TreeView = new AddressRuleEditorTreeView(treeViewState);
+            TreeView = new LayoutViewerTreeView(treeViewState);
             _searchField = new TreeViewSearchField(TreeView);
         }
 
-        public AddressRuleEditorTreeView TreeView { get; }
+        public LayoutViewerTreeView TreeView { get; }
 
         public void DoLayout()
         {

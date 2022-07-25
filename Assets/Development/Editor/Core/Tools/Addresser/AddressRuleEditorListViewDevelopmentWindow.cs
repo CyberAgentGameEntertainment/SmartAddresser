@@ -2,7 +2,7 @@ using System.Linq;
 using SmartAddresser.Editor.Core.Models.EntryRules.AddressRules;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
-using SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using UnityEditor;
@@ -16,20 +16,20 @@ namespace Development.Editor.Core.Tools.Addresser
     {
         private const string WindowName = "[Dev] Address Rule Editor List View";
 
-        [SerializeField] private AddressEditorTreeViewState _treeViewState;
+        [SerializeField] private AddressRuleEditorTreeView.State _treeViewState;
         private readonly AutoIncrementHistory _history = new AutoIncrementHistory();
         private readonly ObservableList<AddressRule> _rules = new ObservableList<AddressRule>();
-        private AddressEditorListViewPresenter _presenter;
-        private AddressEditorListView _view;
+        private AddressRuleEditorListViewPresenter _presenter;
+        private AddressRuleEditorListView _view;
 
         private void OnEnable()
         {
             minSize = new Vector2(600, 200);
 
             if (_treeViewState == null)
-                _treeViewState = new AddressEditorTreeViewState();
-            _view = new AddressEditorListView(_treeViewState);
-            _presenter = new AddressEditorListViewPresenter(_rules, _view, _history, new FakeAssetSaveService());
+                _treeViewState = new AddressRuleEditorTreeView.State();
+            _view = new AddressRuleEditorListView(_treeViewState);
+            _presenter = new AddressRuleEditorListViewPresenter(_rules, _view, _history, new FakeAssetSaveService());
 
             // Use default settings for development.
             var settings = AddressableAssetSettingsDefaultObject.Settings;
@@ -91,7 +91,7 @@ namespace Development.Editor.Core.Tools.Addresser
                     RemoveMissingGroupRules();
                     return;
                 }
-                
+
                 if (obj is AddressableAssetGroup addressableGroup)
                     RemoveGroup(addressableGroup);
             }

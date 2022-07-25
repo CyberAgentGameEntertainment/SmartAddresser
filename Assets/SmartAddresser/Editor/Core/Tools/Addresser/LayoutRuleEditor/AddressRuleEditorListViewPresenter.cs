@@ -6,21 +6,21 @@ using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 {
     /// <summary>
-    ///     Presenter for <see cref="AddressEditorListView" />.
+    ///     Presenter for <see cref="AddressRuleEditorListView" />.
     /// </summary>
-    internal sealed class AddressEditorListViewPresenter : IDisposable
+    internal sealed class AddressRuleEditorListViewPresenter : IDisposable
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
-        private readonly Dictionary<string, AddressRuleEditorTreeViewItem> _ruleIdToTreeViewItem =
-            new Dictionary<string, AddressRuleEditorTreeViewItem>();
+        private readonly Dictionary<string, AddressRuleEditorTreeView.Item> _ruleIdToTreeViewItem =
+            new Dictionary<string, AddressRuleEditorTreeView.Item>();
 
-        private readonly AddressEditorListView _view;
+        private readonly AddressRuleEditorListView _view;
 
-        public AddressEditorListViewPresenter(IObservableList<AddressRule> rules, AddressEditorListView view,
+        public AddressRuleEditorListViewPresenter(IObservableList<AddressRule> rules, AddressRuleEditorListView view,
             AutoIncrementHistory history, IAssetSaveService saveService)
         {
             _view = view;
