@@ -72,7 +72,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             {
                 var menu = new GenericMenu();
 
-                if (CanPaste != null && CanPaste.Invoke())
+                if (CanPaste == null || CanPaste.Invoke())
                     menu.AddItem(new GUIContent(PasteMenuName), false,
                         () => _pasteMenuExecutedSubject.OnNext(Empty.Default));
                 else
