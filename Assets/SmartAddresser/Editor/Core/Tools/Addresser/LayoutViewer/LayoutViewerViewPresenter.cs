@@ -8,10 +8,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
     /// <summary>
     ///     Presenter for <see cref="LayoutViewerView" />.
     /// </summary>
-    internal sealed class LayoutViewerViewPresenter : IDisposable
+    internal sealed class AddressLayoutViewerViewPresenter
     {
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
-        private readonly LayoutViewerView _view;
+        private readonly AddressLayoutViewerView _view;
 
         public LayoutViewerViewPresenter(IEnumerable<Group> groups, LayoutViewerView view)
         {
@@ -20,11 +19,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             foreach (var group in groups)
                 AddGroupView(group);
             _view.TreeView.Reload();
-        }
-
-        public void Dispose()
-        {
-            _disposables.Dispose();
         }
 
         private void AddGroupView(Group group, bool reload = true)

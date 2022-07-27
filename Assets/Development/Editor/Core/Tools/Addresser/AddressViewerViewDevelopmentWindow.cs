@@ -20,8 +20,7 @@ namespace Development.Editor.Core.Tools.Addresser
 
         [SerializeField] private LayoutViewerTreeView.State _treeViewState;
         private readonly List<Group> _groups = new List<Group>();
-        private LayoutViewerViewPresenter _presenter;
-        private LayoutViewerView _view;
+        private AddressLayoutViewerView _view;
 
         private void OnEnable()
         {
@@ -80,14 +79,9 @@ namespace Development.Editor.Core.Tools.Addresser
             }
 
             if (_treeViewState == null)
-                _treeViewState = new LayoutViewerTreeView.State();
-            _view = new LayoutViewerView(_treeViewState);
-            _presenter = new LayoutViewerViewPresenter(_groups, _view);
-        }
-
-        private void OnDisable()
-        {
-            _presenter?.Dispose();
+                _treeViewState = new AddressLayoutViewerTreeView.State();
+            _view = new AddressLayoutViewerView(_treeViewState);
+            var _ = new AddressLayoutViewerViewPresenter(_groups, _view);
         }
 
         private void OnGUI()
