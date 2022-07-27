@@ -201,9 +201,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             {
                 GroupItem groupItem => (Columns)columnIndex switch
                 {
-                    Columns.GroupNameOrAddress => groupItem.Group.AddressableGroup == null
-                        ? "[Missing Reference]"
-                        : groupItem.Group.AddressableGroup.name,
+                    Columns.GroupNameOrAddress => groupItem.Group.DisplayName,
                     Columns.AssetPath => null,
                     Columns.Labels => null,
                     Columns.Tags => null,
@@ -216,7 +214,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     Columns.AssetPath => entryItem.Entry.AssetPath,
                     Columns.Labels => "TODO",
                     Columns.Tags => "TODO",
-                    Columns.Message => entryItem.Entry.Message,
+                    Columns.Message => entryItem.Entry.Messages,
                     _ => throw new NotImplementedException()
                 },
                 _ => null

@@ -72,7 +72,21 @@ namespace Development.Editor.Core.Tools.Addresser
                     var tags = Enumerable.Range(0, Random.Range(0, 3)).Select(x => GetRandomWord()).ToArray();
                     var errorType = GetRandomErrorType();
                     var message = GetRandomSentence();
-                    var entry = new Entry(assetName, assetPath, labels, tags, errorType, message);
+                    var entry = new Entry(assetName, assetPath, labels, tags);
+                    switch (errorType)
+                    {
+                        case LayoutErrorType.Warning:
+                            entry.Errors.Add(new EntryError(EntryErrorType.Warning, message));
+                            break;
+                        case LayoutErrorType.Error:
+                            entry.Errors.Add(new EntryError(EntryErrorType.Error, message));
+                            break;
+                        case LayoutErrorType.None:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
                     group.Entries.Add(entry);
                 }
 
