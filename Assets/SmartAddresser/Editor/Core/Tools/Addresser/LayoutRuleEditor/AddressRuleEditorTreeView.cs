@@ -7,16 +7,24 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 {
     /// <summary>
     ///     Tree view for the Address Rule Editor.
     /// </summary>
     internal sealed class AddressRuleEditorTreeView : TreeViewBase
     {
+        public enum Columns
+        {
+            Groups,
+            Control,
+            AssetGroups,
+            AddressRule
+        }
+
         [NonSerialized] private int _currentId;
 
-        public AddressRuleEditorTreeView(AddressEditorTreeViewState state) : base(state)
+        public AddressRuleEditorTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
             ColumnStates = state.ColumnStates;
@@ -24,9 +32,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
             Reload();
         }
 
-        public AddressRuleEditorTreeViewItem AddItem(AddressRule rule, int index = -1)
+        public Item AddItem(AddressRule rule, int index = -1)
         {
-            var item = new AddressRuleEditorTreeViewItem(rule)
+            var item = new Item(rule)
             {
                 id = _currentId++
             };
@@ -36,7 +44,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
 
         protected override void CellGUI(int columnIndex, Rect cellRect, RowGUIArgs args)
         {
-            var item = (AddressRuleEditorTreeViewItem)args.item;
+            var item = (Item)args.item;
             var addressableGroup = item.Rule.AddressableGroup;
             switch ((Columns)columnIndex)
             {
@@ -70,7 +78,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
         {
             string KeySelector(TreeViewItem x)
             {
-                return GetText((AddressRuleEditorTreeViewItem)x, keyColumnIndex);
+                return GetText((Item)x, keyColumnIndex);
             }
 
             return ascending
@@ -80,7 +88,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
 
         protected override string GetTextForSearch(TreeViewItem item, int columnIndex)
         {
-            return GetText((AddressRuleEditorTreeViewItem)item, columnIndex);
+            return GetText((Item)item, columnIndex);
         }
 
         protected override bool CanMultiSelect(TreeViewItem item)
@@ -93,7 +101,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
             return false;
         }
 
-        private static string GetText(AddressRuleEditorTreeViewItem item, int columnIndex)
+        private static string GetText(Item item, int columnIndex)
         {
             switch ((Columns)columnIndex)
             {
@@ -112,12 +120,73 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressEditor
             }
         }
 
-        public enum Columns
+        public sealed class Item : TreeViewItem
         {
-            Groups,
-            Control,
-            AssetGroups,
-            AddressRule
+            public Item(AddressRule rule)
+            {
+                Rule = rule;
+            }
+
+            public AddressRule Rule { get; }
+        }
+
+        [Serializable]
+        public sealed class State : TreeViewState
+        {
+            [SerializeField] private MultiColumnHeaderState.Column[] _columnStates;
+
+            public State()
+            {
+                _columnStates = GetColumnStates();
+            }
+
+            public MultiColumnHeaderState.Column[] ColumnStates => _columnStates;
+
+            private MultiColumnHeaderState.Column[] GetColumnStates()
+            {
+                var groupsColumn = new MultiColumnHeaderState.Column
+                {
+                    headerContent = new GUIContent("Groups"),
+                    headerTextAlignment = TextAlignment.Center,
+                    canSort = false,
+                    width = 150,
+                    minWidth = 50,
+                    autoResize = false,
+                    allowToggleVisibility = false
+                };
+                var controlColumn = new MultiColumnHeaderState.Column
+                {
+                    headerContent = new GUIContent("Control"),
+                    headerTextAlignment = TextAlignment.Center,
+                    canSort = false,
+                    width = 60,
+                    minWidth = 60,
+                    maxWidth = 60,
+                    autoResize = false,
+                    allowToggleVisibility = false
+                };
+                var assetGroupsColumn = new MultiColumnHeaderState.Column
+                {
+                    headerContent = new GUIContent("Asset Groups"),
+                    headerTextAlignment = TextAlignment.Center,
+                    canSort = false,
+                    width = 200,
+                    minWidth = 50,
+                    autoResize = true,
+                    allowToggleVisibility = true
+                };
+                var addressRuleColumn = new MultiColumnHeaderState.Column
+                {
+                    headerContent = new GUIContent("Address Rule"),
+                    headerTextAlignment = TextAlignment.Center,
+                    canSort = false,
+                    width = 200,
+                    minWidth = 50,
+                    autoResize = true,
+                    allowToggleVisibility = true
+                };
+                return new[] { groupsColumn, controlColumn, assetGroupsColumn, addressRuleColumn };
+            }
         }
     }
 }

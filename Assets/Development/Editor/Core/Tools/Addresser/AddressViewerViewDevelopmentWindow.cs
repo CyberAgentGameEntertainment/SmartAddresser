@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SmartAddresser.Editor.Core.Models.Layouts;
-using SmartAddresser.Editor.Core.Tools.Addresser.AddressLayoutViewer;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
@@ -18,7 +18,7 @@ namespace Development.Editor.Core.Tools.Addresser
 
         private const string WindowName = "[Dev] Address Viewer View";
 
-        [SerializeField] private AddressLayoutViewerTreeView.State _treeViewState;
+        [SerializeField] private LayoutViewerTreeView.State _treeViewState;
         private readonly List<Group> _groups = new List<Group>();
         private AddressLayoutViewerView _view;
 

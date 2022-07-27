@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using SmartAddresser.Editor.Core.Models.Layouts;
 using SmartAddresser.Editor.Foundation.TinyRx;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressLayoutViewer
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 {
     /// <summary>
-    ///     Presenter for <see cref="AddressLayoutViewerView" />.
+    ///     Presenter for <see cref="LayoutViewerView" />.
     /// </summary>
     internal sealed class AddressLayoutViewerViewPresenter
     {
         private readonly AddressLayoutViewerView _view;
 
-        public AddressLayoutViewerViewPresenter(IEnumerable<Group> groups, AddressLayoutViewerView view)
+        public LayoutViewerViewPresenter(IEnumerable<Group> groups, LayoutViewerView view)
         {
             _view = view;
 

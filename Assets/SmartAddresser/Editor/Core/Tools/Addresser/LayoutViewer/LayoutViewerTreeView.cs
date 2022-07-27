@@ -7,12 +7,12 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressLayoutViewer
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 {
     /// <summary>
     ///     Tree view for the Address Viewer.
     /// </summary>
-    internal sealed class AddressLayoutViewerTreeView : TreeViewBase
+    internal sealed class LayoutViewerTreeView : TreeViewBase
     {
         public enum Columns
         {
@@ -30,7 +30,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.AddressLayoutViewer
 
         [NonSerialized] private int _currentId;
 
-        public AddressLayoutViewerTreeView(State state) : base(state)
+        public LayoutViewerTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
             ColumnStates = state.ColumnStates;

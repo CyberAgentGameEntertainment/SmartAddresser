@@ -99,7 +99,7 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
 
         internal void RefreshAssetGroupDescription()
         {
-            var groupDescriptions = new List<string>();
+            var groupDescriptions = new List<string>(_assetGroups.Count);
 
             foreach (var group in _assetGroups)
             {

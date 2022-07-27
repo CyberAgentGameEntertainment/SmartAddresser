@@ -43,9 +43,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
         public void Dispose()
         {
-            foreach (var groupView in _groupViews.Values)
-                groupView.Dispose();
-            _groupViews.Clear();
+            ClearGroups();
 
             _disposables.Dispose();
             _addButtonClickedSubject.Dispose();
@@ -74,7 +72,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             {
                 var menu = new GenericMenu();
 
-                if (CanPaste != null && CanPaste.Invoke())
+                if (CanPaste == null || CanPaste.Invoke())
                     menu.AddItem(new GUIContent(PasteMenuName), false,
                         () => _pasteMenuExecutedSubject.OnNext(Empty.Default));
                 else
