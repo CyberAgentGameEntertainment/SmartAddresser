@@ -123,11 +123,19 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
         /// <param name="item"></param>
         /// <param name="parentId"></param>
         /// <param name="invokeCallback"></param>
-        public void AddItemAndSetParent(TreeViewItem item, int parentId, bool invokeCallback = true)
+        /// <param name="index"></param>
+        public void AddItemAndSetParent(TreeViewItem item, int parentId, int index = -1, bool invokeCallback = true)
         {
             var parent = parentId == -1 ? RootItem : _items[parentId];
             parent.AddChild(item);
             _items.Add(item.id, item);
+            if (index != -1)
+            {
+                // Set item index.
+                parent.children.RemoveAt(_items.Count - 1);
+                parent.children.Insert(index, item);
+            }
+
             if (invokeCallback) OnItemAdded?.Invoke(item);
         }
 

@@ -10,5 +10,7 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
         void Setup();
 
         string CreateAddress(string assetPath, Type assetType, bool isFolder);
+
+        string GetDescription();
     }
 }

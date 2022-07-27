@@ -21,19 +21,22 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
         [SerializeField] private AddressableAssetGroup _addressableGroup;
         [SerializeField] private bool _control;
         [SerializeField] private ObservableList<AssetGroup> _assetGroups = new ObservableList<AssetGroup>();
-        private readonly Subject<IAddressProvider> _addressProviderChangedSubject = new Subject<IAddressProvider>();
 
+        private readonly Subject<IAddressProvider> _addressProviderChangedSubject = new Subject<IAddressProvider>();
+        private readonly ObservableProperty<string> _addressProviderDescription = new ObservableProperty<string>();
         private readonly ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
+
         [SerializeReference] private IAddressProvider _addressProvider;
 
-        public AddressRule()
+        public AddressRule(AddressableAssetGroup addressableGroup)
         {
             _id = IdentifierFactory.Create();
+            _addressableGroup = addressableGroup;
         }
 
+        public AddressableAssetGroup AddressableGroup => _addressableGroup;
 
         public string Id => _id;
-        public AddressableAssetGroup AddressableGroup => _addressableGroup;
 
         public bool Control
         {
@@ -43,6 +46,7 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
 
         public IObservableList<AssetGroup> AssetGroups => _assetGroups;
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
+        public IReadOnlyObservableProperty<string> AddressProviderDescription => _addressProviderDescription;
 
         public IAddressProvider AddressProvider
         {
@@ -58,7 +62,6 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
         }
 
         public IObservable<IAddressProvider> AddressProviderChangedAsObservable => _addressProviderChangedSubject;
-
 
         /// <summary>
         ///     Setup to generate addresses.
@@ -93,7 +96,6 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
             address = null;
             return false;
         }
-
 
         internal void RefreshAssetGroupDescription()
         {
@@ -133,6 +135,11 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
             }
 
             _assetGroupDescription.Value = description.ToString();
+        }
+
+        internal void RefreshAddressProviderDescription()
+        {
+            _addressProviderDescription.Value = _addressProvider == null ? "(None)" : _addressProvider.GetDescription();
         }
     }
 }
