@@ -1,21 +1,16 @@
-using SmartAddresser.Editor.Core.Models.EntryRules.AddressRules;
+using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Foundation.CustomDrawers;
 using UnityEditor;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressProviderDrawers
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared
 {
-    /// <summary>
-    ///     GUI Drawer for <see cref="AssetPathBasedAddressProvider" />
-    /// </summary>
-    [CustomGUIDrawer(typeof(AssetPathBasedAddressProvider))]
-    public sealed class AssetPathBasedAddressProviderDrawer : GUIDrawer<AssetPathBasedAddressProvider>
+    public abstract class AssetPathBasedProviderDrawerBase<T> : GUIDrawer<T> where T : AssetPathBasedProvider
     {
-        protected override void GUILayout(AssetPathBasedAddressProvider target)
+        protected override void GUILayout(T target)
         {
             var sourceLabel = ObjectNames.NicifyVariableName(nameof(target.Source));
-            target.Source =
-                (AssetPathBasedAddressProvider.SourceType)EditorGUILayout.EnumPopup(sourceLabel, target.Source);
+            target.Source = (PartialAssetPathType)EditorGUILayout.EnumPopup(sourceLabel, target.Source);
             var replaceWithRegexLabel = ObjectNames.NicifyVariableName(nameof(target.ReplaceWithRegex));
             target.ReplaceWithRegex = EditorGUILayout.Toggle(replaceWithRegexLabel, target.ReplaceWithRegex);
 

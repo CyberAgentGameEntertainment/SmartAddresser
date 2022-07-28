@@ -89,7 +89,7 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
                 if (!_assetGroups[i].Contains(assetPath, assetType, isFolder))
                     continue;
 
-                address = _addressProvider.CreateAddress(assetPath, assetType, isFolder);
+                address = _addressProvider.Provide(assetPath, assetType, isFolder);
                 return true;
             }
 

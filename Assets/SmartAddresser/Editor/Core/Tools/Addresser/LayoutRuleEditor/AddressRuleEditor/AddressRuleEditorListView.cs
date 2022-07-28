@@ -2,7 +2,7 @@ using SmartAddresser.Editor.Foundation.EasyTreeView;
 using UnityEditor;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor
 {
     /// <summary>
     ///     View for the left side of the address editor.

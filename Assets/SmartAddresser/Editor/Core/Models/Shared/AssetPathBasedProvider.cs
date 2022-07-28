@@ -1,0 +1,75 @@
+using System;
+using System.Text.RegularExpressions;
+using UnityEngine;
+
+namespace SmartAddresser.Editor.Core.Models.Shared
+{
+    [Serializable]
+    public abstract class AssetPathBasedProvider : IProvider<string>
+    {
+        [SerializeField] private PartialAssetPathType _source = PartialAssetPathType.AssetName;
+        [SerializeField] private bool _replaceWithRegex;
+        [SerializeField] private string _pattern;
+        [SerializeField] private string _replacement;
+
+        private Regex _regex;
+
+        /// <summary>
+        ///     Source type of the address.
+        /// </summary>
+        public PartialAssetPathType Source
+        {
+            get => _source;
+            set => _source = value;
+        }
+
+        /// <summary>
+        ///     If true, replaces the source value through regular expressions.
+        /// </summary>
+        public bool ReplaceWithRegex
+        {
+            get => _replaceWithRegex;
+            set => _replaceWithRegex = value;
+        }
+
+        /// <summary>
+        ///     Regex pattern to replace the source value.
+        /// </summary>
+        public string Pattern
+        {
+            get => _pattern;
+            set => _pattern = value;
+        }
+
+        /// <summary>
+        ///     Replacement value for the regex pattern.
+        /// </summary>
+        public string Replacement
+        {
+            get => _replacement;
+            set => _replacement = value;
+        }
+
+        void IProvider<string>.Setup()
+        {
+            if (!_replaceWithRegex)
+                return;
+            _regex = new Regex(_pattern);
+        }
+
+        string IProvider<string>.Provide(string assetPath, Type assetType, bool isFolder)
+        {
+            var sourceValue = _source.Create(assetPath);
+            return _replaceWithRegex ? _regex.Replace(sourceValue, _replacement) : sourceValue;
+        }
+
+        string IProvider<string>.GetDescription()
+        {
+            var result = $"Source: {_source.ToString()}";
+            if (_replaceWithRegex)
+                result += $", Regex: Replace \"{_pattern}\" with \"{_replacement}\"";
+
+            return result;
+        }
+    }
+}

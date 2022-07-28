@@ -1,19 +1,15 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using SmartAddresser.Editor.Core.Models.EntryRules.AddressRules;
 using SmartAddresser.Editor.Foundation.CustomDrawers;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared
 {
-    /// <summary>
-    ///     View for the right panel of the Addresses tab of the Address Rule Editor.
-    /// </summary>
-    internal sealed class AddressProviderPanelView : IDisposable
+    internal abstract class ProviderPanelViewBase<TProvider> : IDisposable
     {
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly Subject<Empty> _mouseButtonClickedSubject = new Subject<Empty>();
@@ -25,14 +21,19 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         private ICustomDrawer _drawer;
         private int _selectedIndex;
 
-        public AddressProviderPanelView(IReadOnlyObservableProperty<IAddressProvider> provider)
+        public abstract Type IgnoreProviderAttributeType { get; }
+
+        public ProviderPanelViewBase(IReadOnlyObservableProperty<TProvider> provider)
         {
-            TypeCache.GetTypesDerivedFrom<IAddressProvider>();
+            TypeCache.GetTypesDerivedFrom<TProvider>();
 
             var providerType = provider.Value.GetType();
-            var types = TypeCache.GetTypesDerivedFrom<IAddressProvider>()
-                .Where(x => !x.IsAbstract)
-                .Where(x => x.GetCustomAttribute<IgnoreAddressProviderAttribute>() == null)
+            var types = TypeCache.GetTypesDerivedFrom<TProvider>()
+                .Where(x =>
+                {
+                    var isIgnoreTarget = IgnoreProviderAttributeType == null || x.GetCustomAttribute(IgnoreProviderAttributeType) != null;
+                    return !x.IsAbstract && !isIgnoreTarget;
+                })
                 .ToArray();
 
             _providerTypes = new Type[types.Length];
@@ -95,7 +96,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             }
         }
 
-        private void SetProvider(IAddressProvider provider)
+        private void SetProvider(TProvider provider)
         {
             if (provider == null)
             {

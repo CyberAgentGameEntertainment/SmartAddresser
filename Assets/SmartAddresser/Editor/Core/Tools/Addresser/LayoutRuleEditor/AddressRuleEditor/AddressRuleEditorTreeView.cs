@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor
 {
     /// <summary>
     ///     Tree view for the Address Rule Editor.

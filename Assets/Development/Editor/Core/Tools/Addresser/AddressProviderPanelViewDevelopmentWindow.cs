@@ -1,5 +1,6 @@
 using SmartAddresser.Editor.Core.Models.EntryRules.AddressRules;
-using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
@@ -7,46 +8,27 @@ using UnityEngine;
 
 namespace Development.Editor.Core.Tools.Addresser
 {
-    internal sealed class AddressProviderPanelViewDevelopmentWindow : EditorWindow
+    internal sealed class AddressProviderPanelViewDevelopmentWindow
+        : ProviderPanelViewDevelopmentWindowBase<IAddressProvider, AddressProviderPanelView,
+            AddressProviderPanelViewPresenter>
     {
         private const string WindowName = "[Dev] Address Provider Panel View";
-        private AutoIncrementHistory _history;
-        private AddressProviderPanelViewPresenter _presenter;
-        private AddressProviderPanelView _view;
 
-        private void OnEnable()
+        protected override IAddressProvider CreateInitialProvider()
         {
-            minSize = new Vector2(600, 200);
-
-            var providerProperty = new ObservableProperty<IAddressProvider>(new FakeAddressProvider());
-            _view = new AddressProviderPanelView(providerProperty);
-            _history = new AutoIncrementHistory();
-            _presenter =
-                new AddressProviderPanelViewPresenter(providerProperty, _view, _history, new FakeAssetSaveService());
+            return new AssetPathBasedAddressProvider();
         }
 
-        private void OnDisable()
+        protected override AddressProviderPanelView CreteView(ObservableProperty<IAddressProvider> providerProperty)
         {
-            _presenter.Dispose();
-            _view.Dispose();
+            return new AddressProviderPanelView(providerProperty);
         }
 
-        private void OnGUI()
+        protected override AddressProviderPanelViewPresenter CreatePresenter(
+            ObservableProperty<IAddressProvider> providerProperty, AddressProviderPanelView view,
+            AutoIncrementHistory history, IAssetSaveService assetSaveService)
         {
-            var e = Event.current;
-            if (GetEventAction(e) && e.type == EventType.KeyDown && e.keyCode == KeyCode.Z)
-            {
-                _history.Undo();
-                e.Use();
-            }
-
-            if (GetEventAction(e) && e.type == EventType.KeyDown && e.keyCode == KeyCode.Y)
-            {
-                _history.Redo();
-                e.Use();
-            }
-
-            _view.DoLayout();
+            return new AddressProviderPanelViewPresenter(providerProperty, view, history, assetSaveService);
         }
 
         private bool GetEventAction(Event e)

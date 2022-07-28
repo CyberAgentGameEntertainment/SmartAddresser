@@ -1,16 +1,12 @@
 using System;
+using SmartAddresser.Editor.Core.Models.Shared;
 
 namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
 {
     /// <summary>
     ///     Provide addresses from asset information.
     /// </summary>
-    public interface IAddressProvider
+    public interface IAddressProvider : IProvider<string>
     {
-        void Setup();
-
-        string CreateAddress(string assetPath, Type assetType, bool isFolder);
-
-        string GetDescription();
     }
 }
