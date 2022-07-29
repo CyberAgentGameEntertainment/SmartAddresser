@@ -1,5 +1,4 @@
 using SmartAddresser.Editor.Core.Models.EntryRules.LabelRules;
-using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
