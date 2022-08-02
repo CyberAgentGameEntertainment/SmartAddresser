@@ -6,7 +6,7 @@ using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor
 {
     /// <summary>
     ///     Presenter for <see cref="AddressRuleEditorListView" />.

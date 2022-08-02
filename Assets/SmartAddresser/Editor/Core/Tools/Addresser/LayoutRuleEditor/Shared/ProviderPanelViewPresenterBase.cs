@@ -1,5 +1,4 @@
 using System;
-using SmartAddresser.Editor.Core.Models.EntryRules.AddressRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx;
@@ -7,22 +6,19 @@ using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEngine;
 using StateBasedHistory = SmartAddresser.Editor.Foundation.StateBasedUndo.History;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared
 {
-    /// <summary>
-    ///     Presenter for <see cref="AddressProviderPanelView" />.
-    /// </summary>
-    internal sealed class AddressProviderPanelViewPresenter : IDisposable
+    internal abstract class ProviderPanelViewPresenterBase<TProvider> : IDisposable
     {
         private readonly IAssetSaveService _assetSaveService;
         private readonly CompositeDisposable _disposables = new CompositeDisposable();
         private readonly AutoIncrementHistory _history;
-        private readonly ObservableProperty<IAddressProvider> _provider;
+        private readonly ObservableProperty<TProvider> _provider;
         private int _mouseButtonClickedCount;
         private StateBasedHistory _providerHistory;
 
-        public AddressProviderPanelViewPresenter(ObservableProperty<IAddressProvider> provider,
-            AddressProviderPanelView view, AutoIncrementHistory history, IAssetSaveService saveService)
+        public ProviderPanelViewPresenterBase(ObservableProperty<TProvider> provider,
+            ProviderPanelViewBase<TProvider> view, AutoIncrementHistory history, IAssetSaveService saveService)
         {
             _provider = provider;
             _history = history;
@@ -46,7 +42,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         {
             var oldInstance = _provider.Value;
             var oldHistory = _providerHistory;
-            var newInstance = (IAddressProvider)Activator.CreateInstance(type);
+            var newInstance = (TProvider)Activator.CreateInstance(type);
             var newHistory = new StateBasedHistory(newInstance);
             newHistory.RegisterSnapshot(newHistory.TakeSnapshot());
             newHistory.IncrementCurrentGroup();
@@ -74,15 +70,17 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             // But if the mouse button is clicked, commandName will be changed.
             // As a result, the undo for successive keyboard inputs will be processed at once and for mouse input is undo individually.
             _providerHistory.IncrementCurrentGroup();
-            _history.Register($"On Filter Value Changed {GUIUtility.keyboardControl} {_mouseButtonClickedCount}", () =>
-            {
-                _providerHistory.Redo();
-                _assetSaveService.Save();
-            }, () =>
-            {
-                _providerHistory.Undo();
-                _assetSaveService.Save();
-            });
+            _history.Register(
+                $"On Provider Value Changed {typeof(TProvider).Name} {GUIUtility.keyboardControl} {_mouseButtonClickedCount}",
+                () =>
+                {
+                    _providerHistory.Redo();
+                    _assetSaveService.Save();
+                }, () =>
+                {
+                    _providerHistory.Undo();
+                    _assetSaveService.Save();
+                });
         }
     }
 }
