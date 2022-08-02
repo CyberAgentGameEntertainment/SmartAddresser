@@ -21,8 +21,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared
         private ICustomDrawer _drawer;
         private int _selectedIndex;
 
-        public abstract Type IgnoreProviderAttributeType { get; }
-
         public ProviderPanelViewBase(IReadOnlyObservableProperty<TProvider> provider)
         {
             TypeCache.GetTypesDerivedFrom<TProvider>();
@@ -31,8 +29,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared
             var types = TypeCache.GetTypesDerivedFrom<TProvider>()
                 .Where(x =>
                 {
-                    var isIgnoreTarget = IgnoreProviderAttributeType == null || x.GetCustomAttribute(IgnoreProviderAttributeType) != null;
-                    return !x.IsAbstract && !isIgnoreTarget;
+                    if (x.IsAbstract)
+                        return false;
+                    var isIgnoreTarget = IgnoreProviderAttributeType == null ||
+                                         x.GetCustomAttribute(IgnoreProviderAttributeType) != null;
+                    return !isIgnoreTarget;
                 })
                 .ToArray();
 
@@ -49,6 +50,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared
 
             provider.Subscribe(SetProvider).DisposeWith(_disposables);
         }
+
+        public abstract Type IgnoreProviderAttributeType { get; }
 
         public IObservable<Empty> ProviderValueChangedAsObservable => _providerValueChangedSubject;
 

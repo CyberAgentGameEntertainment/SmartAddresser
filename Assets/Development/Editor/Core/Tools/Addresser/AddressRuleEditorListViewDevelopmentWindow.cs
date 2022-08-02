@@ -2,7 +2,6 @@ using System.Linq;
 using SmartAddresser.Editor.Core.Models.EntryRules.AddressRules;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
-using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
