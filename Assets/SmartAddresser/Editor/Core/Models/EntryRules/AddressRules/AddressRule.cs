@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Foundation.TinyRx;
@@ -20,7 +18,7 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
         [SerializeField] private string _id;
         [SerializeField] private AddressableAssetGroup _addressableGroup;
         [SerializeField] private bool _control;
-        [SerializeField] private ObservableList<AssetGroup> _assetGroups = new ObservableList<AssetGroup>();
+        [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
 
         private readonly Subject<IAddressProvider> _addressProviderChangedSubject = new Subject<IAddressProvider>();
         private readonly ObservableProperty<string> _addressProviderDescription = new ObservableProperty<string>();
@@ -69,8 +67,7 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
         /// </summary>
         public void Setup()
         {
-            foreach (var group in _assetGroups)
-                group.Setup();
+            _assetGroups.Setup();
             _addressProvider.Setup();
         }
 
@@ -84,57 +81,22 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
         /// <returns>Return true if successful.</returns>
         public bool CreateAddress(string assetPath, Type assetType, bool isFolder, out string address)
         {
-            for (var i = 0; i < _assetGroups.Count; i++)
+            if (!_assetGroups.Contains(assetPath, assetType, isFolder))
             {
-                if (!_assetGroups[i].Contains(assetPath, assetType, isFolder))
-                    continue;
-
-                address = _addressProvider.Provide(assetPath, assetType, isFolder);
-                return true;
+                address = null;
+                return false;
             }
 
-            address = null;
-            return false;
+            address = _addressProvider.Provide(assetPath, assetType, isFolder);
+            return true;
         }
 
         internal void RefreshAssetGroupDescription()
         {
-            var groupDescriptions = new List<string>(_assetGroups.Count);
-
-            foreach (var group in _assetGroups)
-            {
-                var groupDescription = group.GetDescription();
-
-                if (string.IsNullOrEmpty(groupDescription))
-                    continue;
-
-                groupDescriptions.Add(groupDescription);
-            }
-
-            if (groupDescriptions.Count == 0)
-            {
-                _assetGroupDescription.Value = "(None)";
-                return;
-            }
-
-            var description = new StringBuilder();
-            for (var i = 0; i < groupDescriptions.Count; i++)
-            {
-                var groupDescription = groupDescriptions[i];
-
-                if (i >= 1)
-                    description.Append(" || ");
-
-                if (groupDescriptions.Count >= 2)
-                    description.Append(" (");
-
-                description.Append(groupDescription);
-
-                if (groupDescriptions.Count >= 2)
-                    description.Append(") ");
-            }
-
-            _assetGroupDescription.Value = description.ToString();
+            var description = _assetGroups.GetDescription();
+            if (string.IsNullOrEmpty(description))
+                description = "(None)";
+            _assetGroupDescription.Value = description;
         }
 
         internal void RefreshAddressProviderDescription()
