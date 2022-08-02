@@ -7,7 +7,7 @@ using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
+namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
 {
     /// <summary>
     ///     Provide rules for setting addresses.

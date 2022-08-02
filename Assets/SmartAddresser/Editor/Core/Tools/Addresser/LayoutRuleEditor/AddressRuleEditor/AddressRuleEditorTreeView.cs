@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartAddresser.Editor.Core.Models.EntryRules.AddressRules;
+using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Foundation.EasyTreeView;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;

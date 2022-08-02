@@ -1,4 +1,4 @@
-using SmartAddresser.Editor.Core.Models.EntryRules.TagRules;
+using SmartAddresser.Editor.Core.Models.LayoutRules.TagRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.TagRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;

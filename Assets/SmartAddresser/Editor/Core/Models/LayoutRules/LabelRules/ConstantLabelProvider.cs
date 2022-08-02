@@ -2,20 +2,20 @@ using System;
 using SmartAddresser.Editor.Core.Models.Shared;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Models.EntryRules.TagRules
+namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 {
     /// <summary>
-    ///     Provide constant tag.
+    ///     Provide constant label.
     /// </summary>
     [Serializable]
-    public sealed class ConstantTagProvider : ITagProvider
+    public sealed class ConstantLabelProvider : ILabelProvider
     {
-        [SerializeField] private string _tag;
+        [SerializeField] private string _label;
 
-        public string Tag
+        public string Label
         {
-            get => _tag;
-            set => _tag = value;
+            get => _label;
+            set => _label = value;
         }
 
         void IProvider<string>.Setup()
@@ -24,12 +24,12 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.TagRules
 
         string IProvider<string>.Provide(string assetPath, Type assetType, bool isFolder)
         {
-            return _tag;
+            return _label;
         }
 
         public string GetDescription()
         {
-            return $"Constant: {_tag}";
+            return $"Constant: {_label}";
         }
     }
 }

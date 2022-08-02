@@ -1,7 +1,6 @@
-using System;
 using SmartAddresser.Editor.Core.Models.Shared;
 
-namespace SmartAddresser.Editor.Core.Models.EntryRules.AddressRules
+namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
 {
     /// <summary>
     ///     Provide addresses from asset information.

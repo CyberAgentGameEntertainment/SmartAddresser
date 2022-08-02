@@ -1,6 +1,6 @@
 using System;
-using SmartAddresser.Editor.Core.Models.EntryRules.LabelRules;
-using SmartAddresser.Editor.Core.Models.EntryRules.TagRules;
+using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
+using SmartAddresser.Editor.Core.Models.LayoutRules.TagRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 

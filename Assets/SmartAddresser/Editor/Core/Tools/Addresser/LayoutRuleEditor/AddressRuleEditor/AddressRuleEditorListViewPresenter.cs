@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using SmartAddresser.Editor.Core.Models.EntryRules.AddressRules;
+using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx;

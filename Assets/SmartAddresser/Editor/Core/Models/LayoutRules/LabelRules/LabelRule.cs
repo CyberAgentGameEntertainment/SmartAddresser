@@ -6,24 +6,24 @@ using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Models.EntryRules.TagRules
+namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 {
     /// <summary>
-    ///     Provide rules for setting tags.
+    ///     Provide rules for setting labels.
     /// </summary>
     [Serializable]
-    public sealed class TagRule
+    public sealed class LabelRule
     {
         [SerializeField] private string _id;
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
         private readonly ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
 
-        private readonly Subject<ITagProvider> _tagProviderChangedSubject = new Subject<ITagProvider>();
-        private readonly ObservableProperty<string> _tagProviderDescription = new ObservableProperty<string>();
+        private readonly Subject<ILabelProvider> _labelProviderChangedSubject = new Subject<ILabelProvider>();
+        private readonly ObservableProperty<string> _labelProviderDescription = new ObservableProperty<string>();
 
-        [SerializeReference] private ITagProvider _tagProvider;
+        [SerializeReference] private ILabelProvider _labelProvider;
 
-        public TagRule()
+        public LabelRule()
         {
             _id = IdentifierFactory.Create();
         }
@@ -32,50 +32,50 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.TagRules
 
         public IObservableList<AssetGroup> AssetGroups => _assetGroups;
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
-        public IReadOnlyObservableProperty<string> TagProviderDescription => _tagProviderDescription;
+        public IReadOnlyObservableProperty<string> LabelProviderDescription => _labelProviderDescription;
 
-        public ITagProvider TagProvider
+        public ILabelProvider LabelProvider
         {
-            get => _tagProvider;
+            get => _labelProvider;
             set
             {
-                if (_tagProvider != null && _tagProvider == value)
+                if (_labelProvider != null && _labelProvider == value)
                     return;
 
-                _tagProvider = value;
-                _tagProviderChangedSubject.OnNext(value);
+                _labelProvider = value;
+                _labelProviderChangedSubject.OnNext(value);
             }
         }
 
-        public IObservable<ITagProvider> TagProviderChangedAsObservable => _tagProviderChangedSubject;
+        public IObservable<ILabelProvider> LabelProviderChangedAsObservable => _labelProviderChangedSubject;
 
         /// <summary>
-        ///     Setup to generate tags.
-        ///     This method must be called before calling <see cref="CreateTag" />.
+        ///     Setup to generate labels.
+        ///     This method must be called before calling <see cref="CreateLabel" />.
         /// </summary>
         public void Setup()
         {
             _assetGroups.Setup();
-            _tagProvider.Setup();
+            _labelProvider.Setup();
         }
 
         /// <summary>
-        ///     Create a tag from asset information.
+        ///     Create a label from asset information.
         /// </summary>
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
-        /// <param name="tag">If successful, assign the address. If not, null.</param>
+        /// <param name="label">If successful, assign the address. If not, null.</param>
         /// <returns>Return true if successful.</returns>
-        public bool CreateTag(string assetPath, Type assetType, bool isFolder, out string tag)
+        public bool CreateLabel(string assetPath, Type assetType, bool isFolder, out string label)
         {
             if (!_assetGroups.Contains(assetPath, assetType, isFolder))
             {
-                tag = null;
+                label = null;
                 return false;
             }
 
-            tag = _tagProvider.Provide(assetPath, assetType, isFolder);
+            label = _labelProvider.Provide(assetPath, assetType, isFolder);
             return true;
         }
 
@@ -87,9 +87,9 @@ namespace SmartAddresser.Editor.Core.Models.EntryRules.TagRules
             _assetGroupDescription.Value = description;
         }
 
-        internal void RefreshTagProviderDescription()
+        internal void RefreshLabelProviderDescription()
         {
-            _tagProviderDescription.Value = _tagProvider == null ? "(None)" : _tagProvider.GetDescription();
+            _labelProviderDescription.Value = _labelProvider == null ? "(None)" : _labelProvider.GetDescription();
         }
     }
 }

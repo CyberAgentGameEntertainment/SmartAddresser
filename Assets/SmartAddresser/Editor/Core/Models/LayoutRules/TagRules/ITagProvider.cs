@@ -1,6 +1,6 @@
 using SmartAddresser.Editor.Core.Models.Shared;
 
-namespace SmartAddresser.Editor.Core.Models.EntryRules.TagRules
+namespace SmartAddresser.Editor.Core.Models.LayoutRules.TagRules
 {
     /// <summary>
     ///     Provide tags from asset information.
