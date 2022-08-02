@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 
 namespace Development.Editor.Core.Tools.Addresser
 {
-    internal sealed class AddressViewerViewDevelopmentWindow : EditorWindow
+    internal sealed class LayoutViewerViewDevelopmentWindow : EditorWindow
     {
         private const string LoremIpsum =
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
@@ -20,7 +20,7 @@ namespace Development.Editor.Core.Tools.Addresser
 
         [SerializeField] private LayoutViewerTreeView.State _treeViewState;
         private readonly List<Group> _groups = new List<Group>();
-        private AddressLayoutViewerView _view;
+        private LayoutViewerView _view;
 
         private void OnEnable()
         {
@@ -71,7 +71,21 @@ namespace Development.Editor.Core.Tools.Addresser
                     var tags = Enumerable.Range(0, Random.Range(0, 3)).Select(x => GetRandomWord()).ToArray();
                     var errorType = GetRandomErrorType();
                     var message = GetRandomSentence();
-                    var entry = new Entry(assetName, assetPath, labels, tags, errorType, message);
+                    var entry = new Entry(assetName, assetPath, labels, tags);
+                    switch (errorType)
+                    {
+                        case LayoutErrorType.Warning:
+                            entry.Errors.Add(new EntryError(EntryErrorType.Warning, message));
+                            break;
+                        case LayoutErrorType.Error:
+                            entry.Errors.Add(new EntryError(EntryErrorType.Error, message));
+                            break;
+                        case LayoutErrorType.None:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
                     group.Entries.Add(entry);
                 }
 
@@ -79,9 +93,9 @@ namespace Development.Editor.Core.Tools.Addresser
             }
 
             if (_treeViewState == null)
-                _treeViewState = new AddressLayoutViewerTreeView.State();
-            _view = new AddressLayoutViewerView(_treeViewState);
-            var _ = new AddressLayoutViewerViewPresenter(_groups, _view);
+                _treeViewState = new LayoutViewerTreeView.State();
+            _view = new LayoutViewerView(_treeViewState);
+            var _ = new LayoutViewerViewPresenter(_groups, _view);
         }
 
         private void OnGUI()
@@ -92,7 +106,7 @@ namespace Development.Editor.Core.Tools.Addresser
         [MenuItem("Window/Smart Addresser/Development/Address Viewer View")]
         public static void Open()
         {
-            GetWindow<AddressViewerViewDevelopmentWindow>(WindowName);
+            GetWindow<LayoutViewerViewDevelopmentWindow>(WindowName);
         }
     }
 }

@@ -8,9 +8,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
     /// <summary>
     ///     Presenter for <see cref="LayoutViewerView" />.
     /// </summary>
-    internal sealed class AddressLayoutViewerViewPresenter
+    internal sealed class LayoutViewerViewPresenter
     {
-        private readonly AddressLayoutViewerView _view;
+        private readonly LayoutViewerView _view;
 
         public LayoutViewerViewPresenter(IEnumerable<Group> groups, LayoutViewerView view)
         {
