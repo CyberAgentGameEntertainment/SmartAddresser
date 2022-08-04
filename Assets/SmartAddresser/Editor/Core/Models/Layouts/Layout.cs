@@ -56,6 +56,13 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
                     }
 
                     addressEntries.Add(entry);
+
+                    // If the entry has multiple versions, mark as error.
+                    if (entry.Versions.Length >= 2)
+                    {
+                        const string message = "[Error] Multiple Versions: This asset has multiple versions.";
+                        entry.Errors.Add(new EntryError(EntryErrorType.Error, message));
+                    }
                 }
             }
 

@@ -2,7 +2,7 @@ using NUnit.Framework;
 using SmartAddresser.Editor.Core.Models.Shared;
 using UnityEngine;
 
-namespace SmartAddresser.Tests.Editor.Core.Models.EntryRules.Shared
+namespace SmartAddresser.Tests.Editor.Core.Models.LayoutRules.Shared
 {
     internal sealed class AssetPathBasedProviderTest
     {

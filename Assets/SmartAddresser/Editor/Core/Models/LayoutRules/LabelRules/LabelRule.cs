@@ -51,7 +51,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 
         /// <summary>
         ///     Setup to generate labels.
-        ///     This method must be called before calling <see cref="CreateLabel" />.
+        ///     This method must be called before calling <see cref="TryProvideLabel" />.
         /// </summary>
         public void Setup()
         {
@@ -67,7 +67,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         /// <param name="isFolder"></param>
         /// <param name="label">If successful, assign the address. If not, null.</param>
         /// <returns>Return true if successful.</returns>
-        public bool CreateLabel(string assetPath, Type assetType, bool isFolder, out string label)
+        public bool TryProvideLabel(string assetPath, Type assetType, bool isFolder, out string label)
         {
             if (!_assetGroups.Contains(assetPath, assetType, isFolder))
             {

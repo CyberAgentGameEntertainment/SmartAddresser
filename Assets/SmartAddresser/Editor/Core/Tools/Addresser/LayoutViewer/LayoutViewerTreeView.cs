@@ -110,7 +110,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                                 cellRect.height - 2, cellRect.width);
                             break;
                         case Columns.Tags:
-                            DrawBadges(entryItem.Entry.Tags, new Vector2(cellRect.x, cellRect.y + 1),
+                            DrawBadges(entryItem.Entry.Versions, new Vector2(cellRect.x, cellRect.y + 1),
                                 cellRect.height - 2, cellRect.width);
                             break;
                         case Columns.Message:

@@ -3,7 +3,7 @@ using UnityEditor.AddressableAssets.Settings;
 
 namespace SmartAddresser.Editor.Foundation.AddressableAdapter
 {
-    internal sealed class AddressableAssetSettingsAdapter : IAddressableAssetSettingsAdapter
+    public sealed class AddressableAssetSettingsAdapter : IAddressableAssetSettingsAdapter
     {
         private readonly AddressableAssetSettings _settings;
 

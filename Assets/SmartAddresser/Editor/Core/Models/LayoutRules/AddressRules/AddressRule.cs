@@ -63,7 +63,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
 
         /// <summary>
         ///     Setup to generate addresses.
-        ///     This method must be called before calling <see cref="CreateAddress" />.
+        ///     This method must be called before calling <see cref="TryProvideAddress" />.
         /// </summary>
         public void Setup()
         {
@@ -72,14 +72,14 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
         }
 
         /// <summary>
-        ///     Create an address from asset information.
+        ///     Provide an address from asset information.
         /// </summary>
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
         /// <param name="address">If successful, assign the address. If not, null.</param>
         /// <returns>Return true if successful.</returns>
-        public bool CreateAddress(string assetPath, Type assetType, bool isFolder, out string address)
+        public bool TryProvideAddress(string assetPath, Type assetType, bool isFolder, out string address)
         {
             if (!_assetGroups.Contains(assetPath, assetType, isFolder))
             {

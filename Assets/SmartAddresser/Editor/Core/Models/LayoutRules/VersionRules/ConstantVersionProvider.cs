@@ -2,20 +2,20 @@ using System;
 using SmartAddresser.Editor.Core.Models.Shared;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Models.LayoutRules.TagRules
+namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
 {
     /// <summary>
     ///     Provide constant tag.
     /// </summary>
     [Serializable]
-    public sealed class ConstantTagProvider : ITagProvider
+    public sealed class ConstantVersionProvider : IVersionProvider
     {
-        [SerializeField] private string _tag;
+        [SerializeField] private string _version;
 
-        public string Tag
+        public string Version
         {
-            get => _tag;
-            set => _tag = value;
+            get => _version;
+            set => _version = value;
         }
 
         void IProvider<string>.Setup()
@@ -24,12 +24,12 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.TagRules
 
         string IProvider<string>.Provide(string assetPath, Type assetType, bool isFolder)
         {
-            return _tag;
+            return _version;
         }
 
         public string GetDescription()
         {
-            return $"Constant: {_tag}";
+            return $"Constant: {_version}";
         }
     }
 }

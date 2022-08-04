@@ -6,24 +6,24 @@ using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Models.LayoutRules.TagRules
+namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
 {
     /// <summary>
-    ///     Provide rules for setting tags.
+    ///     Provide rules for setting versions.
     /// </summary>
     [Serializable]
-    public sealed class TagRule
+    public sealed class VersionRule
     {
         [SerializeField] private string _id;
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
         private readonly ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
 
-        private readonly Subject<ITagProvider> _tagProviderChangedSubject = new Subject<ITagProvider>();
-        private readonly ObservableProperty<string> _tagProviderDescription = new ObservableProperty<string>();
+        private readonly Subject<IVersionProvider> _versionProviderChangedSubject = new Subject<IVersionProvider>();
+        private readonly ObservableProperty<string> _versionProviderDescription = new ObservableProperty<string>();
 
-        [SerializeReference] private ITagProvider _tagProvider;
+        [SerializeReference] private IVersionProvider _versionProvider;
 
-        public TagRule()
+        public VersionRule()
         {
             _id = IdentifierFactory.Create();
         }
@@ -32,50 +32,50 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.TagRules
 
         public IObservableList<AssetGroup> AssetGroups => _assetGroups;
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
-        public IReadOnlyObservableProperty<string> TagProviderDescription => _tagProviderDescription;
+        public IReadOnlyObservableProperty<string> VersionProviderDescription => _versionProviderDescription;
 
-        public ITagProvider TagProvider
+        public IVersionProvider VersionProvider
         {
-            get => _tagProvider;
+            get => _versionProvider;
             set
             {
-                if (_tagProvider != null && _tagProvider == value)
+                if (_versionProvider != null && _versionProvider == value)
                     return;
 
-                _tagProvider = value;
-                _tagProviderChangedSubject.OnNext(value);
+                _versionProvider = value;
+                _versionProviderChangedSubject.OnNext(value);
             }
         }
 
-        public IObservable<ITagProvider> TagProviderChangedAsObservable => _tagProviderChangedSubject;
+        public IObservable<IVersionProvider> VersionProviderChangedAsObservable => _versionProviderChangedSubject;
 
         /// <summary>
-        ///     Setup to generate tags.
-        ///     This method must be called before calling <see cref="CreateTag" />.
+        ///     Setup to generate versions.
+        ///     This method must be called before calling <see cref="TryProvideVersion" />.
         /// </summary>
         public void Setup()
         {
             _assetGroups.Setup();
-            _tagProvider.Setup();
+            _versionProvider.Setup();
         }
 
         /// <summary>
-        ///     Create a tag from asset information.
+        ///     Create a version from asset information.
         /// </summary>
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
-        /// <param name="tag">If successful, assign the address. If not, null.</param>
+        /// <param name="version">If successful, assign the address. If not, null.</param>
         /// <returns>Return true if successful.</returns>
-        public bool CreateTag(string assetPath, Type assetType, bool isFolder, out string tag)
+        public bool TryProvideVersion(string assetPath, Type assetType, bool isFolder, out string version)
         {
             if (!_assetGroups.Contains(assetPath, assetType, isFolder))
             {
-                tag = null;
+                version = null;
                 return false;
             }
 
-            tag = _tagProvider.Provide(assetPath, assetType, isFolder);
+            version = _versionProvider.Provide(assetPath, assetType, isFolder);
             return true;
         }
 
@@ -87,9 +87,9 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.TagRules
             _assetGroupDescription.Value = description;
         }
 
-        internal void RefreshTagProviderDescription()
+        internal void RefreshVersionProviderDescription()
         {
-            _tagProviderDescription.Value = _tagProvider == null ? "(None)" : _tagProvider.GetDescription();
+            _versionProviderDescription.Value = _versionProvider == null ? "(None)" : _versionProvider.GetDescription();
         }
     }
 }

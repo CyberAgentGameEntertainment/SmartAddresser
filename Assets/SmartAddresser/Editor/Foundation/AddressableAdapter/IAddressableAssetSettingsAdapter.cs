@@ -5,7 +5,7 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
     /// <summary>
     ///     Abstraction of operations to AddressableAssetSettings.
     /// </summary>
-    internal interface IAddressableAssetSettingsAdapter
+    public interface IAddressableAssetSettingsAdapter
     {
         /// <summary>
         ///     Find and asset entry by guid.
