@@ -1,35 +1,25 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Foundation.EditorSplitView
 {
-    [Serializable]
     public sealed class EditorGUILayoutSplitView
     {
-        [SerializeField] private LayoutDirection _direction;
-        [SerializeField] private float _firstRectMinSize;
-        [SerializeField] private float _secondRectMinSize;
-        [SerializeField] private float _normalizedPosition;
         private bool _isResizing;
         private float _maxPosition;
         private Vector2 _scrollPosition1;
         private Vector2 _scrollPosition2;
 
-        public float NormalizedPosition => _normalizedPosition;
-
-        public EditorGUILayoutSplitView(LayoutDirection direction, float initialNormalizedPosition = 0.5f,
-            float firstRectMinSize = 1.0f, float secondRectMinSize = 1.0f)
+        public EditorGUILayoutSplitView(EditorGUILayoutSplitViewState state)
         {
-            _direction = direction;
-            _firstRectMinSize = Mathf.Max(1.0f, firstRectMinSize);
-            _secondRectMinSize = Mathf.Max(1.0f, secondRectMinSize);
-            _normalizedPosition = initialNormalizedPosition;
+            State = state;
         }
+
+        public EditorGUILayoutSplitViewState State { get; }
 
         public void Begin()
         {
-            var isHorizontal = _direction == LayoutDirection.Horizontal;
+            var isHorizontal = State.Direction == LayoutDirection.Horizontal;
 
             if (isHorizontal)
             {
@@ -46,10 +36,10 @@ namespace SmartAddresser.Editor.Foundation.EditorSplitView
 
             if (isHorizontal)
                 _scrollPosition1 = GUILayout.BeginScrollView(_scrollPosition1,
-                    GUILayout.Width(_normalizedPosition * _maxPosition));
+                    GUILayout.Width(State.NormalizedPosition * _maxPosition));
             else
                 _scrollPosition1 = GUILayout.BeginScrollView(_scrollPosition1,
-                    GUILayout.Height(_normalizedPosition * _maxPosition));
+                    GUILayout.Height(State.NormalizedPosition * _maxPosition));
         }
 
         /// <summary>
@@ -57,7 +47,7 @@ namespace SmartAddresser.Editor.Foundation.EditorSplitView
         /// <returns>Return true if resized.</returns>
         public bool Split()
         {
-            var isHorizontal = _direction == LayoutDirection.Horizontal;
+            var isHorizontal = State.Direction == LayoutDirection.Horizontal;
 
             GUILayout.EndScrollView();
 
@@ -88,19 +78,19 @@ namespace SmartAddresser.Editor.Foundation.EditorSplitView
 
             if (_isResizing)
             {
-                if (_direction == LayoutDirection.Horizontal)
+                if (State.Direction == LayoutDirection.Horizontal)
                 {
-                    _normalizedPosition = Event.current.mousePosition.x;
-                    _normalizedPosition = Mathf.Clamp(_normalizedPosition, _firstRectMinSize,
-                        _maxPosition - _firstRectMinSize);
-                    _normalizedPosition /= _maxPosition;
+                    State.NormalizedPosition = Event.current.mousePosition.x;
+                    State.NormalizedPosition = Mathf.Clamp(State.NormalizedPosition, State.FirstRectMinSize,
+                        _maxPosition - State.FirstRectMinSize);
+                    State.NormalizedPosition /= _maxPosition;
                 }
                 else
                 {
-                    _normalizedPosition = Event.current.mousePosition.y;
-                    _normalizedPosition = Mathf.Clamp(_normalizedPosition, _secondRectMinSize,
-                        _maxPosition - _secondRectMinSize);
-                    _normalizedPosition /= _maxPosition;
+                    State.NormalizedPosition = Event.current.mousePosition.y;
+                    State.NormalizedPosition = Mathf.Clamp(State.NormalizedPosition, State.SecondRectMinSize,
+                        _maxPosition - State.SecondRectMinSize);
+                    State.NormalizedPosition /= _maxPosition;
                 }
             }
 
@@ -110,10 +100,10 @@ namespace SmartAddresser.Editor.Foundation.EditorSplitView
             // Start ScrollView.
             if (isHorizontal)
                 _scrollPosition2 = GUILayout.BeginScrollView(_scrollPosition2,
-                    GUILayout.Width((1 - _normalizedPosition) * _maxPosition));
+                    GUILayout.Width((1 - State.NormalizedPosition) * _maxPosition));
             else
                 _scrollPosition2 = GUILayout.BeginScrollView(_scrollPosition2,
-                    GUILayout.Height((1 - _normalizedPosition) * _maxPosition));
+                    GUILayout.Height((1 - State.NormalizedPosition) * _maxPosition));
 
             return _isResizing;
         }
@@ -122,7 +112,7 @@ namespace SmartAddresser.Editor.Foundation.EditorSplitView
         {
             GUILayout.EndScrollView();
 
-            if (_direction == LayoutDirection.Horizontal)
+            if (State.Direction == LayoutDirection.Horizontal)
                 EditorGUILayout.EndHorizontal();
             else
                 EditorGUILayout.EndVertical();
