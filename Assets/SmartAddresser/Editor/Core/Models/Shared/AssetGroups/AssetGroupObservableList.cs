@@ -55,23 +55,24 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
                 groupDescriptions.Add(groupDescription);
             }
 
-            if (groupDescriptions.Count == 0)
+            var groupDescriptionsCount = groupDescriptions.Count;
+            if (groupDescriptionsCount == 0)
                 return null;
 
             var description = new StringBuilder();
-            for (var i = 0; i < groupDescriptions.Count; i++)
+            for (var i = 0; i < groupDescriptionsCount; i++)
             {
                 var groupDescription = groupDescriptions[i];
 
                 if (i >= 1)
                     description.Append(" || ");
 
-                if (groupDescriptions.Count >= 2)
+                if (groupDescriptionsCount >= 2)
                     description.Append(" (");
 
                 description.Append(groupDescription);
 
-                if (groupDescriptions.Count >= 2)
+                if (groupDescriptionsCount >= 2)
                     description.Append(") ");
             }
 

@@ -8,7 +8,7 @@ namespace SmartAddresser.Editor.Core.Models.Services
 {
     public sealed class LayoutRuleApplyService
     {
-        private readonly IAddressableAssetSettingsAdapter _addressableSettingAdapter;
+        private readonly IAddressableAssetSettingsAdapter _addressableSettingsAdapter;
         private readonly IAssetDatabaseAdapter _assetDatabaseAdapter;
         private readonly LayoutRule _layoutRule;
         private readonly IVersionExpressionParser _versionExpressionParser;
@@ -19,7 +19,7 @@ namespace SmartAddresser.Editor.Core.Models.Services
             IAssetDatabaseAdapter assetDatabaseAdapter)
         {
             _layoutRule = layoutRule;
-            _addressableSettingAdapter = addressableSettingsAdapter;
+            _addressableSettingsAdapter = addressableSettingsAdapter;
             _versionExpressionParser = versionExpressionParser;
             _assetDatabaseAdapter = assetDatabaseAdapter;
         }
@@ -82,15 +82,15 @@ namespace SmartAddresser.Editor.Core.Models.Services
             }
 
             // Set group and address.
-            var entryAdapter = _addressableSettingAdapter.CreateOrMoveEntry(addressableGroupName, assetGuid);
+            var entryAdapter = _addressableSettingsAdapter.CreateOrMoveEntry(addressableGroupName, assetGuid);
             entryAdapter.SetAddress(address);
 
             // Add labels to addressable settings if not exists.
             var labels = _layoutRule.ProvideLabels(assetPath, assetType, isFolder, doSetup);
-            var addressableLabels = _addressableSettingAdapter.GetLabels();
+            var addressableLabels = _addressableSettingsAdapter.GetLabels();
             foreach (var label in labels)
                 if (!addressableLabels.Contains(label))
-                    _addressableSettingAdapter.AddLabel(label);
+                    _addressableSettingsAdapter.AddLabel(label);
 
             // Set labels.
             foreach (var label in entryAdapter.Labels)
