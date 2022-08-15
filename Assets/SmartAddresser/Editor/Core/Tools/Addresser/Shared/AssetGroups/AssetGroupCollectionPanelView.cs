@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
@@ -8,53 +9,50 @@ using UnityEngine;
 namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 {
     /// <summary>
-    ///     View to draw the collection of the <see cref="AssetGroup" />.
+    ///     View for the asset group collection panel.
     /// </summary>
-    internal sealed class AssetGroupCollectionView
+    internal sealed class AssetGroupCollectionPanelView
     {
         private const string AddButtonName = "Add Asset Group";
         private const string PasteMenuName = "Paste Asset Group";
 
         private readonly Subject<Empty> _addButtonClickedSubject = new Subject<Empty>();
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
-        private readonly ObservableDictionary<string, AssetGroupView> _groupViews =
-            new ObservableDictionary<string, AssetGroupView>();
+        private readonly List<string> _groupPanelViewOrder = new List<string>();
+
+        private readonly ObservableDictionary<string, AssetGroupPanelView> _groupPanelViews =
+            new ObservableDictionary<string, AssetGroupPanelView>();
 
         private readonly Subject<Empty> _pasteMenuExecutedSubject = new Subject<Empty>();
 
-        public AssetGroupCollectionView(IReadOnlyObservableList<AssetGroup> groups)
-        {
-            Groups = groups;
-
-            foreach (var group in groups)
-                AddGroup(group);
-
-            groups.ObservableAdd.Subscribe(x => AddGroup(x.Value)).DisposeWith(_disposables);
-            groups.ObservableRemove.Subscribe(x => RemoveGroup(x.Value)).DisposeWith(_disposables);
-            groups.ObservableClear.Subscribe(x => ClearGroups()).DisposeWith(_disposables);
-        }
-
         public IObservable<Empty> AddButtonClickedAsObservable => _addButtonClickedSubject;
         public IObservable<Empty> PasteMenuExecutedAsObservable => _pasteMenuExecutedSubject;
-        public IReadOnlyObservableList<AssetGroup> Groups { get; }
-        public IReadOnlyObservableDictionary<string, AssetGroupView> GroupViews => _groupViews;
+        public IReadOnlyObservableDictionary<string, AssetGroupPanelView> GroupPanelViews => _groupPanelViews;
+
+        public bool Enabled { get; set; }
+
         public event Func<bool> CanPaste;
 
         public void Dispose()
         {
-            ClearGroups();
+            // Clear the group panel views.
+            ClearGroupPanelViews();
 
-            _disposables.Dispose();
+            // Dispose all the disposables.
             _addButtonClickedSubject.Dispose();
             _pasteMenuExecutedSubject.Dispose();
         }
 
         public void DoLayout()
         {
-            // Draw the Groups in the same order as model.
-            foreach (var group in Groups)
-                _groupViews[group.Id].DoLayout();
+            var enabled = GUI.enabled;
+            GUI.enabled = GUI.enabled && Enabled;
+
+            foreach (var groupId in _groupPanelViewOrder)
+            {
+                var groupPanelView = _groupPanelViews[groupId];
+                groupPanelView.DoLayout();
+            }
 
             var bottomRect = GUILayoutUtility.GetRect(1, EditorGUIUtility.singleLineHeight + 8,
                 GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
@@ -80,26 +78,41 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
                 menu.ShowAsContext();
             }
+
+            GUI.enabled = enabled;
         }
 
-        private void AddGroup(AssetGroup group)
+        public AssetGroupPanelView AddGroupPanelView(AssetGroup group, int index = -1)
         {
-            var groupView = new AssetGroupView(group);
-            _groupViews.Add(group.Id, groupView);
+            var groupPanelView = new AssetGroupPanelView();
+            _groupPanelViews.Add(group.Id, groupPanelView);
+            if (index == -1)
+                _groupPanelViewOrder.Add(group.Id);
+            else
+                _groupPanelViewOrder.Insert(index, group.Id);
+            return groupPanelView;
         }
 
-        private void RemoveGroup(AssetGroup group)
+        public void RemoveGroupPanelView(string groupId)
         {
-            var groupView = _groupViews[group.Id];
+            var groupView = _groupPanelViews[groupId];
             groupView.Dispose();
-            _groupViews.Remove(group.Id);
+            _groupPanelViews.Remove(groupId);
+            _groupPanelViewOrder.Remove(groupId);
         }
 
-        private void ClearGroups()
+        public void ClearGroupPanelViews()
         {
-            foreach (var groupView in _groupViews.Values)
+            foreach (var groupView in _groupPanelViews.Values)
                 groupView.Dispose();
-            _groupViews.Clear();
+            _groupPanelViews.Clear();
+            _groupPanelViewOrder.Clear();
+        }
+
+        public void ChangGroupPanelViewOrder(string groupId, int newIndex)
+        {
+            _groupPanelViewOrder.Remove(groupId);
+            _groupPanelViewOrder.Insert(newIndex, groupId);
         }
     }
 }

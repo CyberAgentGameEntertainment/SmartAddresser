@@ -5,30 +5,29 @@ using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using UnityEditor;
 using UnityEngine;
 
-namespace Development.Editor.Core.Tools.Shared.AssetGroups
+namespace Development.Editor.Core.Tools.Addresser.Shared.AssetGroups
 {
-    internal sealed class AssetGroupViewDevelopmentWindow : EditorWindow
+    internal sealed class AssetGroupPanelDevelopmentWindow : EditorWindow
     {
-        private const string WindowName = "[Dev] Asset Group View";
+        private const string WindowName = "[Dev] Asset Group Panel";
+        private readonly FakeAssetSaveService _assetSaveService = new FakeAssetSaveService();
+        private readonly AutoIncrementHistory _history = new AutoIncrementHistory();
 
         private List<AssetGroup> _groupCollection;
-        private AutoIncrementHistory _history;
-        private AssetGroupViewPresenter _presenter;
+        private AssetGroupPanelPresenter _presenter;
         private Vector2 _scrollPos;
-        private AssetGroupView _view;
+        private AssetGroupPanelView _view;
 
         private void OnEnable()
         {
-            _history = new AutoIncrementHistory();
             _groupCollection ??= new List<AssetGroup>();
 
             if (_groupCollection.Count == 0)
                 _groupCollection.Add(new AssetGroup());
 
-            var assetGroup = _groupCollection[0];
-
-            _view = new AssetGroupView(assetGroup);
-            _presenter = new AssetGroupViewPresenter(_groupCollection, _view, _history, new FakeAssetSaveService());
+            _view = new AssetGroupPanelView();
+            _presenter = new AssetGroupPanelPresenter(_view, _history, _assetSaveService);
+            _presenter.SetupView(_groupCollection, 0);
         }
 
         private void OnDisable()
@@ -54,12 +53,24 @@ namespace Development.Editor.Core.Tools.Shared.AssetGroups
 
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
 
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar, GUILayout.ExpandWidth(true)))
+            {
+                if (GUILayout.Button("Set New Data", EditorStyles.toolbarButton))
+                {
+                    _groupCollection = new List<AssetGroup> { new AssetGroup() };
+                    _presenter.SetupView(_groupCollection, 0);
+                }
+
+                if (GUILayout.Button("Clear Data", EditorStyles.toolbarButton))
+                    _presenter.CleanupView();
+            }
+
             _view.DoLayout();
 
             EditorGUILayout.EndScrollView();
         }
 
-        private bool GetEventAction(Event e)
+        private static bool GetEventAction(Event e)
         {
 #if UNITY_EDITOR_WIN
             return e.control;
@@ -68,10 +79,10 @@ namespace Development.Editor.Core.Tools.Shared.AssetGroups
 #endif
         }
 
-        [MenuItem("Window/Smart Addresser/Development/Asset Group View")]
+        [MenuItem("Window/Smart Addresser/Development/Addresser/Shared/Asset Group Panel")]
         public static void Open()
         {
-            GetWindow<AssetGroupViewDevelopmentWindow>(WindowName);
+            GetWindow<AssetGroupPanelDevelopmentWindow>(WindowName);
         }
     }
 }

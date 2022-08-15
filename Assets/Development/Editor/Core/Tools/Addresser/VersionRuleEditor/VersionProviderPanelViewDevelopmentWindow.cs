@@ -1,12 +1,12 @@
+using Development.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
-using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
 using UnityEngine;
 
-namespace Development.Editor.Core.Tools.Addresser
+namespace Development.Editor.Core.Tools.Addresser.VersionRuleEditor
 {
     internal sealed class VersionProviderPanelViewDevelopmentWindow
         : ProviderPanelViewDevelopmentWindowBase<IVersionProvider, VersionProviderPanelView,
@@ -14,21 +14,15 @@ namespace Development.Editor.Core.Tools.Addresser
     {
         private const string WindowName = "[Dev] Version Provider Panel View";
 
-        protected override IVersionProvider CreateInitialProvider()
+        protected override VersionProviderPanelView CreateView()
         {
-            return new ConstantVersionProvider();
+            return new VersionProviderPanelView();
         }
 
-        protected override VersionProviderPanelView CreteView(ObservableProperty<IVersionProvider> providerProperty)
-        {
-            return new VersionProviderPanelView(providerProperty);
-        }
-
-        protected override VersionProviderPanelViewPresenter CreatePresenter(
-            ObservableProperty<IVersionProvider> providerProperty, VersionProviderPanelView view,
+        protected override VersionProviderPanelViewPresenter CreatePresenter(VersionProviderPanelView view,
             AutoIncrementHistory history, IAssetSaveService assetSaveService)
         {
-            return new VersionProviderPanelViewPresenter(providerProperty, view, history, assetSaveService);
+            return new VersionProviderPanelViewPresenter(view, history, assetSaveService);
         }
 
         private bool GetEventAction(Event e)
@@ -40,7 +34,7 @@ namespace Development.Editor.Core.Tools.Addresser
 #endif
         }
 
-        [MenuItem("Window/Smart Addresser/Development/Version Provider Panel View")]
+        [MenuItem("Window/Smart Addresser/Development/Addresser/Version Rule Editor/Version Provider Panel View")]
         public static void Open()
         {
             GetWindow<VersionProviderPanelViewDevelopmentWindow>(WindowName);

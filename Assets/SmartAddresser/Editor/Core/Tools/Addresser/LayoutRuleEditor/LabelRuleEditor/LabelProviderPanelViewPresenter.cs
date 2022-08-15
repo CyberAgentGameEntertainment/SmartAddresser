@@ -1,8 +1,8 @@
+using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
-using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor
 {
@@ -11,10 +11,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
     /// </summary>
     internal sealed class LabelProviderPanelViewPresenter : ProviderPanelViewPresenterBase<ILabelProvider>
     {
-        public LabelProviderPanelViewPresenter(ObservableProperty<ILabelProvider> provider,
-            LabelProviderPanelView view, AutoIncrementHistory history, IAssetSaveService saveService) : base(provider,
-            view, history, saveService)
+        public LabelProviderPanelViewPresenter(LabelProviderPanelView view, AutoIncrementHistory history,
+            IAssetSaveService saveService) : base(view, history, saveService)
         {
         }
+
+        protected override Type IgnoreProviderAttributeType => typeof(IgnoreLabelProviderAttribute);
     }
 }

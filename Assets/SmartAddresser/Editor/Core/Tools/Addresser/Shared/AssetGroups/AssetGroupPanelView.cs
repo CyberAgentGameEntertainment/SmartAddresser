@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Foundation;
 using SmartAddresser.Editor.Foundation.TinyRx;
@@ -9,9 +10,9 @@ using UnityEngine;
 namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 {
     /// <summary>
-    ///     View to draw <see cref="AssetGroup" />.
+    ///     View to the asset group panel.
     /// </summary>
-    internal sealed class AssetGroupView : IDisposable
+    internal sealed class AssetGroupPanelView : IDisposable
     {
         private const string RenameMenuName = "Rename";
         private const string RemoveMenuName = "Remove";
@@ -23,10 +24,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
         private const string PasteFilterMenuName = "Paste Filter";
         private readonly Subject<Empty> _addFilterButtonClickedSubject = new Subject<Empty>();
         private readonly Subject<Empty> _copyGroupMenuExecutedSubject = new Subject<Empty>();
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
         private readonly ObservableDictionary<string, AssetFilterView> _filterViews =
             new ObservableDictionary<string, AssetFilterView>();
+
+        private readonly List<string> _filterViewsOrder = new List<string>();
 
         private readonly Subject<Empty> _moveDownMenuExecutedSubject = new Subject<Empty>();
         private readonly Subject<Empty> _moveUpMenuExecutedSubject = new Subject<Empty>();
@@ -36,20 +38,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
         private readonly Subject<Empty> _pasteGroupValuesMenuExecutedSubject = new Subject<Empty>();
         private readonly Subject<Empty> _removeGroupMenuExecutedSubject = new Subject<Empty>();
 
-        public AssetGroupView(AssetGroup group)
-        {
-            Group = group;
+        public string GroupName { get; set; }
 
-            foreach (var filter in group.Filters)
-                AddFilter(filter);
-
-            group.Filters.ObservableAdd.Subscribe(x => AddFilter(x.Value)).DisposeWith(_disposables);
-            group.Filters.ObservableRemove.Subscribe(x => RemoveFilter(x.Value)).DisposeWith(_disposables);
-            group.Filters.ObservableClear.Subscribe(_ => ClearFilters()).DisposeWith(_disposables);
-        }
-
-        public AssetGroup Group { get; }
-
+        public bool Enabled { get; set; }
+        
         public IObservable<string> NameChangedAsObservable => _nameChangedSubject;
 
         public IObservable<Empty> RemoveGroupMenuExecutedAsObservable => _removeGroupMenuExecutedSubject;
@@ -72,13 +64,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
         public void Dispose()
         {
-            // Dispose the filter views.
-            foreach (var filterView in _filterViews)
-                filterView.Value.Dispose();
-            _filterViews.Clear();
+            // Clear the filter views.
+            ClearFilterViews();
 
             // Dispose all the disposables.
-            _disposables.Dispose();
             _nameChangedSubject.Dispose();
             _addFilterButtonClickedSubject.Dispose();
             _moveUpMenuExecutedSubject.Dispose();
@@ -94,8 +83,44 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
         public event Func<bool> CanPasteGroupValues;
         public event Func<bool> CanPasteFilter;
 
+        public AssetFilterView AddFilterView(IAssetFilter filter, int index = -1)
+        {
+            var filterView = new AssetFilterView(filter);
+            _filterViews.Add(filter.Id, filterView);
+            if (index == -1)
+                _filterViewsOrder.Add(filter.Id);
+            else
+                _filterViewsOrder.Insert(index, filter.Id);
+            return filterView;
+        }
+
+        public void RemoveFilterView(string filterId)
+        {
+            var filterView = _filterViews[filterId];
+            filterView.Dispose();
+            _filterViews.Remove(filterId);
+            _filterViewsOrder.Remove(filterId);
+        }
+
+        public void ClearFilterViews()
+        {
+            foreach (var filterView in _filterViews.Values)
+                filterView.Dispose();
+            _filterViews.Clear();
+            _filterViewsOrder.Clear();
+        }
+
+        public void ChangeFilterViewOrder(string filterId, int newIndex)
+        {
+            _filterViewsOrder.Remove(filterId);
+            _filterViewsOrder.Insert(newIndex, filterId);
+        }
+
         public void DoLayout()
         {
+            var enabled = GUI.enabled;
+            GUI.enabled = GUI.enabled && Enabled;
+            
             var rect = GUILayoutUtility.GetRect(1, 20, GUILayout.ExpandWidth(true));
 
             // Title
@@ -103,7 +128,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             rect.xMin += 4;
             var titleRect = rect;
             titleRect.xMax -= 20;
-            EditorGUI.LabelField(rect, Group.Name.Value, EditorStyles.boldLabel);
+            EditorGUI.LabelField(rect, GroupName, EditorStyles.boldLabel);
             var titleButtonRect = rect;
             titleButtonRect.xMin += titleButtonRect.width - 20;
 
@@ -124,7 +149,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
                 menu.AddItem(new GUIContent(RenameMenuName), false,
                     () =>
                     {
-                        TextFieldPopup.Show(mousePos, Group.Name.Value, null, x => _nameChangedSubject.OnNext(x),
+                        TextFieldPopup.Show(mousePos, GroupName, null, x => _nameChangedSubject.OnNext(x),
                             RenameMenuName);
                     });
 
@@ -173,9 +198,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             EditorGUILayout.BeginVertical();
             GUILayout.Space(8);
 
-            // Draw the Filters in the same order as model.
-            foreach (var filter in Group.Filters)
-                _filterViews[filter.Id].DoLayout();
+            foreach (var filterId in _filterViewsOrder)
+            {
+                var filterView = _filterViews[filterId];
+                filterView.DoLayout();
+            }
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
@@ -185,26 +212,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             // Border
             var borderRect = GUILayoutUtility.GetRect(1, 1, GUILayout.ExpandWidth(true));
             EditorGUI.DrawRect(borderRect, EditorGUIUtil.EditorBorderColor);
-        }
 
-        private void AddFilter(IAssetFilter filter)
-        {
-            var filterView = new AssetFilterView(filter);
-            _filterViews.Add(filter.Id, filterView);
-        }
-
-        private void RemoveFilter(IAssetFilter filter)
-        {
-            var filterView = _filterViews[filter.Id];
-            filterView.Dispose();
-            _filterViews.Remove(filter.Id);
-        }
-
-        private void ClearFilters()
-        {
-            foreach (var filterView in _filterViews.Values)
-                filterView.Dispose();
-            _filterViews.Clear();
+            GUI.enabled = enabled;
         }
     }
 }

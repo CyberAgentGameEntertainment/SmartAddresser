@@ -1,8 +1,8 @@
+using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
-using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor
 {
@@ -11,10 +11,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
     /// </summary>
     internal sealed class VersionProviderPanelViewPresenter : ProviderPanelViewPresenterBase<IVersionProvider>
     {
-        public VersionProviderPanelViewPresenter(ObservableProperty<IVersionProvider> provider,
-            VersionProviderPanelView view, AutoIncrementHistory history, IAssetSaveService saveService) : base(provider,
-            view, history, saveService)
+        public VersionProviderPanelViewPresenter(VersionProviderPanelView view, AutoIncrementHistory history,
+            IAssetSaveService saveService) : base(view, history, saveService)
         {
         }
+
+        protected override Type IgnoreProviderAttributeType => typeof(IgnoreVersionProviderAttribute);
     }
 }

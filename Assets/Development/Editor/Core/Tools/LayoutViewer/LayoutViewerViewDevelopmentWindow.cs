@@ -9,7 +9,7 @@ using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Development.Editor.Core.Tools.Addresser
+namespace Development.Editor.Core.Tools.LayoutViewer
 {
     internal sealed class LayoutViewerViewDevelopmentWindow : EditorWindow
     {
@@ -103,7 +103,7 @@ namespace Development.Editor.Core.Tools.Addresser
             _view.DoLayout();
         }
 
-        [MenuItem("Window/Smart Addresser/Development/Address Viewer View")]
+        [MenuItem("Window/Smart Addresser/Development/Layout Viewer/Layout Viewer View")]
         public static void Open()
         {
             GetWindow<LayoutViewerViewDevelopmentWindow>(WindowName);

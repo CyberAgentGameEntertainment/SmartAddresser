@@ -1,7 +1,6 @@
 using System;
 using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
-using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEngine;
@@ -12,20 +11,28 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
     ///     Provide rules for setting labels.
     /// </summary>
     [Serializable]
-    public sealed class LabelRule
+    public sealed class LabelRule : ISerializationCallbackReceiver
     {
         [SerializeField] private string _id;
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
         private readonly ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
 
-        private readonly Subject<ILabelProvider> _labelProviderChangedSubject = new Subject<ILabelProvider>();
         private readonly ObservableProperty<string> _labelProviderDescription = new ObservableProperty<string>();
 
-        [SerializeReference] private ILabelProvider _labelProvider;
+        [SerializeReference] private ILabelProvider _labelProviderInternal;
 
         public LabelRule()
         {
             _id = IdentifierFactory.Create();
+            var defaultAssetGroup = new AssetGroup
+            {
+                Name =
+                {
+                    Value = "Default Asset Group"
+                }
+            };
+            _assetGroups.Add(defaultAssetGroup);
+            LabelProvider.Value = new ConstantLabelProvider();
         }
 
         public string Id => _id;
@@ -34,20 +41,17 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
         public IReadOnlyObservableProperty<string> LabelProviderDescription => _labelProviderDescription;
 
-        public ILabelProvider LabelProvider
-        {
-            get => _labelProvider;
-            set
-            {
-                if (_labelProvider != null && _labelProvider == value)
-                    return;
+        public ObservableProperty<ILabelProvider> LabelProvider { get; } = new ObservableProperty<ILabelProvider>();
 
-                _labelProvider = value;
-                _labelProviderChangedSubject.OnNext(value);
-            }
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+            _labelProviderInternal = LabelProvider.Value;
         }
 
-        public IObservable<ILabelProvider> LabelProviderChangedAsObservable => _labelProviderChangedSubject;
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            LabelProvider.Value = _labelProviderInternal;
+        }
 
         /// <summary>
         ///     Setup to generate labels.
@@ -56,7 +60,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         public void Setup()
         {
             _assetGroups.Setup();
-            _labelProvider.Setup();
+            _labelProviderInternal.Setup();
         }
 
         /// <summary>
@@ -75,7 +79,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
                 return false;
             }
 
-            label = _labelProvider.Provide(assetPath, assetType, isFolder);
+            label = _labelProviderInternal.Provide(assetPath, assetType, isFolder);
             return true;
         }
 
@@ -89,7 +93,8 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 
         internal void RefreshLabelProviderDescription()
         {
-            _labelProviderDescription.Value = _labelProvider == null ? "(None)" : _labelProvider.GetDescription();
+            _labelProviderDescription.Value =
+                _labelProviderInternal == null ? "(None)" : _labelProviderInternal.GetDescription();
         }
     }
 }
