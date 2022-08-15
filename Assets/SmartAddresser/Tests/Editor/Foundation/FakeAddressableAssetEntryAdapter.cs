@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 
-namespace SmartAddresser.Tests.Editor
+namespace SmartAddresser.Tests.Editor.Foundation
 {
     internal sealed class FakeAddressableAssetEntryAdapter : IAddressableAssetEntryAdapter
     {
@@ -11,7 +11,18 @@ namespace SmartAddresser.Tests.Editor
         }
 
         /// <inheritdoc />
+        public string Address { get; private set; }
+
+        /// <inheritdoc />
         public HashSet<string> Labels { get; }
+
+        public string GroupName { get; private set; }
+
+        /// <inheritdoc />
+        public void SetAddress(string address)
+        {
+            Address = address;
+        }
 
         /// <inheritdoc />
         public bool SetLabel(string label, bool enable)
@@ -19,6 +30,11 @@ namespace SmartAddresser.Tests.Editor
             if (enable)
                 return Labels.Add(label);
             return Labels.Remove(label);
+        }
+        
+        internal void SetGroup(string groupName)
+        {
+            GroupName = groupName;
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 
-namespace SmartAddresser.Tests.Editor
+namespace SmartAddresser.Tests.Editor.Foundation
 {
     internal sealed class FakeAddressableAssetSettingsAdapter : IAddressableAssetSettingsAdapter
     {
@@ -20,13 +20,14 @@ namespace SmartAddresser.Tests.Editor
             if (_guidToEntryMap.TryGetValue(guid, out var entry))
             {
                 // Change group of the existing entry.
-                entry.GroupName = groupName;
+                entry.Adapter.SetGroup(groupName);
             }
             else
             {
                 // Create a new entry.
                 var adapter = new FakeAddressableAssetEntryAdapter();
-                entry = new Entry(guid, groupName, adapter);
+                adapter.SetGroup(groupName);
+                entry = new Entry(guid, adapter);
                 _guidToEntryMap.Add(guid, entry);
             }
 
@@ -59,16 +60,14 @@ namespace SmartAddresser.Tests.Editor
 
         private class Entry
         {
-            public Entry(string assetGuid, string groupName, IAddressableAssetEntryAdapter adapter)
+            public Entry(string assetGuid, FakeAddressableAssetEntryAdapter adapter)
             {
                 AssetGuid = assetGuid;
-                GroupName = groupName;
                 Adapter = adapter;
             }
 
             public string AssetGuid { get; }
-            public string GroupName { get; set; }
-            public IAddressableAssetEntryAdapter Adapter { get; }
+            public FakeAddressableAssetEntryAdapter Adapter { get; }
         }
     }
 }

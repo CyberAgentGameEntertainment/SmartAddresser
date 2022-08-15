@@ -3,7 +3,7 @@ using UnityEditor.AddressableAssets.Settings;
 
 namespace SmartAddresser.Editor.Foundation.AddressableAdapter
 {
-    internal sealed class AddressableAssetEntryAdapter : IAddressableAssetEntryAdapter
+    public sealed class AddressableAssetEntryAdapter : IAddressableAssetEntryAdapter
     {
         private readonly AddressableAssetEntry _entry;
 
@@ -11,10 +11,22 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         {
             _entry = entry;
         }
+        
+        /// <inheritdoc />
+        public string Address => _entry.address;
 
         /// <inheritdoc />
         public HashSet<string> Labels => _entry.labels;
+        
+        /// <inheritdoc />
+        public string GroupName => _entry.parentGroup.Name;
 
+        /// <inheritdoc />
+        public void SetAddress(string address)
+        {
+            _entry.SetAddress(address);
+        }
+        
         /// <inheritdoc />
         public bool SetLabel(string label, bool enable)
         {

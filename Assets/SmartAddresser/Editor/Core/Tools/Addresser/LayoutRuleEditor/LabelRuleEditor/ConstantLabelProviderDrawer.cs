@@ -1,4 +1,4 @@
-using SmartAddresser.Editor.Core.Models.EntryRules.LabelRules;
+using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Foundation.CustomDrawers;
 using UnityEditor;
 

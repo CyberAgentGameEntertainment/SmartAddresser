@@ -41,7 +41,7 @@ namespace SmartAddresser.Editor.Foundation.SemanticVersioning
             }
             catch
             {
-                result = new Version();
+                result = default;
                 return false;
             }
         }

@@ -12,25 +12,25 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         [SerializeField] private string _address;
         [SerializeField] private string _assetPath;
         [SerializeField] private string[] _labels;
-        [SerializeField] private string[] _tags;
+        [SerializeField] private string[] _versions;
         [SerializeField] private LayoutErrorType _errorType;
         [SerializeField] private string _messages;
         [SerializeField] private List<EntryError> _errors = new List<EntryError>();
 
-        public Entry(string address, string assetPath, string[] labels, string[] tags)
+        public Entry(string address, string assetPath, string[] labels, string[] versions)
         {
             _id = IdentifierFactory.Create();
             _address = address;
             _assetPath = assetPath;
             _labels = labels ?? Array.Empty<string>();
-            _tags = tags ?? Array.Empty<string>();
+            _versions = versions ?? Array.Empty<string>();
         }
 
         public string Id => _id;
         public string Address => _address;
         public string AssetPath => _assetPath;
         public string[] Labels => _labels;
-        public string[] Tags => _tags;
+        public string[] Versions => _versions;
 
         /// <summary>
         ///     Error type of the entry.
