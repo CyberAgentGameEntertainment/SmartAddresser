@@ -29,6 +29,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared
         public void Dispose()
         {
             _mouseButtonClickedSubject.Dispose();
+            _providerValueChangedSubject.Dispose();
+            _changeProviderButtonClickedSubject.Dispose();
         }
 
         public void DoLayout()
