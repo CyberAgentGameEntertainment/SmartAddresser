@@ -4,26 +4,18 @@ using UnityEngine;
 
 namespace SmartAddresser.Editor.Foundation.EditorSplitView
 {
-    [Serializable]
     public sealed class EditorGUISplitView
     {
         private const float ResizeAreaSize = 16.0f;
+        private bool _isResizing;
+        private float _mousePosDiff;
 
-        [SerializeField] private float _firstRectSize;
-        [SerializeField] private LayoutDirection _layoutDirection;
-        [SerializeField] private float _firstRectMinSize;
-        [SerializeField] private float _secondRectMinSize;
-        [NonSerialized] private bool _isResizing;
-        [NonSerialized] private float _mousePosDiff;
-
-        public EditorGUISplitView(LayoutDirection layoutDirection, float initialSize, float firstRectMinSize = 0,
-            float secondRectMinSize = 0)
+        public EditorGUISplitView(EditorGUISplitViewState state)
         {
-            _firstRectSize = initialSize;
-            _layoutDirection = layoutDirection;
-            _firstRectMinSize = firstRectMinSize;
-            _secondRectMinSize = secondRectMinSize;
+            State = state;
         }
+
+        public EditorGUISplitViewState State { get; }
 
         /// <summary>
         ///     Draw GUI.
@@ -34,39 +26,39 @@ namespace SmartAddresser.Editor.Foundation.EditorSplitView
         /// <returns>Return true if resized.</returns>
         public bool DrawGUI(Rect rect, Action<Rect> drawFirstRect, Action<Rect> drawSecondRect)
         {
-            var isHorizontal = _layoutDirection == LayoutDirection.Horizontal;
+            var isHorizontal = State.LayoutDirection == LayoutDirection.Horizontal;
 
             // Resize to mouse position when dragging.
             if (_isResizing && Event.current.type == EventType.MouseDrag)
             {
-                var minSize = isHorizontal ? rect.x + _firstRectMinSize : rect.y + _firstRectMinSize;
+                var minSize = isHorizontal ? rect.x + State.FirstRectMinSize : rect.y + State.FirstRectMinSize;
                 var maxSize = isHorizontal
-                    ? rect.x + rect.width - _secondRectMinSize
-                    : rect.y + rect.height - _secondRectMinSize;
+                    ? rect.x + rect.width - State.SecondRectMinSize
+                    : rect.y + rect.height - State.SecondRectMinSize;
                 if (maxSize < minSize) maxSize = minSize;
 
                 var mousePos = isHorizontal ? Event.current.mousePosition.x : Event.current.mousePosition.y;
-                _firstRectSize = Mathf.Clamp(mousePos + _mousePosDiff, minSize, maxSize);
-                _firstRectSize -= isHorizontal ? rect.x : rect.y;
+                State.FirstRectSize = Mathf.Clamp(mousePos + _mousePosDiff, minSize, maxSize);
+                State.FirstRectSize -= isHorizontal ? rect.x : rect.y;
             }
 
             // Clamp when the window is resized.
             if (Event.current.type == EventType.Layout)
             {
-                var minSize = isHorizontal ? rect.x + _firstRectMinSize : rect.y + _firstRectMinSize;
+                var minSize = isHorizontal ? rect.x + State.FirstRectMinSize : rect.y + State.FirstRectMinSize;
                 var maxSize = isHorizontal
-                    ? rect.x + rect.width - _secondRectMinSize
-                    : rect.y + rect.height - _secondRectMinSize;
+                    ? rect.x + rect.width - State.SecondRectMinSize
+                    : rect.y + rect.height - State.SecondRectMinSize;
                 if (maxSize < minSize) maxSize = minSize;
 
-                _firstRectSize = Mathf.Clamp(_firstRectSize, minSize, maxSize);
-                _firstRectSize -= isHorizontal ? rect.x : rect.y;
+                State.FirstRectSize = Mathf.Clamp(State.FirstRectSize, minSize, maxSize);
+                State.FirstRectSize -= isHorizontal ? rect.x : rect.y;
             }
 
             // Calculate each rectanble.
             var firstRect = rect;
-            firstRect.width = isHorizontal ? _firstRectSize : firstRect.width;
-            firstRect.height = isHorizontal ? firstRect.height : _firstRectSize;
+            firstRect.width = isHorizontal ? State.FirstRectSize : firstRect.width;
+            firstRect.height = isHorizontal ? firstRect.height : State.FirstRectSize;
 
             var borderRect = rect;
             borderRect.x += isHorizontal ? firstRect.width : 0;
@@ -77,8 +69,8 @@ namespace SmartAddresser.Editor.Foundation.EditorSplitView
             var secondRect = rect;
             secondRect.x += isHorizontal ? firstRect.width + 1 : 0;
             secondRect.y += isHorizontal ? 0 : firstRect.height + 1;
-            secondRect.height = isHorizontal ? firstRect.height : rect.height - _firstRectSize - 1;
-            secondRect.width = isHorizontal ? rect.width - _firstRectSize - 1 : firstRect.width;
+            secondRect.height = isHorizontal ? firstRect.height : rect.height - State.FirstRectSize - 1;
+            secondRect.width = isHorizontal ? rect.width - State.FirstRectSize - 1 : firstRect.width;
 
             var resizeAreaRect = borderRect;
             resizeAreaRect.width = isHorizontal ? ResizeAreaSize : resizeAreaRect.width;

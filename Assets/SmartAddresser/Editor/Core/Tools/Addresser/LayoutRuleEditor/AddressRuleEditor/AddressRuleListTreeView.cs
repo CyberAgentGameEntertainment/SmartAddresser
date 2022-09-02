@@ -12,7 +12,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
     /// <summary>
     ///     Tree view for the Address Rule Editor.
     /// </summary>
-    internal sealed class AddressRuleEditorTreeView : TreeViewBase
+    internal sealed class AddressRuleListTreeView : TreeViewBase
     {
         public enum Columns
         {
@@ -24,7 +24,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
 
         [NonSerialized] private int _currentId;
 
-        public AddressRuleEditorTreeView(State state) : base(state)
+        public AddressRuleListTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
             ColumnStates = state.ColumnStates;
@@ -34,6 +34,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
 
         public Item AddItem(AddressRule rule, int index = -1)
         {
+            rule.RefreshAddressProviderDescription();
+            rule.RefreshAssetGroupDescription();
             var item = new Item(rule)
             {
                 id = _currentId++
@@ -49,21 +51,21 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             switch ((Columns)columnIndex)
             {
                 case Columns.Groups:
-                    GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly && item.Rule.Control;
+                    GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly && item.Rule.Control.Value;
                     GUI.Label(cellRect, GetText(item, columnIndex));
                     break;
                 case Columns.Control:
                     GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly;
                     cellRect.x += cellRect.width / 2 - 7;
                     cellRect.width = 14;
-                    item.Rule.Control = GUI.Toggle(cellRect, item.Rule.Control, "");
+                    item.Rule.Control.Value = GUI.Toggle(cellRect, item.Rule.Control.Value, "");
                     break;
                 case Columns.AssetGroups:
-                    GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly && item.Rule.Control;
+                    GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly && item.Rule.Control.Value;
                     GUI.Label(cellRect, GetText(item, columnIndex));
                     break;
                 case Columns.AddressRule:
-                    GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly && item.Rule.Control;
+                    GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly && item.Rule.Control.Value;
                     GUI.Label(cellRect, GetText(item, columnIndex));
                     break;
                 default:
@@ -101,7 +103,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             return false;
         }
 
-        private static string GetText(Item item, int columnIndex)
+        private string GetText(Item item, int columnIndex)
         {
             switch ((Columns)columnIndex)
             {
@@ -112,8 +114,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
                 case Columns.Control:
                     return item.Rule.Control.ToString();
                 case Columns.AssetGroups:
+                    if (GetSelection().FirstOrDefault() == item.id)
+                        item.Rule.RefreshAssetGroupDescription();
                     return item.Rule.AssetGroupDescription.Value;
                 case Columns.AddressRule:
+                    if (GetSelection().FirstOrDefault() == item.id)
+                        item.Rule.RefreshAddressProviderDescription();
                     return item.Rule.AddressProviderDescription.Value;
                 default:
                     throw new NotImplementedException();

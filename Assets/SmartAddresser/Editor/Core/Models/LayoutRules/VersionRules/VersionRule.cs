@@ -1,7 +1,6 @@
 using System;
 using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
-using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEngine;
@@ -12,20 +11,27 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
     ///     Provide rules for setting versions.
     /// </summary>
     [Serializable]
-    public sealed class VersionRule
+    public sealed class VersionRule : ISerializationCallbackReceiver
     {
         [SerializeField] private string _id;
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
         private readonly ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
-
-        private readonly Subject<IVersionProvider> _versionProviderChangedSubject = new Subject<IVersionProvider>();
         private readonly ObservableProperty<string> _versionProviderDescription = new ObservableProperty<string>();
 
-        [SerializeReference] private IVersionProvider _versionProvider;
+        [SerializeReference] private IVersionProvider _versionProviderInternal;
 
         public VersionRule()
         {
             _id = IdentifierFactory.Create();
+            var defaultAssetGroup = new AssetGroup
+            {
+                Name =
+                {
+                    Value = "Default Asset Group"
+                }
+            };
+            _assetGroups.Add(defaultAssetGroup);
+            VersionProvider.Value = new ConstantVersionProvider();
         }
 
         public string Id => _id;
@@ -34,20 +40,18 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
         public IReadOnlyObservableProperty<string> VersionProviderDescription => _versionProviderDescription;
 
-        public IVersionProvider VersionProvider
-        {
-            get => _versionProvider;
-            set
-            {
-                if (_versionProvider != null && _versionProvider == value)
-                    return;
+        public ObservableProperty<IVersionProvider> VersionProvider { get; } =
+            new ObservableProperty<IVersionProvider>();
 
-                _versionProvider = value;
-                _versionProviderChangedSubject.OnNext(value);
-            }
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+            _versionProviderInternal = VersionProvider.Value;
         }
 
-        public IObservable<IVersionProvider> VersionProviderChangedAsObservable => _versionProviderChangedSubject;
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            VersionProvider.Value = _versionProviderInternal;
+        }
 
         /// <summary>
         ///     Setup to generate versions.
@@ -56,7 +60,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
         public void Setup()
         {
             _assetGroups.Setup();
-            _versionProvider.Setup();
+            _versionProviderInternal.Setup();
         }
 
         /// <summary>
@@ -75,7 +79,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
                 return false;
             }
 
-            version = _versionProvider.Provide(assetPath, assetType, isFolder);
+            version = _versionProviderInternal.Provide(assetPath, assetType, isFolder);
             return true;
         }
 
@@ -89,7 +93,9 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
 
         internal void RefreshVersionProviderDescription()
         {
-            _versionProviderDescription.Value = _versionProvider == null ? "(None)" : _versionProvider.GetDescription();
+            _versionProviderDescription.Value = _versionProviderInternal == null
+                ? "(None)"
+                : _versionProviderInternal.GetDescription();
         }
     }
 }

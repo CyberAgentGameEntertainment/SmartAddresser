@@ -5,11 +5,12 @@ using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
 using UnityEngine;
 
-namespace Development.Editor.Core.Tools.Addresser
+namespace Development.Editor.Core.Tools.Addresser.Shared
 {
     internal abstract class ProviderPanelViewDevelopmentWindowBase<TProvider, TView, TPresenter> : EditorWindow
         where TView : ProviderPanelViewBase<TProvider>
         where TPresenter : ProviderPanelViewPresenterBase<TProvider>
+        where TProvider : class
     {
         private AutoIncrementHistory _history;
         private TPresenter _presenter;
@@ -17,12 +18,13 @@ namespace Development.Editor.Core.Tools.Addresser
 
         private void OnEnable()
         {
-            minSize = new Vector2(600, 200);
+            minSize = new Vector2(200, 200);
 
-            var providerProperty = new ObservableProperty<TProvider>(CreateInitialProvider());
-            _view = CreteView(providerProperty);
+            var providerProperty = new ObservableProperty<TProvider>();
+            _view = CreateView();
             _history = new AutoIncrementHistory();
-            _presenter = CreatePresenter(providerProperty, _view, _history, new FakeAssetSaveService());
+            _presenter = CreatePresenter(_view, _history, new FakeAssetSaveService());
+            _presenter.SetupView(providerProperty);
         }
 
         private void OnDisable()
@@ -46,15 +48,25 @@ namespace Development.Editor.Core.Tools.Addresser
                 e.Use();
             }
 
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar, GUILayout.ExpandWidth(true)))
+            {
+                if (GUILayout.Button("Set New Data", EditorStyles.toolbarButton))
+                {
+                    var providerProperty = new ObservableProperty<TProvider>();
+                    _presenter.SetupView(providerProperty);
+                }
+
+                if (GUILayout.Button("Clear Data", EditorStyles.toolbarButton))
+                    _presenter.CleanupView();
+            }
+
             _view.DoLayout();
         }
 
-        protected abstract TProvider CreateInitialProvider();
+        protected abstract TView CreateView();
 
-        protected abstract TView CreteView(ObservableProperty<TProvider> providerProperty);
-
-        protected abstract TPresenter CreatePresenter(ObservableProperty<TProvider> providerProperty, TView view,
-            AutoIncrementHistory history, IAssetSaveService assetSaveService);
+        protected abstract TPresenter CreatePresenter(TView view, AutoIncrementHistory history,
+            IAssetSaveService assetSaveService);
 
         private bool GetEventAction(Event e)
         {

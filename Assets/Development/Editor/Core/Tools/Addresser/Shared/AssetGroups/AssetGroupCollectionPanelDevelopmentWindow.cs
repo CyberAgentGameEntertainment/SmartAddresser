@@ -5,25 +5,25 @@ using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using UnityEditor;
 using UnityEngine;
 
-namespace Development.Editor.Core.Tools.Shared.AssetGroups
+namespace Development.Editor.Core.Tools.Addresser.Shared.AssetGroups
 {
-    internal sealed class AssetGroupCollectionViewDevelopmentWindow : EditorWindow
+    internal sealed class AssetGroupCollectionPanelDevelopmentWindow : EditorWindow
     {
-        private const string WindowName = "[Dev] Asset Group Collection View";
+        private const string WindowName = "[Dev] Asset Group Collection Panel";
 
         private ObservableList<AssetGroup> _groupCollection;
         private AutoIncrementHistory _history;
-        private AssetGroupCollectionViewPresenter _presenter;
+        private AssetGroupCollectionPanelPresenter _presenter;
         private Vector2 _scrollPos;
-        private AssetGroupCollectionView _view;
+        private AssetGroupCollectionPanelView _view;
 
         private void OnEnable()
         {
             _history = new AutoIncrementHistory();
             _groupCollection ??= new ObservableList<AssetGroup>();
-            _view = new AssetGroupCollectionView(_groupCollection);
-            _presenter =
-                new AssetGroupCollectionViewPresenter(_groupCollection, _view, _history, new FakeAssetSaveService());
+            _view = new AssetGroupCollectionPanelView();
+            _presenter = new AssetGroupCollectionPanelPresenter(_view, _history, new FakeAssetSaveService());
+            _presenter.SetupView(_groupCollection);
         }
 
         private void OnDisable()
@@ -46,6 +46,18 @@ namespace Development.Editor.Core.Tools.Shared.AssetGroups
                 _history.Redo();
                 e.Use();
             }
+            
+            using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar, GUILayout.ExpandWidth(true)))
+            {
+                if (GUILayout.Button("Set New Data", EditorStyles.toolbarButton))
+                { 
+                    _groupCollection = new ObservableList<AssetGroup>();
+                    _presenter.SetupView(_groupCollection);
+                }
+
+                if (GUILayout.Button("Clear Data", EditorStyles.toolbarButton))
+                    _presenter.CleanupView();
+            }
 
             _scrollPos = EditorGUILayout.BeginScrollView(_scrollPos);
 
@@ -63,10 +75,10 @@ namespace Development.Editor.Core.Tools.Shared.AssetGroups
 #endif
         }
 
-        [MenuItem("Window/Smart Addresser/Development/Asset Group Collection View")]
+        [MenuItem("Window/Smart Addresser/Development/Addresser/Shared/Asset Group Collection Panel")]
         public static void Open()
         {
-            GetWindow<AssetGroupCollectionViewDevelopmentWindow>(WindowName);
+            GetWindow<AssetGroupCollectionPanelDevelopmentWindow>(WindowName);
         }
     }
 }

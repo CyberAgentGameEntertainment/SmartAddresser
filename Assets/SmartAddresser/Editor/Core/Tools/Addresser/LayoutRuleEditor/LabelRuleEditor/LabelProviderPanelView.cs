@@ -1,7 +1,5 @@
-using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared;
-using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor
 {
@@ -10,10 +8,5 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
     /// </summary>
     internal sealed class LabelProviderPanelView : ProviderPanelViewBase<ILabelProvider>
     {
-        public LabelProviderPanelView(IReadOnlyObservableProperty<ILabelProvider> provider) : base(provider)
-        {
-        }
-
-        public override Type IgnoreProviderAttributeType => typeof(IgnoreLabelProviderAttribute);
     }
 }

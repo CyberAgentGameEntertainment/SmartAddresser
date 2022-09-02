@@ -1,12 +1,12 @@
+using Development.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
-using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
 using UnityEngine;
 
-namespace Development.Editor.Core.Tools.Addresser
+namespace Development.Editor.Core.Tools.Addresser.LabelRuleEditor
 {
     internal sealed class LabelProviderPanelViewDevelopmentWindow
         : ProviderPanelViewDevelopmentWindowBase<ILabelProvider, LabelProviderPanelView,
@@ -14,21 +14,15 @@ namespace Development.Editor.Core.Tools.Addresser
     {
         private const string WindowName = "[Dev] Label Provider Panel View";
 
-        protected override ILabelProvider CreateInitialProvider()
+        protected override LabelProviderPanelView CreateView()
         {
-            return new AssetPathBasedLabelProvider();
+            return new LabelProviderPanelView();
         }
 
-        protected override LabelProviderPanelView CreteView(ObservableProperty<ILabelProvider> providerProperty)
-        {
-            return new LabelProviderPanelView(providerProperty);
-        }
-
-        protected override LabelProviderPanelViewPresenter CreatePresenter(
-            ObservableProperty<ILabelProvider> providerProperty, LabelProviderPanelView view,
+        protected override LabelProviderPanelViewPresenter CreatePresenter(LabelProviderPanelView view,
             AutoIncrementHistory history, IAssetSaveService assetSaveService)
         {
-            return new LabelProviderPanelViewPresenter(providerProperty, view, history, assetSaveService);
+            return new LabelProviderPanelViewPresenter(view, history, assetSaveService);
         }
 
         private bool GetEventAction(Event e)
@@ -40,7 +34,7 @@ namespace Development.Editor.Core.Tools.Addresser
 #endif
         }
 
-        [MenuItem("Window/Smart Addresser/Development/Label Provider Panel View")]
+        [MenuItem("Window/Smart Addresser/Development/Addresser/Label Rule Editor/Label Provider Panel View")]
         public static void Open()
         {
             GetWindow<LabelProviderPanelViewDevelopmentWindow>(WindowName);

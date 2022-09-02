@@ -9,7 +9,6 @@ using SmartAddresser.Editor.Core.Models.Services;
 using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
-using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.SemanticVersioning;
 using SmartAddresser.Tests.Editor.Core.Models.Shared;
 using SmartAddresser.Tests.Editor.Foundation;
@@ -229,11 +228,9 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
                 ReplaceWithRegex = false
             };
 
-            var addressRule = new AddressRule(addressableGroup)
-            {
-                Control = true,
-                AddressProvider = addressProvider
-            };
+            var addressRule = new AddressRule(addressableGroup);
+            addressRule.Control.Value = true;
+            addressRule.AddressProvider.Value = addressProvider;
             addressRule.AssetGroups.Add(assetGroup);
 
             var layoutRule = new LayoutRule();
@@ -241,26 +238,24 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
 
             if (!string.IsNullOrEmpty(label))
             {
-                var labelRule = new LabelRule
+                var labelRule = new LabelRule();
+                var labelProvider = new ConstantLabelProvider
                 {
-                    LabelProvider = new ConstantLabelProvider
-                    {
-                        Label = label
-                    }
+                    Label = label
                 };
+                labelRule.LabelProvider.Value = labelProvider;
                 labelRule.AssetGroups.Add(assetGroup);
                 layoutRule.LabelRules.Add(labelRule);
             }
 
             if (!string.IsNullOrEmpty(version))
             {
-                var versionRule = new VersionRule
+                var versionRule = new VersionRule();
+                var versionProvider = new ConstantVersionProvider
                 {
-                    VersionProvider = new ConstantVersionProvider
-                    {
-                        Version = version
-                    }
+                    Version = version
                 };
+                versionRule.VersionProvider.Value = versionProvider;
                 versionRule.AssetGroups.Add(assetGroup);
                 layoutRule.VersionRules.Add(versionRule);
             }

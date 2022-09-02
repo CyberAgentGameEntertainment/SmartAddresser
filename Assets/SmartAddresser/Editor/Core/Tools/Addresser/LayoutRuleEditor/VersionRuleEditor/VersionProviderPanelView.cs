@@ -1,8 +1,5 @@
-using System;
-using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.Shared;
-using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor
 {
@@ -11,10 +8,5 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
     /// </summary>
     internal sealed class VersionProviderPanelView : ProviderPanelViewBase<IVersionProvider>
     {
-        public VersionProviderPanelView(IReadOnlyObservableProperty<IVersionProvider> provider) : base(provider)
-        {
-        }
-
-        public override Type IgnoreProviderAttributeType => typeof(IgnoreLabelProviderAttribute);
     }
 }

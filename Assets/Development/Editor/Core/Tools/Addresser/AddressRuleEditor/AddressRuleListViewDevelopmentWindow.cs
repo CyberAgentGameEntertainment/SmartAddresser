@@ -10,16 +10,16 @@ using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
-namespace Development.Editor.Core.Tools.Addresser
+namespace Development.Editor.Core.Tools.Addresser.AddressRuleEditor
 {
-    internal sealed class AddressRuleEditorListViewDevelopmentWindow : EditorWindow
+    internal sealed class AddressRuleListViewDevelopmentWindow : EditorWindow
     {
-        private const string WindowName = "[Dev] Address Rule Editor List View";
+        private const string WindowName = "[Dev] Address Rule List View";
 
-        [SerializeField] private AddressRuleEditorTreeView.State _treeViewState;
+        [SerializeField] private AddressRuleListTreeView.State _treeViewState;
         private readonly AutoIncrementHistory _history = new AutoIncrementHistory();
         private readonly ObservableList<AddressRule> _rules = new ObservableList<AddressRule>();
-        private AddressRuleEditorListViewPresenter _presenter;
+        private AddressRuleListViewPresenter _presenter;
         private AddressRuleEditorListView _view;
 
         private void OnEnable()
@@ -27,9 +27,10 @@ namespace Development.Editor.Core.Tools.Addresser
             minSize = new Vector2(600, 200);
 
             if (_treeViewState == null)
-                _treeViewState = new AddressRuleEditorTreeView.State();
+                _treeViewState = new AddressRuleListTreeView.State();
             _view = new AddressRuleEditorListView(_treeViewState);
-            _presenter = new AddressRuleEditorListViewPresenter(_rules, _view, _history, new FakeAssetSaveService());
+            _presenter = new AddressRuleListViewPresenter(_view, _history, new FakeAssetSaveService());
+            _presenter.SetupView(_rules);
 
             // Use default settings for development.
             var settings = AddressableAssetSettingsDefaultObject.Settings;
@@ -64,7 +65,7 @@ namespace Development.Editor.Core.Tools.Addresser
                 {
                     var randomIndex = Random.Range(0, _rules.Count);
                     var randomRule = _rules[randomIndex];
-                    randomRule.AddressProvider = new AssetPathBasedAddressProvider();
+                    randomRule.AddressProvider.Value = new AssetPathBasedAddressProvider();
                     randomRule.RefreshAddressProviderDescription();
                 }
             }
@@ -134,10 +135,10 @@ namespace Development.Editor.Core.Tools.Addresser
             _rules.Clear();
         }
 
-        [MenuItem("Window/Smart Addresser/Development/Address Rule Editor List View")]
+        [MenuItem("Window/Smart Addresser/Development/Addresser/Address Rule Editor/Address Rule List View")]
         public static void Open()
         {
-            GetWindow<AddressRuleEditorListViewDevelopmentWindow>(WindowName);
+            GetWindow<AddressRuleListViewDevelopmentWindow>(WindowName);
         }
     }
 }

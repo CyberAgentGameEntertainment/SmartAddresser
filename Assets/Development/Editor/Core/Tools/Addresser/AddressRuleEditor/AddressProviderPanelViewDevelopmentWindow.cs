@@ -1,34 +1,28 @@
+using Development.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
-using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
 using UnityEngine;
 
-namespace Development.Editor.Core.Tools.Addresser
+namespace Development.Editor.Core.Tools.Addresser.AddressRuleEditor
 {
     internal sealed class AddressProviderPanelViewDevelopmentWindow
         : ProviderPanelViewDevelopmentWindowBase<IAddressProvider, AddressProviderPanelView,
-            AddressProviderPanelViewPresenter>
+            AddressProviderPanelPresenter>
     {
         private const string WindowName = "[Dev] Address Provider Panel View";
 
-        protected override IAddressProvider CreateInitialProvider()
+        protected override AddressProviderPanelView CreateView()
         {
-            return new AssetPathBasedAddressProvider();
+            return new AddressProviderPanelView();
         }
 
-        protected override AddressProviderPanelView CreteView(ObservableProperty<IAddressProvider> providerProperty)
-        {
-            return new AddressProviderPanelView(providerProperty);
-        }
-
-        protected override AddressProviderPanelViewPresenter CreatePresenter(
-            ObservableProperty<IAddressProvider> providerProperty, AddressProviderPanelView view,
+        protected override AddressProviderPanelPresenter CreatePresenter(AddressProviderPanelView view,
             AutoIncrementHistory history, IAssetSaveService assetSaveService)
         {
-            return new AddressProviderPanelViewPresenter(providerProperty, view, history, assetSaveService);
+            return new AddressProviderPanelPresenter(view, history, assetSaveService);
         }
 
         private bool GetEventAction(Event e)
@@ -40,7 +34,7 @@ namespace Development.Editor.Core.Tools.Addresser
 #endif
         }
 
-        [MenuItem("Window/Smart Addresser/Development/Address Provider Panel View")]
+        [MenuItem("Window/Smart Addresser/Development/Addresser/Address Rule Editor/Address Provider Panel View")]
         public static void Open()
         {
             GetWindow<AddressProviderPanelViewDevelopmentWindow>(WindowName);
