@@ -37,7 +37,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 
         public string Id => _id;
 
-        public IObservableList<AssetGroup> AssetGroups => _assetGroups;
+        public ObservableList<AssetGroup> AssetGroups => _assetGroups;
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
         public IReadOnlyObservableProperty<string> LabelProviderDescription => _labelProviderDescription;
 
