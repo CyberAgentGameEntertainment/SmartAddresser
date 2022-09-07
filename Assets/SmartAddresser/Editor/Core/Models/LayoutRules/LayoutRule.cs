@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
@@ -19,6 +20,26 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         public IObservableList<AddressRule> AddressRules => _addressRules;
         public IObservableList<LabelRule> LabelRules => _labelRules;
         public IObservableList<VersionRule> VersionRules => _versionRules;
+
+        /// <summary>
+        ///     <para>* If there is no address group that hold the addressable group, add it.</para>
+        ///     <para>* Remove address rules that hold addressable groups that no longer exists.</para>
+        ///     <para>* Order address group by addressable group.</para>
+        /// </summary>
+        public void SyncAddressRulesWithAddressableAssetGroups(List<AddressableAssetGroup> addressableGroups)
+        {
+            var newList = new List<AddressRule>();
+            foreach (var addressableGroup in addressableGroups)
+            {
+                var addressRule = _addressRules.FirstOrDefault(x => x.AddressableGroup == addressableGroup)
+                                  ?? new AddressRule(addressableGroup);
+                newList.Add(addressRule);
+            }
+
+            _addressRules.Clear();
+            foreach (var addressRule in newList)
+                _addressRules.Add(addressRule);
+        }
 
         public void SetupForAddress()
         {

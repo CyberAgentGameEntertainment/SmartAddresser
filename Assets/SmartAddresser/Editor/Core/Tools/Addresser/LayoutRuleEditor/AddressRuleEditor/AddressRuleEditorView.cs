@@ -6,7 +6,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
     /// <summary>
     ///     View for the address editor.
     /// </summary>
-    [Serializable]
     internal sealed class AddressRuleEditorView : IDisposable
     {
         private readonly Action _repaintParentWindow;

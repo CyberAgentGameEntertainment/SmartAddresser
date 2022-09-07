@@ -19,10 +19,10 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
         [SerializeField] private ObservableProperty<bool> _control = new ObservableProperty<bool>();
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
 
-        private readonly ObservableProperty<string> _addressProviderDescription = new ObservableProperty<string>();
-        private readonly ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
+        private ObservableProperty<string> _addressProviderDescription = new ObservableProperty<string>();
 
         [SerializeReference] private IAddressProvider _addressProviderInternal;
+        private ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
 
         public AddressRule(AddressableAssetGroup addressableGroup)
         {
@@ -46,7 +46,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
         public IReadOnlyObservableProperty<string> AddressProviderDescription => _addressProviderDescription;
 
-        public ObservableProperty<IAddressProvider> AddressProvider { get; } =
+        public ObservableProperty<IAddressProvider> AddressProvider { get; set; } =
             new ObservableProperty<IAddressProvider>();
 
         public IObservableProperty<bool> Control => _control;
@@ -101,8 +101,9 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
 
         internal void RefreshAddressProviderDescription()
         {
-            _addressProviderDescription.Value =
-                AddressProvider.Value == null ? "(None)" : AddressProvider.Value.GetDescription();
+            _addressProviderDescription.Value = AddressProvider.Value == null
+                ? "(None)"
+                : AddressProvider.Value.GetDescription();
         }
     }
 }
