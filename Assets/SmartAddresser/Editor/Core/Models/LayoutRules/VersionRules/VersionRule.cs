@@ -15,8 +15,8 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
     {
         [SerializeField] private string _id;
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
-        private readonly ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
-        private readonly ObservableProperty<string> _versionProviderDescription = new ObservableProperty<string>();
+        private ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
+        private ObservableProperty<string> _versionProviderDescription = new ObservableProperty<string>();
 
         [SerializeReference] private IVersionProvider _versionProviderInternal;
 
@@ -40,7 +40,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
         public IReadOnlyObservableProperty<string> VersionProviderDescription => _versionProviderDescription;
 
-        public ObservableProperty<IVersionProvider> VersionProvider { get; } =
+        public ObservableProperty<IVersionProvider> VersionProvider { get; set; } =
             new ObservableProperty<IVersionProvider>();
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()

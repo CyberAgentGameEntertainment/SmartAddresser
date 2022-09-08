@@ -30,6 +30,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
         public void Dispose()
         {
             CleanupView();
+            
+            _addressProviderPanelPresenter.Dispose();
+            _assetGroupCollectionPanelPresenter.Dispose();
         }
 
         public void SetupView(AddressRule rule)

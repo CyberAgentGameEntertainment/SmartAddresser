@@ -13,7 +13,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
     /// </summary>
     internal sealed class AddressRuleListViewPresenter : IDisposable
     {
-        private readonly CompositeDisposable _disposables = new CompositeDisposable();
+        private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
 
         private readonly Dictionary<string, AddressRuleListTreeView.Item> _ruleIdToTreeViewItem =
             new Dictionary<string, AddressRuleListTreeView.Item>();
@@ -28,16 +28,16 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
 
         public void Dispose()
         {
-            _disposables.Dispose();
+            CleanupView();
         }
 
         public void SetupView(IObservableList<AddressRule> rules)
         {
             CleanupView();
 
-            rules.ObservableAdd.Subscribe(x => AddRuleView(x.Value, x.Index)).DisposeWith(_disposables);
-            rules.ObservableRemove.Subscribe(x => RemoveRuleView(x.Value)).DisposeWith(_disposables);
-            rules.ObservableClear.Subscribe(_ => ClearViews()).DisposeWith(_disposables);
+            rules.ObservableAdd.Subscribe(x => AddRuleView(x.Value, x.Index)).DisposeWith(_setupViewDisposables);
+            rules.ObservableRemove.Subscribe(x => RemoveRuleView(x.Value)).DisposeWith(_setupViewDisposables);
+            rules.ObservableClear.Subscribe(_ => ClearViews()).DisposeWith(_setupViewDisposables);
             foreach (var rule in rules)
                 AddRuleView(rule);
             _view.TreeView.Reload();
@@ -72,6 +72,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
 
         public void CleanupView()
         {
+            _setupViewDisposables.Clear();
             _view.TreeView.ClearItems();
             _view.TreeView.Reload();
         }

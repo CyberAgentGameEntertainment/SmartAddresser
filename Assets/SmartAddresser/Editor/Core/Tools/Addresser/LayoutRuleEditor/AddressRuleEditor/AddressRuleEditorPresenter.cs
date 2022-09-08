@@ -32,6 +32,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
         {
             CleanupViewEventHandler();
             CleanupView();
+            _inspectorPresenter.Dispose();
+            _listViewPresenter.Dispose();
         }
 
         public void SetupView(IObservableList<AddressRule> rules)
