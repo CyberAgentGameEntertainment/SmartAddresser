@@ -1,18 +1,17 @@
 using SmartAddresser.Editor.Foundation.EasyTreeView;
-using SmartAddresser.Editor.Foundation.EditorSplitView;
 using UnityEditor;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor
 {
     /// <summary>
-    ///     View for the left side of the address editor.
+    ///     View for the left side of the address rule editor.
     /// </summary>
-    internal sealed class AddressRuleEditorListView
+    internal sealed class AddressRuleListView
     {
         private readonly TreeViewSearchField _searchField;
 
-        public AddressRuleEditorListView(AddressRuleListTreeView.State treeViewState)
+        public AddressRuleListView(AddressRuleListTreeView.State treeViewState)
         {
             TreeView = new AddressRuleListTreeView(treeViewState);
             _searchField = new TreeViewSearchField(TreeView);
@@ -26,7 +25,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             {
                 // Search Field
                 _searchField.OnToolbarGUI();
-                
+
                 GUILayout.FlexibleSpace();
             }
 

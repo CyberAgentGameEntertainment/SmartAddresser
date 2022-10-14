@@ -9,18 +9,18 @@ using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor
 {
     /// <summary>
-    ///     Presenter for <see cref="AddressRuleEditorListView" />.
+    ///     Presenter for <see cref="AddressRuleListView" />.
     /// </summary>
-    internal sealed class AddressRuleListViewPresenter : IDisposable
+    internal sealed class AddressRuleListPresenter : IDisposable
     {
         private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
 
         private readonly Dictionary<string, AddressRuleListTreeView.Item> _ruleIdToTreeViewItem =
             new Dictionary<string, AddressRuleListTreeView.Item>();
 
-        private readonly AddressRuleEditorListView _view;
+        private readonly AddressRuleListView _view;
 
-        public AddressRuleListViewPresenter(AddressRuleEditorListView view, AutoIncrementHistory history,
+        public AddressRuleListPresenter(AddressRuleListView view, AutoIncrementHistory history,
             IAssetSaveService saveService)
         {
             _view = view;

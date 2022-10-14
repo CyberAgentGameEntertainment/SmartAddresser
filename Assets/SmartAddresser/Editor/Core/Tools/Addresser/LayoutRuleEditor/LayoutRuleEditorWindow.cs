@@ -1,6 +1,8 @@
 using System.Linq;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.EditorSplitView;
@@ -14,7 +16,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
     {
         private const string WindowName = "Layout Rule Editor";
 
-        [SerializeField] private AddressRuleListTreeView.State _treeViewState;
+        [SerializeField] private AddressRuleListTreeView.State _addressTreeViewState;
+        [SerializeField] private LabelRuleListTreeView.State _labelTreeViewState;
+        [SerializeField] private VersionRuleListTreeView.State _versionTreeViewState;
         [SerializeField] private EditorGUILayoutSplitViewState _splitViewState;
 
         private readonly AutoIncrementHistory _history = new AutoIncrementHistory();
@@ -80,14 +84,19 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             var assetSaveService = new AssetSaveService(data);
             data.LayoutRule.SyncAddressRulesWithAddressableAssetGroups(AddressableAssetSettingsDefaultObject.Settings
                 .groups);
-            assetSaveService.SaveImmediate();
+            assetSaveService.MarkAsDirty();
 
-            if (_treeViewState == null)
-                _treeViewState = new AddressRuleListTreeView.State();
+            if (_addressTreeViewState == null)
+                _addressTreeViewState = new AddressRuleListTreeView.State();
+            if (_labelTreeViewState == null)
+                _labelTreeViewState = new LabelRuleListTreeView.State();
+            if (_versionTreeViewState == null)
+                _versionTreeViewState = new VersionRuleListTreeView.State();
             if (_splitViewState == null)
                 _splitViewState = new EditorGUILayoutSplitViewState(LayoutDirection.Horizontal, 0.75f);
 
-            _view = new LayoutRuleEditorView(_treeViewState, _splitViewState, Repaint);
+            _view = new LayoutRuleEditorView(_addressTreeViewState, _labelTreeViewState, _versionTreeViewState,
+                _splitViewState, Repaint);
             _presenter = new LayoutRuleEditorPresenter(_view, _history, assetSaveService);
             _presenter.SetupView(data.LayoutRule);
         }
