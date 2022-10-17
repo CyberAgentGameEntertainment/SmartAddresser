@@ -11,6 +11,11 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared
 
         public IList<Entry> Entries => _entries;
 
+        public string[] GetAllAssetPaths()
+        {
+            return _entries.Select(x => x.AssetPath).ToArray();
+        }
+
         public string GUIDToAssetPath(string guid)
         {
             var entry = _entries.FirstOrDefault(x => x.Guid == guid);

@@ -5,6 +5,11 @@ namespace SmartAddresser.Editor.Foundation.AssetDatabaseAdapter
 {
     public sealed class AssetDatabaseAdapter : IAssetDatabaseAdapter
     {
+        public string[] GetAllAssetPaths()
+        {
+            return AssetDatabase.GetAllAssetPaths();
+        }
+
         public string GUIDToAssetPath(string guid)
         {
             return AssetDatabase.GUIDToAssetPath(guid);

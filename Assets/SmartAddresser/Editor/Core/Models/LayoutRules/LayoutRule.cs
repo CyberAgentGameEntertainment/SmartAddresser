@@ -47,7 +47,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                 addressRule.Setup();
         }
 
-        public bool ProvideAddressAndAddressableGroup(string assetPath, Type assetType, bool isFolder, bool doSetup,
+        public bool TryProvideAddressAndAddressableGroup(string assetPath, Type assetType, bool isFolder, bool doSetup,
             out string address, out AddressableAssetGroup addressableGroup)
         {
             foreach (var addressRule in _addressRules)

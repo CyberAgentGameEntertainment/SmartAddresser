@@ -91,6 +91,12 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
                 return false;
             }
 
+            if (!AddressableAssetUtility.IsPathValidForEntry(assetPath))
+            {
+                address = null;
+                return false;
+            }
+
             address = AddressProvider.Value.Provide(assetPath, assetType, isFolder);
             return true;
         }

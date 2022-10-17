@@ -61,7 +61,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
         public void Setup()
         {
             _assetGroups.Setup();
-            _versionProviderInternal.Setup();
+            VersionProvider.Value.Setup();
         }
 
         /// <summary>
@@ -80,7 +80,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
                 return false;
             }
 
-            version = _versionProviderInternal.Provide(assetPath, assetType, isFolder);
+            if (!AddressableAssetUtility.IsPathValidForEntry(assetPath))
+            {
+                version = null;
+                return false;
+            }
+
+            version = VersionProvider.Value.Provide(assetPath, assetType, isFolder);
             return true;
         }
 
