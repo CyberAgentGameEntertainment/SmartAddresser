@@ -85,7 +85,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                     break;
                 case Tab.Settings:
                     //TODO: SettingsタブのViewを実装後に対応
-                    break;
+                    throw new NotImplementedException();
                 default:
                     throw new ArgumentOutOfRangeException();
             }
