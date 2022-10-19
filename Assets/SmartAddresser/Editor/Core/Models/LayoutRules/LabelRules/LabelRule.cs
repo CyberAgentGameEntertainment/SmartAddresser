@@ -62,7 +62,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         public void Setup()
         {
             _assetGroups.Setup();
-            _labelProviderInternal.Setup();
+            LabelProvider.Value.Setup();
         }
 
         /// <summary>
@@ -81,7 +81,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
                 return false;
             }
 
-            label = _labelProviderInternal.Provide(assetPath, assetType, isFolder);
+            if (!AddressableAssetUtility.IsPathValidForEntry(assetPath))
+            {
+                label = null;
+                return false;
+            }
+
+            label = LabelProvider.Value.Provide(assetPath, assetType, isFolder);
             return true;
         }
 

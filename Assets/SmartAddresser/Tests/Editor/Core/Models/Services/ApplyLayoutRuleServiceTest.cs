@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace SmartAddresser.Tests.Editor.Core.Models.Services
 {
-    internal sealed class LayoutRuleApplyServiceTest
+    internal sealed class ApplyLayoutRuleServiceTest
     {
         private const string TestAddressableGroupName = "TestGroup";
         private const string TestAssetName = "test_asset.asset";
@@ -35,7 +35,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
-            var service = new LayoutRuleApplyService(layoutRule, new UnityVersionExpressionParser(),
+            var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             var result = service.Execute(assetGuid, true);
@@ -57,7 +57,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
-            var service = new LayoutRuleApplyService(layoutRule, new UnityVersionExpressionParser(),
+            var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             service.Setup();
@@ -81,7 +81,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
-            var service = new LayoutRuleApplyService(layoutRule, new UnityVersionExpressionParser(),
+            var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             var result = service.Execute(assetGuid, true);
@@ -100,7 +100,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
-            var service = new LayoutRuleApplyService(layoutRule, new UnityVersionExpressionParser(),
+            var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             var result = service.Execute(assetGuid, true);
@@ -119,7 +119,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
-            var service = new LayoutRuleApplyService(layoutRule, new UnityVersionExpressionParser(),
+            var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             var result = service.Execute(assetGuid, true, "[1.2.3,1.2.4)");
@@ -142,7 +142,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
-            var service = new LayoutRuleApplyService(layoutRule, new UnityVersionExpressionParser(),
+            var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             var result = service.Execute(assetGuid, true, "(1.2.3,1.3)");
@@ -161,7 +161,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
-            var service = new LayoutRuleApplyService(layoutRule, new UnityVersionExpressionParser(),
+            var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             Assert.That(() => service.Execute(assetGuid, true, "(1.2.3, 1.3)"), Throws.InstanceOf<Exception>());
@@ -180,7 +180,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
-            var service = new LayoutRuleApplyService(layoutRule, new UnityVersionExpressionParser(),
+            var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             var result = service.Execute(assetGuid, true);

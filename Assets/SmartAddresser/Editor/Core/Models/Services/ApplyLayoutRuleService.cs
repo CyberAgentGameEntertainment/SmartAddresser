@@ -6,14 +6,14 @@ using SmartAddresser.Editor.Foundation.SemanticVersioning;
 
 namespace SmartAddresser.Editor.Core.Models.Services
 {
-    public sealed class LayoutRuleApplyService
+    public sealed class ApplyLayoutRuleService
     {
         private readonly IAddressableAssetSettingsAdapter _addressableSettingsAdapter;
         private readonly IAssetDatabaseAdapter _assetDatabaseAdapter;
         private readonly LayoutRule _layoutRule;
         private readonly IVersionExpressionParser _versionExpressionParser;
 
-        public LayoutRuleApplyService(LayoutRule layoutRule,
+        public ApplyLayoutRuleService(LayoutRule layoutRule,
             IVersionExpressionParser versionExpressionParser,
             IAddressableAssetSettingsAdapter addressableSettingsAdapter,
             IAssetDatabaseAdapter assetDatabaseAdapter)
@@ -58,7 +58,7 @@ namespace SmartAddresser.Editor.Core.Models.Services
             var isFolder = _assetDatabaseAdapter.IsValidFolder(assetPath);
 
             // If the layout rule was not found, return false.
-            if (!_layoutRule.ProvideAddressAndAddressableGroup(assetPath, assetType, isFolder, doSetup, out var address,
+            if (!_layoutRule.TryProvideAddressAndAddressableGroup(assetPath, assetType, isFolder, doSetup, out var address,
                     out var addressableGroup))
                 return false;
 
