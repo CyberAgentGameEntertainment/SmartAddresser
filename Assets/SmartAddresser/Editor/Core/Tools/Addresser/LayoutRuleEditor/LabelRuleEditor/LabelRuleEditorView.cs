@@ -1,28 +1,28 @@
 using System;
 using SmartAddresser.Editor.Foundation.EditorSplitView;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor
 {
     /// <summary>
-    ///     View for the address editor.
+    ///     View for the label rule editor.
     /// </summary>
-    internal sealed class AddressRuleEditorView : IDisposable
+    internal sealed class LabelRuleEditorView : IDisposable
     {
         private readonly Action _repaintParentWindow;
         private readonly EditorGUILayoutSplitView _splitView;
 
-        public AddressRuleEditorView(AddressRuleListTreeView.State treeViewState,
+        public LabelRuleEditorView(LabelRuleListTreeView.State treeViewState,
             EditorGUILayoutSplitViewState splitViewState, Action repaintParentWindow)
         {
             _splitView = new EditorGUILayoutSplitView(splitViewState);
             _repaintParentWindow = repaintParentWindow;
-            ListView = new AddressRuleListView(treeViewState);
-            InspectorView = new AddressRuleEditorInspectorView();
+            ListView = new LabelRuleListView(treeViewState);
+            InspectorView = new LabelRuleEditorInspectorView();
         }
 
-        public AddressRuleListView ListView { get; }
+        public LabelRuleListView ListView { get; }
 
-        public AddressRuleEditorInspectorView InspectorView { get; }
+        public LabelRuleEditorInspectorView InspectorView { get; }
 
         public void Dispose()
         {

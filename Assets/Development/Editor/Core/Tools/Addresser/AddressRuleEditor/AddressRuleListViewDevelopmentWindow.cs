@@ -19,8 +19,8 @@ namespace Development.Editor.Core.Tools.Addresser.AddressRuleEditor
         [SerializeField] private AddressRuleListTreeView.State _treeViewState;
         private readonly AutoIncrementHistory _history = new AutoIncrementHistory();
         private readonly ObservableList<AddressRule> _rules = new ObservableList<AddressRule>();
-        private AddressRuleListViewPresenter _presenter;
-        private AddressRuleEditorListView _view;
+        private AddressRuleListPresenter _presenter;
+        private AddressRuleListView _view;
 
         private void OnEnable()
         {
@@ -28,8 +28,8 @@ namespace Development.Editor.Core.Tools.Addresser.AddressRuleEditor
 
             if (_treeViewState == null)
                 _treeViewState = new AddressRuleListTreeView.State();
-            _view = new AddressRuleEditorListView(_treeViewState);
-            _presenter = new AddressRuleListViewPresenter(_view, _history, new FakeAssetSaveService());
+            _view = new AddressRuleListView(_treeViewState);
+            _presenter = new AddressRuleListPresenter(_view, _history, new FakeAssetSaveService());
             _presenter.SetupView(_rules);
 
             // Use default settings for development.

@@ -24,6 +24,11 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
         [SerializeReference] private IAddressProvider _addressProviderInternal;
         private ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
 
+        // Define the default constructor for serialization.
+        private AddressRule()
+        {
+        }
+
         public AddressRule(AddressableAssetGroup addressableGroup)
         {
             _id = IdentifierFactory.Create();
@@ -36,8 +41,10 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
                 }
             };
             _assetGroups.Add(defaultAssetGroup);
-            AddressProvider.Value = new AssetPathBasedAddressProvider();
         }
+
+        public ObservableProperty<IAddressProvider> AddressProvider { get; } =
+            new ObservableProperty<IAddressProvider>();
 
         public AddressableAssetGroup AddressableGroup => _addressableGroup;
 
@@ -45,9 +52,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
         public ObservableList<AssetGroup> AssetGroups => _assetGroups;
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
         public IReadOnlyObservableProperty<string> AddressProviderDescription => _addressProviderDescription;
-
-        public ObservableProperty<IAddressProvider> AddressProvider { get; set; } =
-            new ObservableProperty<IAddressProvider>();
 
         public IObservableProperty<bool> Control => _control;
 

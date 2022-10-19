@@ -2,6 +2,8 @@ using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.EditorSplitView;
 using UnityEditor;
@@ -14,7 +16,9 @@ namespace Development.Editor.Core.Tools.Addresser
     {
         private const string WindowName = "[Dev] Layout Rule Editor";
 
-        [SerializeField] private AddressRuleListTreeView.State _treeViewState;
+        [SerializeField] private AddressRuleListTreeView.State _addressTreeViewState;
+        [SerializeField] private LabelRuleListTreeView.State _labelTreeViewState;
+        [SerializeField] private VersionRuleListTreeView.State _versionTreeViewState;
         [SerializeField] private EditorGUILayoutSplitViewState _splitViewState;
 
         private readonly AutoIncrementHistory _history = new AutoIncrementHistory();
@@ -24,12 +28,17 @@ namespace Development.Editor.Core.Tools.Addresser
         private void OnEnable()
         {
             minSize = new Vector2(600, 200);
-            if (_treeViewState == null)
-                _treeViewState = new AddressRuleListTreeView.State();
+            if (_addressTreeViewState == null)
+                _addressTreeViewState = new AddressRuleListTreeView.State();
+            if (_labelTreeViewState == null)
+                _labelTreeViewState = new LabelRuleListTreeView.State();
+            if (_versionTreeViewState == null)
+                _versionTreeViewState = new VersionRuleListTreeView.State();
             if (_splitViewState == null)
                 _splitViewState = new EditorGUILayoutSplitViewState(LayoutDirection.Horizontal, 0.75f);
 
-            _view = new LayoutRuleEditorView(_treeViewState, _splitViewState, Repaint);
+            _view = new LayoutRuleEditorView(_addressTreeViewState, _labelTreeViewState, _versionTreeViewState,
+                _splitViewState, Repaint);
             _presenter = new LayoutRuleEditorPresenter(_view, _history, new FakeAssetSaveService());
 
             var layoutRule = new LayoutRule();

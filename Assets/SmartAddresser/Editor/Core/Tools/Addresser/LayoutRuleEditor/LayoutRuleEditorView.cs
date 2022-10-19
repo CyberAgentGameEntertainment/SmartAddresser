@@ -1,5 +1,7 @@
 using System;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor;
 using SmartAddresser.Editor.Foundation.EditorSplitView;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
@@ -23,13 +25,20 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
         private readonly Subject<Empty> _applyButtonClickedSubject = new Subject<Empty>();
 
-        public LayoutRuleEditorView(AddressRuleListTreeView.State treeViewState,
+        public LayoutRuleEditorView(AddressRuleListTreeView.State addressTreeViewState,
+            LabelRuleListTreeView.State labelTreeViewState, VersionRuleListTreeView.State versionTreeViewState,
             EditorGUILayoutSplitViewState splitViewState, Action repaintParentWindow)
         {
-            AddressRuleEditorView = new AddressRuleEditorView(treeViewState, splitViewState, repaintParentWindow);
+            AddressRuleEditorView =
+                new AddressRuleEditorView(addressTreeViewState, splitViewState, repaintParentWindow);
+            LabelRuleEditorView = new LabelRuleEditorView(labelTreeViewState, splitViewState, repaintParentWindow);
+            VersionRuleEditorView =
+                new VersionRuleEditorView(versionTreeViewState, splitViewState, repaintParentWindow);
         }
 
         public AddressRuleEditorView AddressRuleEditorView { get; }
+        public LabelRuleEditorView LabelRuleEditorView { get; }
+        public VersionRuleEditorView VersionRuleEditorView { get; }
 
         public ObservableProperty<Tab> ActiveTab { get; } = new ObservableProperty<Tab>();
 
@@ -38,6 +47,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         public void Dispose()
         {
             AddressRuleEditorView.Dispose();
+            LabelRuleEditorView.Dispose();
+            VersionRuleEditorView.Dispose();
             ActiveTab.Dispose();
             _applyButtonClickedSubject.Dispose();
         }
@@ -61,8 +72,23 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                     _applyButtonClickedSubject.OnNext(Empty.Default);
             }
 
-            // TODO: View実装後に、選択されているタブに応じて表示するViewを変える
-            AddressRuleEditorView.DoLayout();
+            switch (ActiveTab.Value)
+            {
+                case Tab.AddressRule:
+                    AddressRuleEditorView.DoLayout();
+                    break;
+                case Tab.LabelRule:
+                    LabelRuleEditorView.DoLayout();
+                    break;
+                case Tab.VersionRule:
+                    VersionRuleEditorView.DoLayout();
+                    break;
+                case Tab.Settings:
+                    //TODO: SettingsタブのViewを実装後に対応
+                    throw new NotImplementedException();
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private static string GetTabName(Tab tab)

@@ -1,29 +1,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
+using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 
-namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor
+namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor
 {
     /// <summary>
-    ///     Presenter for <see cref="AddressRuleEditorView" />.
+    ///     Presenter for <see cref="VersionRuleEditorView" />.
     /// </summary>
-    internal sealed class AddressRuleEditorPresenter : IDisposable
+    internal sealed class VersionRuleEditorPresenter : IDisposable
     {
-        private readonly AddressRuleEditorInspectorPresenter _inspectorPresenter;
-        private readonly AddressRuleListPresenter _listPresenter;
-        private readonly AddressRuleEditorView _view;
+        private readonly VersionRuleEditorInspectorPresenter _inspectorPresenter;
+        private readonly VersionRuleListPresenter _listPresenter;
+        private readonly VersionRuleEditorView _view;
         private bool _didSetupView;
 
-        public AddressRuleEditorPresenter(AddressRuleEditorView view, AutoIncrementHistory history,
+        public VersionRuleEditorPresenter(VersionRuleEditorView view, AutoIncrementHistory history,
             IAssetSaveService saveService)
         {
             _view = view;
-            _listPresenter = new AddressRuleListPresenter(view.ListView, history, saveService);
-            _inspectorPresenter = new AddressRuleEditorInspectorPresenter(view.InspectorView, history, saveService);
+            _listPresenter = new VersionRuleListPresenter(view.ListView, history, saveService);
+            _inspectorPresenter = new VersionRuleEditorInspectorPresenter(view.InspectorView, history, saveService);
 
             SetupViewEventHandlers();
         }
@@ -36,7 +36,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             _listPresenter.Dispose();
         }
 
-        public void SetupView(IObservableList<AddressRule> rules)
+        public void SetupView(IObservableList<VersionRule> rules)
         {
             CleanupView();
 
@@ -80,7 +80,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             var id = ids.First();
             if (_view.ListView.TreeView.HasItem(id))
             {
-                var item = (AddressRuleListTreeView.Item)_view.ListView.TreeView.GetItem(id);
+                var item = (VersionRuleListTreeView.Item)_view.ListView.TreeView.GetItem(id);
                 _inspectorPresenter.SetupView(item.Rule);
             }
         }

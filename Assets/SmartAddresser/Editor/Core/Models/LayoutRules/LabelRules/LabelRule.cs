@@ -14,6 +14,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
     public sealed class LabelRule : ISerializationCallbackReceiver
     {
         [SerializeField] private string _id;
+        [SerializeField] private ObservableProperty<string> _name = new ObservableProperty<string>("New Label Rule");
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
 
         private ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
@@ -36,12 +37,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         }
 
         public string Id => _id;
-
+        public IObservableProperty<string> Name => _name;
         public ObservableList<AssetGroup> AssetGroups => _assetGroups;
         public IReadOnlyObservableProperty<string> AssetGroupDescription => _assetGroupDescription;
         public IReadOnlyObservableProperty<string> LabelProviderDescription => _labelProviderDescription;
 
-        public ObservableProperty<ILabelProvider> LabelProvider { get; set; } = new ObservableProperty<ILabelProvider>();
+        public ObservableProperty<ILabelProvider> LabelProvider { get; set; } =
+            new ObservableProperty<ILabelProvider>();
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {
@@ -93,9 +95,9 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 
         internal void RefreshLabelProviderDescription()
         {
-            _labelProviderDescription.Value = _labelProviderInternal == null
+            _labelProviderDescription.Value = LabelProvider.Value == null
                 ? "(None)"
-                : _labelProviderInternal.GetDescription();
+                : LabelProvider.Value.GetDescription();
         }
     }
 }
