@@ -103,7 +103,7 @@ namespace SmartAddresser.Editor.Foundation.EditorSplitView
                     GUILayout.Width((1 - State.NormalizedPosition) * _maxPosition));
             else
                 _scrollPosition2 = GUILayout.BeginScrollView(_scrollPosition2,
-                    GUILayout.Height((1 - State.NormalizedPosition) * _maxPosition));
+                    GUILayout.ExpandHeight(true));
 
             return _isResizing;
         }

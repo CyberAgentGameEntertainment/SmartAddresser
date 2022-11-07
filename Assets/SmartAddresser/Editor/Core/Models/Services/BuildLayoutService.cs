@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
+using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Models.Layouts;
+using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 
 namespace SmartAddresser.Editor.Core.Models.Services
@@ -30,7 +33,11 @@ namespace SmartAddresser.Editor.Core.Models.Services
             layoutRule.SetupForLabels();
             layoutRule.SetupForVersion();
 
-            var assetPaths = _assetDatabaseAdapter.GetAllAssetPaths(); //TODO: 絞り込み
+            var assetPaths = _assetDatabaseAdapter
+                .GetAllAssetPaths()
+                .Where(AddressableAssetUtility.IsAssetPathValidForEntry)
+                .ToArray();
+
             var assetTypes = new Type[assetPaths.Length];
             var isFolders = new bool[assetPaths.Length];
             for (var i = 0; i < assetPaths.Length; i++)
@@ -40,29 +47,49 @@ namespace SmartAddresser.Editor.Core.Models.Services
             }
 
             var layout = new Layout();
-            foreach (var addressRule in layoutRule.AddressRules)
+
+            var buildGroupsTasks = layoutRule.AddressRules
+                .Where(addressRule => addressRule.Control.Value)
+                .Select(addressRule => BuildGroupAsync(addressRule, layoutRule, assetPaths, assetTypes, isFolders));
+
+            var groups = Task.WhenAll(buildGroupsTasks).Result;
+
+            foreach (var group in groups)
+                if (group != null && group.Entries.Count >= 1)
+                    layout.Groups.Add(group);
+
+            return layout;
+        }
+
+        private static Task<Group> BuildGroupAsync(AddressRule addressRule, LayoutRule layoutRule,
+            IReadOnlyList<string> assetPaths,
+            IReadOnlyList<Type> assetTypes, IReadOnlyList<bool> isFolders)
+        {
+            if (!addressRule.Control.Value)
+                return Task.FromResult((Group)null);
+
+            return Task.Run(() =>
             {
                 var group = new Group(addressRule.AddressableGroup);
 
-                for (var i = 0; i < assetPaths.Length; i++)
+                for (var i = 0; i < assetPaths.Count; i++)
                 {
                     var assetPath = assetPaths[i];
                     var assetType = assetTypes[i];
                     var isFolder = isFolders[i];
 
                     // Address
-                    addressRule.AddressProvider.Value.Provide(assetPath, assetType, isFolder);
-                    if (!addressRule.TryProvideAddress(assetPath, assetType, isFolder, out var address))
+                    if (!addressRule.TryProvideAddress(assetPath, assetType, isFolder, out var address, false))
                         continue;
 
                     // Labels
-                    var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, false).ToArray();
+                    var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, false, false).ToArray();
 
                     // Versions
                     var versions = new List<string>();
                     foreach (var versionRule in layoutRule.VersionRules)
                     {
-                        if (!versionRule.TryProvideVersion(assetPath, assetType, isFolder, out var version))
+                        if (!versionRule.TryProvideVersion(assetPath, assetType, isFolder, out var version, false))
                             continue;
 
                         versions.Add(version);
@@ -72,11 +99,8 @@ namespace SmartAddresser.Editor.Core.Models.Services
                     group.Entries.Add(entry);
                 }
 
-                if (group.Entries.Count >= 1)
-                    layout.Groups.Add(group);
-            }
-
-            return layout;
+                return group;
+            });
         }
     }
 }

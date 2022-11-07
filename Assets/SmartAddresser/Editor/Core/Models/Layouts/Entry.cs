@@ -16,6 +16,9 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         [SerializeField] private LayoutErrorType _errorType;
         [SerializeField] private string _messages;
         [SerializeField] private List<EntryError> _errors = new List<EntryError>();
+        
+        [NonSerialized] private bool _isErrorTypeDirty = true;
+        [NonSerialized] private bool _isMessagesDirty = true;
 
         public Entry(string address, string assetPath, string[] labels, string[] versions)
         {
@@ -35,52 +38,72 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         /// <summary>
         ///     Error type of the entry.
         /// </summary>
-        public LayoutErrorType ErrorType => _errorType;
+        public LayoutErrorType ErrorType
+        {
+            get
+            {
+                if (_isErrorTypeDirty)
+                {
+                    _errorType = LayoutErrorType.None;
+                    for (int i = 0, errorCount = _errors.Count; i < errorCount; i++)
+                    {
+                        var error = _errors[i];
+                        switch (error.Type)
+                        {
+                            case EntryErrorType.Warning:
+                                if (_errorType == LayoutErrorType.None)
+                                    _errorType = LayoutErrorType.Warning;
+                                break;
+                            case EntryErrorType.Error:
+                                _errorType = LayoutErrorType.Error;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+
+                    _isErrorTypeDirty = false;
+                }
+
+                return _errorType;
+            }
+        }
 
         /// <summary>
         ///     Warning and error messages.
         ///     This is the combined messages of <see cref="Errors" />.
         /// </summary>
-        public string Messages => _messages;
+        public string Messages
+        {
+            get
+            {
+                if (_isMessagesDirty)
+                {
+                    _messages = null;
+                    for (int i = 0, errorCount = _errors.Count; i < errorCount; i++)
+                    {
+                        var error = _errors[i];
+                        if (!string.IsNullOrEmpty(_messages))
+                            _messages += Environment.NewLine;
+                        _messages += error.Message;
+                    }
+
+                    _isMessagesDirty = false;
+                }
+
+                return _messages;
+            }
+        }
 
         /// <summary>
         ///     Warnings and errors of the entry.
         /// </summary>
         public List<EntryError> Errors => _errors;
 
-        /// <summary>
-        ///     Refresh <see cref="ErrorType" /> and <see cref="Messages" /> property using <see cref="Errors" />.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        internal void RefreshErrorTypeAndMessages()
+        internal void SetErrorTypeAndMessagesDirty()
         {
-            _errorType = LayoutErrorType.None;
-            _messages = null;
-            for (int i = 0, errorCount = _errors.Count; i < errorCount; i++)
-            {
-                var error = _errors[i];
-                switch (error.Type)
-                {
-                    case EntryErrorType.Warning:
-                        if (_errorType == LayoutErrorType.None)
-                            _errorType = LayoutErrorType.Warning;
-                        break;
-                    case EntryErrorType.Error:
-                        _errorType = LayoutErrorType.Error;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                AppendMessage(error.Message);
-            }
-        }
-
-        private void AppendMessage(string message)
-        {
-            if (!string.IsNullOrEmpty(_messages))
-                _messages += Environment.NewLine;
-            _messages += message;
+            _isMessagesDirty = true;
+            _isErrorTypeDirty = true;
         }
     }
 }

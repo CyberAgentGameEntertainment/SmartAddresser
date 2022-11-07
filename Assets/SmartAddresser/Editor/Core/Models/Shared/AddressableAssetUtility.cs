@@ -6,45 +6,47 @@ using UnityEditor.Build.Utilities;
 
 namespace SmartAddresser.Editor.Core.Models.Shared
 {
-    /// <summary>
-    ///     Class that extracts the necessary parts from AddressableAssetUtility.cs of Addressable Asset System.
-    /// </summary>
     internal static class AddressableAssetUtility
     {
         private static readonly HashSet<string> ExcludedExtensions =
             new HashSet<string>(new[] { ".cs", ".js", ".boo", ".exe", ".dll", ".meta" });
 
-        internal static bool IsPathValidForEntry(string path)
+        internal static bool IsAssetPathValidForEntry(string assetPath)
         {
-            if (string.IsNullOrEmpty(path))
+            if (ExcludedExtensions.Contains(Path.GetExtension(assetPath)))
                 return false;
-            if (!path.StartsWith("assets", StringComparison.OrdinalIgnoreCase) && !IsPathValidPackageAsset(path))
+
+            if (!assetPath.StartsWith("Assets/", StringComparison.OrdinalIgnoreCase)
+                && !IsPathValidPackageAsset(assetPath))
                 return false;
-            if (path == CommonStrings.UnityEditorResourcePath ||
-                path == CommonStrings.UnityDefaultResourcePath ||
-                path == CommonStrings.UnityBuiltInExtraPath)
+
+            if (assetPath == CommonStrings.UnityEditorResourcePath ||
+                assetPath == CommonStrings.UnityDefaultResourcePath ||
+                assetPath == CommonStrings.UnityBuiltInExtraPath)
                 return false;
-            if (path.EndsWith("/Editor") || path.Contains("/Editor/"))
+
+            if (assetPath.EndsWith("/Editor", StringComparison.Ordinal) ||
+                assetPath.Contains("/Editor/"))
                 return false;
-            if (path == "Assets")
-                return false;
+
             var settings = AddressableAssetSettingsDefaultObject.SettingsExists
                 ? AddressableAssetSettingsDefaultObject.Settings
                 : null;
-            if (settings != null && path.StartsWith(settings.ConfigFolder) ||
-                path.StartsWith(AddressableAssetSettingsDefaultObject.kDefaultConfigFolder))
+            if (settings != null && assetPath.StartsWith(settings.ConfigFolder, StringComparison.Ordinal) ||
+                assetPath.StartsWith(AddressableAssetSettingsDefaultObject.kDefaultConfigFolder,
+                    StringComparison.Ordinal))
                 return false;
-            return !ExcludedExtensions.Contains(Path.GetExtension(path));
+
+            return !ExcludedExtensions.Contains(Path.GetExtension(assetPath));
         }
 
         internal static bool IsPathValidPackageAsset(string path)
         {
-            var convertPath = path.ToLower().Replace("\\", "/");
-            var splitPath = convertPath.Split('/');
+            var splitPath = path.Split('/');
 
             if (splitPath.Length < 3)
                 return false;
-            if (splitPath[0] != "packages")
+            if (splitPath[0] != "Packages")
                 return false;
             if (splitPath[2] == "package.json")
                 return false;

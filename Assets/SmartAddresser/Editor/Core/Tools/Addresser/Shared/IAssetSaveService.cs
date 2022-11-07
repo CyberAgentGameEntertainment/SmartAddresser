@@ -36,5 +36,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
         ///     Clear the dirty flag.
         /// </summary>
         void ClearDirty();
+
+        void SetAsset(Object asset);
     }
 }

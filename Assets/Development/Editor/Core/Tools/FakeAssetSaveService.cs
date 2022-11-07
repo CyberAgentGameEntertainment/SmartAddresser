@@ -14,6 +14,10 @@ namespace Development.Editor.Core.Tools
             _isDirty = new ObservableProperty<bool>(false);
         }
 
+        public void SetAsset(Object asset)
+        {
+        }
+
         public Object Asset => null;
         public IReadOnlyObservableProperty<bool> IsDirty => _isDirty;
 

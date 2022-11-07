@@ -89,6 +89,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
             _setupViewDisposables.Clear();
             _view.TreeView.ClearItems();
             _view.TreeView.Reload();
+            _ruleIdToTreeViewItem.Clear();
 
             _didSetupView = false;
         }

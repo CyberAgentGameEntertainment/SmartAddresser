@@ -24,11 +24,17 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
 
         string IProvider<string>.Provide(string assetPath, Type assetType, bool isFolder)
         {
+            if (string.IsNullOrEmpty(_version))
+                return null;
+
             return _version;
         }
 
         public string GetDescription()
         {
+            if (string.IsNullOrEmpty(_version))
+                return null;
+
             return $"Constant: {_version}";
         }
     }

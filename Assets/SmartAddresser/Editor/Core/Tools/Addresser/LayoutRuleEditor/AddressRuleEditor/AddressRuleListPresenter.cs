@@ -75,6 +75,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             _setupViewDisposables.Clear();
             _view.TreeView.ClearItems();
             _view.TreeView.Reload();
+            _ruleIdToTreeViewItem.Clear();
         }
     }
 }

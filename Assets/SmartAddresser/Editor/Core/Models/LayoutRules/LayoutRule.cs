@@ -74,15 +74,30 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                 labelRule.Setup();
         }
 
-        public IReadOnlyCollection<string> ProvideLabels(string assetPath, Type assetType, bool isFolder, bool doSetup)
+        /// <summary>
+        ///     Provide the labels.
+        /// </summary>
+        /// <param name="assetPath"></param>
+        /// <param name="assetType"></param>
+        /// <param name="isFolder"></param>
+        /// <param name="doSetup"></param>
+        /// <param name="checkIsPathValidForEntry">
+        ///     If true, check if the asset path is valid for entry.
+        ///     You can pass false if it is guaranteed to be valid.
+        /// </param>
+        /// <returns></returns>
+        public IReadOnlyCollection<string> ProvideLabels(string assetPath, Type assetType, bool isFolder, bool doSetup,
+            bool checkIsPathValidForEntry = true)
         {
             var labels = new HashSet<string>();
-            foreach (var labelRule in _labelRules)
+            for (int i = 0, count = _labelRules.Count; i < count; i++)
             {
+                var labelRule = _labelRules[i];
+                
                 if (doSetup)
                     labelRule.Setup();
 
-                if (labelRule.TryProvideLabel(assetPath, assetType, isFolder, out var label))
+                if (labelRule.TryProvideLabel(assetPath, assetType, isFolder, out var label, checkIsPathValidForEntry))
                     labels.Add(label);
             }
 

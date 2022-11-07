@@ -72,8 +72,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
         /// <param name="label">If successful, assign the address. If not, null.</param>
+        /// <param name="checkIsPathValidForEntry">
+        ///     If true, check if the asset path is valid for entry.
+        ///     You can pass false if it is guaranteed to be valid.
+        /// </param>
         /// <returns>Return true if successful.</returns>
-        public bool TryProvideLabel(string assetPath, Type assetType, bool isFolder, out string label)
+        public bool TryProvideLabel(string assetPath, Type assetType, bool isFolder, out string label,
+            bool checkIsPathValidForEntry = true)
         {
             if (!_assetGroups.Contains(assetPath, assetType, isFolder))
             {
@@ -81,13 +86,20 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
                 return false;
             }
 
-            if (!AddressableAssetUtility.IsPathValidForEntry(assetPath))
+            if (checkIsPathValidForEntry && !AddressableAssetUtility.IsAssetPathValidForEntry(assetPath))
             {
                 label = null;
                 return false;
             }
 
             label = LabelProvider.Value.Provide(assetPath, assetType, isFolder);
+
+            if (string.IsNullOrEmpty(label))
+            {
+                label = null;
+                return false;
+            }
+
             return true;
         }
 
@@ -101,9 +113,10 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 
         internal void RefreshLabelProviderDescription()
         {
-            _labelProviderDescription.Value = LabelProvider.Value == null
-                ? "(None)"
-                : LabelProvider.Value.GetDescription();
+            var description = LabelProvider.Value?.GetDescription();
+            if (string.IsNullOrEmpty(description))
+                description = "(None)";
+            _labelProviderDescription.Value = description;
         }
     }
 }

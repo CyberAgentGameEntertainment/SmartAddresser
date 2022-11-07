@@ -37,6 +37,12 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
             _treeView = treeView;
         }
 
+        public string SearchString
+        {
+            get => _treeView.searchString;
+            set => _treeView.searchString = value;
+        }
+
         /// <summary>
         ///     <para>This is the controlID used for the text field to obtain keyboard focus.</para>
         /// </summary>
@@ -86,7 +92,7 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
         /// <summary>
         ///     <para>This function displays the search field with a toolbar style in the given Rect.</para>
         /// </summary>
-        public void OnToolbarGUI(Rect rect)
+        public string OnToolbarGUI(Rect rect)
         {
             EditorGUI.LabelField(rect, string.Empty, EditorStyles.toolbarButton);
             rect.xMin += 10;
@@ -124,18 +130,19 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
             {
                 var searchString = _searchField.OnToolbarGUI(searchFieldRect, _treeView.searchString);
                 if (ccs.changed) _treeView.searchString = searchString;
+                return searchString;
             }
         }
 
         /// <summary>
         ///     <para>This function displays the search field with a toolbar style.</para>
         /// </summary>
-        public void OnToolbarGUI()
+        public string OnToolbarGUI()
         {
             var maxWidth = _targetColumns.Count >= 2 ? 300 : 200;
             var rect = GUILayoutUtility.GetRect(100, maxWidth, EditorStyles.toolbar.fixedHeight,
                 EditorStyles.toolbar.fixedHeight);
-            OnToolbarGUI(rect);
+            return OnToolbarGUI(rect);
         }
     }
 }

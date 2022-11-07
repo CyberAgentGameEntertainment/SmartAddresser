@@ -9,13 +9,30 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         [SerializeField] private EntryErrorType _type;
         [SerializeField] private string _message;
 
-        public EntryError(EntryErrorType type, string message)
+        private readonly Func<string> _getMessage;
+
+        public EntryError(EntryErrorType type, Func<string> getMessage)
         {
             _type = type;
-            _message = message;
+            _getMessage = getMessage;
         }
 
         public EntryErrorType Type => _type;
-        public string Message => _message;
+
+        public string Message
+        {
+            get
+            {
+                InvokeGetMessage();
+                return _message;
+            }
+        }
+
+        public void InvokeGetMessage()
+        {
+            if (!string.IsNullOrEmpty(_message))
+                return;
+            _message = _getMessage.Invoke();
+        }
     }
 }
