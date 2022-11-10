@@ -68,7 +68,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
             if (data == null)
             {
-                _activeData.Value = data;
+                _activeData.Value = null;
                 return;
             }
 
@@ -150,9 +150,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
                 var menu = new GenericMenu();
 
-                var sourceAssets = _dataRepository.LoadAll().ToList();
+                var sourceAssets = _dataRepository.LoadAll().ToArray();
                 var sourceAssetNames = sourceAssets.Select(y => y.name).ToArray();
-                var activeSourceAssetIndex = sourceAssets.IndexOf(_activeData.Value);
+                var activeSourceAssetIndex = Array.IndexOf(sourceAssets, _activeData.Value);
                 if (activeSourceAssetIndex == -1)
                     activeSourceAssetIndex = 0;
 

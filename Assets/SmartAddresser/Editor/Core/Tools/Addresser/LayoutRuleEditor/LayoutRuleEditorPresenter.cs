@@ -229,7 +229,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
                 var menu = new GenericMenu();
 
-                menu.AddItem(new GUIContent("Apply to Addressable"), false, () =>
+                menu.AddItem(new GUIContent("Apply to Addressables"), false, () =>
                 {
                     // TODO: ルールを適用する仕組みを実装後、適用処理を書く
                 });
@@ -243,12 +243,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             {
                 var assetPath = EditorUtility.SaveFilePanelInProject($"Create {nameof(LayoutRuleData)}",
                     $"{nameof(LayoutRuleData)}", "asset", "", "Assets");
-                if (!string.IsNullOrEmpty(assetPath))
-                {
-                    var asset = ScriptableObject.CreateInstance<LayoutRuleData>();
-                    AssetDatabase.CreateAsset(asset, assetPath);
-                    SetupActiveView(asset);
-                }
+                if (string.IsNullOrEmpty(assetPath))
+                    return;
+                
+                var asset = ScriptableObject.CreateInstance<LayoutRuleData>();
+                AssetDatabase.CreateAsset(asset, assetPath);
+                SetupActiveView(asset);
             }
 
             #endregion

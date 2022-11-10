@@ -102,8 +102,8 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
 
         internal void SetErrorTypeAndMessagesDirty()
         {
-            _isMessagesDirty = true;
             _isErrorTypeDirty = true;
+            _isMessagesDirty = true;
         }
     }
 }

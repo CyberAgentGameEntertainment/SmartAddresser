@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace SmartAddresser.Editor.Core.Models.Layouts
 {
@@ -13,6 +14,8 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
 
         public EntryError(EntryErrorType type, Func<string> getMessage)
         {
+            Assert.IsNotNull(getMessage);
+            
             _type = type;
             _getMessage = getMessage;
         }
