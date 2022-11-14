@@ -7,7 +7,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared
     [Serializable]
     public abstract class AssetPathBasedProvider : IProvider<string>
     {
-        [SerializeField] private PartialAssetPathType _source = PartialAssetPathType.AssetName;
+        [SerializeField] private PartialAssetPathType _source = PartialAssetPathType.AssetNameWithoutExtensions;
         [SerializeField] private bool _replaceWithRegex;
         [SerializeField] private string _pattern;
         [SerializeField] private string _replacement;
@@ -54,13 +54,31 @@ namespace SmartAddresser.Editor.Core.Models.Shared
         {
             if (!_replaceWithRegex)
                 return;
-            _regex = new Regex(_pattern);
+
+            try
+            {
+                _regex = new Regex(_pattern);
+            }
+            catch
+            {
+                _regex = null;
+            }
         }
 
         string IProvider<string>.Provide(string assetPath, Type assetType, bool isFolder)
         {
-            var sourceValue = _source.Create(assetPath);
-            return _replaceWithRegex ? _regex.Replace(sourceValue, _replacement) : sourceValue;
+            if (_replaceWithRegex && _regex == null)
+                return null;
+
+            try
+            {
+                var sourceValue = _source.Create(assetPath);
+                return _replaceWithRegex ? _regex.Replace(sourceValue, _replacement) : sourceValue;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         string IProvider<string>.GetDescription()

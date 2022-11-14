@@ -24,11 +24,17 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 
         string IProvider<string>.Provide(string assetPath, Type assetType, bool isFolder)
         {
+            if (string.IsNullOrEmpty(_label))
+                return null;
+
             return _label;
         }
 
         public string GetDescription()
         {
+            if (string.IsNullOrEmpty(_label))
+                return null;
+
             return $"Constant: {_label}";
         }
     }

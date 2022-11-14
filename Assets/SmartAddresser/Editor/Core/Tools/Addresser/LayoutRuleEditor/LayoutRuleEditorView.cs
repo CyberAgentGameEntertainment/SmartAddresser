@@ -1,4 +1,5 @@
 using System;
+using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor;
@@ -6,6 +7,7 @@ using SmartAddresser.Editor.Foundation.EditorSplitView;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
@@ -15,15 +17,29 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
     /// </summary>
     internal sealed class LayoutRuleEditorView : IDisposable
     {
+        public enum Mode
+        {
+            Create,
+            Edit,
+            NoAddressableSettings
+        }
+
         public enum Tab
         {
             AddressRule,
             LabelRule,
-            VersionRule,
-            Settings
+            VersionRule
         }
 
-        private readonly Subject<Empty> _applyButtonClickedSubject = new Subject<Empty>();
+        private readonly ObservableProperty<string> _activeAssetName = new ObservableProperty<string>();
+
+        private readonly ObservableProperty<Mode> _activeMode = new ObservableProperty<Mode>();
+        private readonly ObservableProperty<Tab> _activeTab = new ObservableProperty<Tab>();
+        private readonly Subject<Empty> _assetSelectButtonClickedSubject = new Subject<Empty>();
+
+        private readonly Subject<Empty> _beforeLayoutSubject = new Subject<Empty>();
+        private readonly Subject<Empty> _createButtonClickedSubject = new Subject<Empty>();
+        private readonly Subject<Empty> _menuButtonClickedSubject = new Subject<Empty>();
 
         public LayoutRuleEditorView(AddressRuleListTreeView.State addressTreeViewState,
             LabelRuleListTreeView.State labelTreeViewState, VersionRuleListTreeView.State versionTreeViewState,
@@ -36,24 +52,58 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 new VersionRuleEditorView(versionTreeViewState, splitViewState, repaintParentWindow);
         }
 
+        private string CreateViewMessage { get; } =
+            $"{nameof(LayoutRuleData)} cannot be found. Click the following button to create it.";
+
+        private string NoAddressableDataViewMessage { get; } =
+            $"{nameof(AddressableAssetSettings)} cannot be found. Please create it before using Smart Addresser.";
+
         public AddressRuleEditorView AddressRuleEditorView { get; }
         public LabelRuleEditorView LabelRuleEditorView { get; }
         public VersionRuleEditorView VersionRuleEditorView { get; }
-
-        public ObservableProperty<Tab> ActiveTab { get; } = new ObservableProperty<Tab>();
-
-        public IObservable<Empty> ApplyButtonClickedAsObservable => _applyButtonClickedSubject;
+        public IObservableProperty<Tab> ActiveTab => _activeTab;
+        public IObservableProperty<Mode> ActiveMode => _activeMode;
+        public IObservableProperty<string> ActiveAssetName => _activeAssetName;
+        public IObservable<Empty> MenuButtonClickedAsObservable => _menuButtonClickedSubject;
+        public IObservable<Empty> BeforeLayoutAsObservable => _beforeLayoutSubject;
+        public IObservable<Empty> CreateButtonClickedAsObservable => _createButtonClickedSubject;
+        public IObservable<Empty> AssetSelectButtonClickedAsObservable => _assetSelectButtonClickedSubject;
 
         public void Dispose()
         {
             AddressRuleEditorView.Dispose();
             LabelRuleEditorView.Dispose();
             VersionRuleEditorView.Dispose();
-            ActiveTab.Dispose();
-            _applyButtonClickedSubject.Dispose();
+            _activeTab.Dispose();
+            _activeMode.Dispose();
+            _menuButtonClickedSubject.Dispose();
+            _beforeLayoutSubject.Dispose();
+            _createButtonClickedSubject.Dispose();
+            _assetSelectButtonClickedSubject.Dispose();
+            _activeAssetName.Dispose();
         }
 
         public void DoLayout()
+        {
+            _beforeLayoutSubject.OnNext(Empty.Default);
+
+            switch (ActiveMode.Value)
+            {
+                case Mode.Create:
+                    DrawCreateView();
+                    break;
+                case Mode.Edit:
+                    DrawEditView();
+                    break;
+                case Mode.NoAddressableSettings:
+                    DrawNoAddressableSettingsView();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void DrawEditView()
         {
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar, GUILayout.ExpandWidth(true)))
             {
@@ -68,8 +118,18 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
                 GUILayout.FlexibleSpace();
 
-                if (GUILayout.Button("Apply", EditorStyles.toolbarButton))
-                    _applyButtonClickedSubject.OnNext(Empty.Default);
+                if (GUILayout.Button(ActiveAssetName.Value, EditorStyles.toolbarDropDown, GUILayout.Width(120)))
+                    _assetSelectButtonClickedSubject.OnNext(Empty.Default);
+
+                // Menu Button
+                var menuButtonRect = GUILayoutUtility.GetRect(24, 20);
+                var menuButtonImageRect = menuButtonRect;
+                menuButtonImageRect.xMin += 2;
+                menuButtonImageRect.xMax -= 2;
+                var menuIconTexture = EditorGUIUtility.IconContent(EditorGUIUtil.MenuIconName).image;
+                GUI.DrawTexture(menuButtonImageRect, menuIconTexture, ScaleMode.StretchToFill);
+                if (GUI.Button(menuButtonRect, "", GUIStyle.none))
+                    _menuButtonClickedSubject.OnNext(Empty.Default);
             }
 
             switch (ActiveTab.Value)
@@ -83,12 +143,41 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 case Tab.VersionRule:
                     VersionRuleEditorView.DoLayout();
                     break;
-                case Tab.Settings:
-                    //TODO: SettingsタブのViewを実装後に対応
-                    throw new NotImplementedException();
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void DrawCreateView()
+        {
+            GUILayout.BeginVertical();
+            GUILayout.FlexibleSpace();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(CreateViewMessage);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button($"Create {nameof(LayoutRuleData)}", GUILayout.Width(200)))
+                _createButtonClickedSubject.OnNext(Empty.Default);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndVertical();
+        }
+
+        private void DrawNoAddressableSettingsView()
+        {
+            GUILayout.BeginVertical();
+            GUILayout.FlexibleSpace();
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(NoAddressableDataViewMessage);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.EndVertical();
         }
 
         private static string GetTabName(Tab tab)
@@ -98,7 +187,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 Tab.AddressRule => "Address Rule",
                 Tab.LabelRule => "Label Rule",
                 Tab.VersionRule => "Version Rule",
-                Tab.Settings => "Settings",
                 _ => throw new ArgumentOutOfRangeException(nameof(tab), tab, null)
             };
         }

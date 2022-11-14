@@ -54,16 +54,10 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 return false;
             }
 
-            var targetExtension = Path.GetExtension(assetPath);
-            if (string.IsNullOrEmpty(targetExtension))
-            {
-                return false;
-            }
-
             foreach (var extension in _extensions)
             {
                 // Return true if any of the extensions match.
-                if (extension == targetExtension)
+                if (assetPath.EndsWith(extension, StringComparison.Ordinal))
                 {
                     return true;
                 }

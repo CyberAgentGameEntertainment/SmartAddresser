@@ -41,6 +41,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
                 }
             };
             _assetGroups.Add(defaultAssetGroup);
+            AddressProvider.Value = new AssetPathBasedAddressProvider();
         }
 
         public ObservableProperty<IAddressProvider> AddressProvider { get; } =
@@ -82,22 +83,41 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
         /// <param name="address">If successful, assign the address. If not, null.</param>
+        /// <param name="checkIsPathValidForEntry">
+        ///     If true, check if the asset path is valid for entry.
+        ///     You can pass false if it is guaranteed to be valid.
+        /// </param>
         /// <returns>Return true if successful.</returns>
-        public bool TryProvideAddress(string assetPath, Type assetType, bool isFolder, out string address)
+        public bool TryProvideAddress(string assetPath, Type assetType, bool isFolder, out string address,
+            bool checkIsPathValidForEntry = true)
         {
+            // If this addressable group is not the control target, do nothing.
+            if (!Control.Value)
+            {
+                address = null;
+                return false;
+            }
+
             if (!_assetGroups.Contains(assetPath, assetType, isFolder))
             {
                 address = null;
                 return false;
             }
 
-            if (!AddressableAssetUtility.IsPathValidForEntry(assetPath))
+            if (checkIsPathValidForEntry && !AddressableAssetUtility.IsAssetPathValidForEntry(assetPath))
             {
                 address = null;
                 return false;
             }
 
             address = AddressProvider.Value.Provide(assetPath, assetType, isFolder);
+
+            if (string.IsNullOrEmpty(address))
+            {
+                address = null;
+                return false;
+            }
+
             return true;
         }
 
@@ -111,9 +131,10 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
 
         internal void RefreshAddressProviderDescription()
         {
-            _addressProviderDescription.Value = AddressProvider.Value == null
-                ? "(None)"
-                : AddressProvider.Value.GetDescription();
+            var description = AddressProvider.Value?.GetDescription();
+            if (string.IsNullOrEmpty(description))
+                description = "(None)";
+            _addressProviderDescription.Value = description;
         }
     }
 }

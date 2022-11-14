@@ -14,6 +14,8 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         [SerializeField] private LayoutErrorType _errorType;
         [SerializeField] private List<Entry> _entries = new List<Entry>();
 
+        [NonSerialized] private bool _isErrorTypeDirty = true;
+        
         public Group(AddressableAssetGroup addressableGroup)
         {
             _id = IdentifierFactory.Create();
@@ -27,21 +29,40 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         ///     Error type of the group.
         ///     This matches the most critical error type of all entries in the group.
         /// </summary>
-        public LayoutErrorType ErrorType => _errorType;
+        public LayoutErrorType ErrorType
+        {
+            get
+            {
+                if (_isErrorTypeDirty)
+                {
+                    _errorType = LayoutErrorType.None;
+                    for (int i = 0, entryCount = _entries.Count; i < entryCount; i++)
+                    {
+                        var entry = _entries[i];
+                        var entryErrorType = entry.ErrorType;
+                        if (entryErrorType.IsMoreCriticalThan(_errorType))
+                            _errorType = entryErrorType;
+                    }
+
+                    _isErrorTypeDirty = false;
+                }
+
+                return _errorType;
+            }
+        }
 
         public List<Entry> Entries => _entries;
 
         public string DisplayName => _addressableGroup == null ? "[Missing Reference]" : _addressableGroup.name;
 
-        internal void RefreshErrorType()
+        internal void SetErrorTypeDirty()
         {
-            _errorType = LayoutErrorType.None;
+            _isErrorTypeDirty = true;
+            
             for (int i = 0, entryCount = _entries.Count; i < entryCount; i++)
             {
                 var entry = _entries[i];
-                entry.RefreshErrorTypeAndMessages();
-                if (entry.ErrorType.IsMoreCriticalThan(_errorType))
-                    _errorType = entry.ErrorType;
+                entry.SetErrorTypeAndMessagesDirty();
             }
         }
     }

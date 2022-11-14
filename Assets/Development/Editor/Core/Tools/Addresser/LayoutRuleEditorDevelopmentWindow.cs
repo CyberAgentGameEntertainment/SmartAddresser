@@ -1,3 +1,4 @@
+using Development.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor;
@@ -7,6 +8,7 @@ using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEdi
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.EditorSplitView;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
@@ -39,18 +41,24 @@ namespace Development.Editor.Core.Tools.Addresser
 
             _view = new LayoutRuleEditorView(_addressTreeViewState, _labelTreeViewState, _versionTreeViewState,
                 _splitViewState, Repaint);
-            _presenter = new LayoutRuleEditorPresenter(_view, _history, new FakeAssetSaveService());
 
-            var layoutRule = new LayoutRule();
+            var settings = AddressableAssetSettings.Create(null, null, true, false);
+            var layoutRuleData = CreateInstance<LayoutRuleData>();
             for (var i = 0; i < 10; i++)
             {
-                var group = CreateInstance<AddressableAssetGroup>();
-                group.Name = $"Group-{i:D2}";
+                var group = settings.CreateGroup($"Group-{i:D2}", false, false, true, null);
                 var addressRule = new AddressRule(group);
-                layoutRule.AddressRules.Add(addressRule);
+                layoutRuleData.LayoutRule.AddressRules.Add(addressRule);
             }
 
-            _presenter.SetupView(layoutRule);
+            var layoutDataLoadService = new FakeLayoutRuleDataRepository();
+            layoutDataLoadService.AddData(layoutRuleData);
+
+            var addressableSettingsRepository = new FakeAddressableAssetSettingsRepository();
+            addressableSettingsRepository.DataSettingsMap.Add(layoutRuleData, settings);
+            _presenter = new LayoutRuleEditorPresenter(_view, _history, new FakeAssetSaveService(),
+                addressableSettingsRepository);
+            _presenter.SetupView(layoutDataLoadService);
         }
 
         private void OnDisable()
@@ -87,7 +95,9 @@ namespace Development.Editor.Core.Tools.Addresser
                         layoutRule.AddressRules.Add(addressRule);
                     }
 
-                    _presenter.SetupView(layoutRule);
+                    var layoutRuleData = CreateInstance<LayoutRuleData>();
+                    layoutRuleData.LayoutRule = layoutRule;
+                    _presenter.SetupView(new FakeLayoutRuleDataRepository());
                 }
 
                 if (GUILayout.Button("Clear Data", EditorStyles.toolbarButton))

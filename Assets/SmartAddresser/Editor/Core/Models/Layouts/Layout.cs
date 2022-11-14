@@ -12,12 +12,34 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         [SerializeField] private LayoutErrorType _errorType;
         [SerializeField] private List<Group> _groups = new List<Group>();
 
+        [NonSerialized] private bool _isErrorTypeDirty = true;
+        
         public Layout()
         {
             _id = IdentifierFactory.Create();
         }
 
-        public LayoutErrorType ErrorType => _errorType;
+        public LayoutErrorType ErrorType
+        {
+            get
+            {
+                if (_isErrorTypeDirty)
+                {
+                    _errorType = LayoutErrorType.None;
+                    for (int i = 0, groupCount = _groups.Count; i < groupCount; i++)
+                    {
+                        var group = _groups[i];
+                        var groupErrorType = group.ErrorType;
+                        if (groupErrorType.IsMoreCriticalThan(_errorType))
+                            _errorType = groupErrorType;
+                    }
+
+                    _isErrorTypeDirty = false;
+                }
+
+                return _errorType;
+            }
+        }
         public List<Group> Groups => _groups;
         public bool HasValidated { get; private set; }
 
@@ -60,8 +82,11 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
                     // If the entry has multiple versions, mark as error.
                     if (entry.Versions.Length >= 2)
                     {
-                        const string message = "[Error] Multiple Versions: This asset has multiple versions.";
-                        entry.Errors.Add(new EntryError(EntryErrorType.Error, message));
+                        string CreateMessage()
+                        {
+                            return "[Error] Multiple Versions: This asset has multiple versions.";
+                        }
+                        entry.Errors.Add(new EntryError(EntryErrorType.Error, CreateMessage));
                     }
                 }
             }
@@ -71,23 +96,28 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
             {
                 var entries = assetPathEntries.Value;
                 if (entries.Count <= 1)
-                    break;
+                    continue;
 
                 // Create message.
-                var message = "[Error] Duplicate Assets: This asset is included in following entries.";
-                for (int i = 0, entryCount = entries.Count; i < entryCount; i++)
+                string CreateMessage()
                 {
-                    var entry = entries[i];
-                    var group = entryToGroup[entry.Id];
-                    message +=
-                        $"{Environment.NewLine}    - Group: {group.DisplayName}, Address: {entry.Address}, AssetPath: {entry.AssetPath}";
+                    var message = "[Error] Duplicate Assets: This asset is included in following entries.";
+                    for (int i = 0, entryCount = entries.Count; i < entryCount; i++)
+                    {
+                        var entry = entries[i];
+                        var group = entryToGroup[entry.Id];
+                        message +=
+                            $"{Environment.NewLine}    - Group: {group.DisplayName}, Address: {entry.Address}, AssetPath: {entry.AssetPath}";
+                    }
+
+                    return message;
                 }
 
                 // Add error to each entry.
                 for (int i = 0, entryCount = entries.Count; i < entryCount; i++)
                 {
                     var entry = entries[i];
-                    entry.Errors.Add(new EntryError(EntryErrorType.Error, message));
+                    entry.Errors.Add(new EntryError(EntryErrorType.Error, CreateMessage));
                 }
             }
 
@@ -100,38 +130,41 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
                     continue;
 
                 // Create message.
-                var message = "[Warning] Duplicate Addresses: This address is included in following entries.";
-                for (int i = 0, entryCount = entries.Count; i < entryCount; i++)
+                string CreateMessage()
                 {
-                    var entry = entries[i];
-                    var group = entryToGroup[entry.Id];
-                    message +=
-                        $"{Environment.NewLine}    - Group: {group.DisplayName}, Address: {entry.Address}, AssetPath: {entry.AssetPath}";
+                    var message = "[Warning] Duplicate Addresses: This address is included in following entries.";
+                    for (int i = 0, entryCount = entries.Count; i < entryCount; i++)
+                    {
+                        var entry = entries[i];
+                        var group = entryToGroup[entry.Id];
+                        message +=
+                            $"{Environment.NewLine}    - Group: {group.DisplayName}, Address: {entry.Address}, AssetPath: {entry.AssetPath}";
+                    }
+
+                    return message;
                 }
 
                 // Add warning to each entry.
                 for (int i = 0, entryCount = entries.Count; i < entryCount; i++)
                 {
                     var entry = entries[i];
-                    entry.Errors.Add(new EntryError(EntryErrorType.Warning, message));
+                    entry.Errors.Add(new EntryError(EntryErrorType.Warning, CreateMessage));
                 }
             }
 
-            // Refresh error type of layout.
-            RefreshErrorType();
+            // Set the dirty flag of the error type.
+            SetErrorTypeDirty();
 
             HasValidated = true;
         }
 
-        private void RefreshErrorType()
+        private void SetErrorTypeDirty()
         {
-            _errorType = LayoutErrorType.None;
+            _isErrorTypeDirty = true;
             for (int i = 0, groupCount = _groups.Count; i < groupCount; i++)
             {
                 var group = _groups[i];
-                group.RefreshErrorType();
-                if (group.ErrorType.IsMoreCriticalThan(_errorType))
-                    _errorType = group.ErrorType;
+                group.SetErrorTypeDirty();
             }
         }
     }

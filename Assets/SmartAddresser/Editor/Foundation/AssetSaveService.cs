@@ -12,6 +12,15 @@ namespace SmartAddresser.Editor.Foundation
     {
         private static readonly List<string> _paths = new List<string>();
 
+        private static string[] OnWillSaveAssets(string[] paths)
+        {
+            if (paths.Length == 0) return paths;
+
+            if (_paths.Count == 0) return paths;
+
+            return _paths.ToArray();
+        }
+
         public void Run(Object obj)
         {
             if (!EditorUtility.IsDirty(obj)) return;
@@ -37,15 +46,6 @@ namespace SmartAddresser.Editor.Foundation
                 AssetDatabase.SaveAssets();
                 _paths.Clear();
             }
-        }
-
-        private static string[] OnWillSaveAssets(string[] paths)
-        {
-            if (paths.Length == 0) return paths;
-
-            if (_paths.Count == 0) return paths;
-
-            return _paths.ToArray();
         }
     }
 }

@@ -19,8 +19,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             GroupNameOrAddress,
             AssetPath,
             Labels,
-            Tags,
-            Message
+            Versions
         }
 
         private readonly Texture2D _badgeBackgroundTexture;
@@ -82,8 +81,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                             break;
                         case Columns.AssetPath:
                         case Columns.Labels:
-                        case Columns.Tags:
-                        case Columns.Message:
+                        case Columns.Versions:
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(columnIndex), columnIndex, null);
@@ -109,12 +107,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                             DrawBadges(entryItem.Entry.Labels, new Vector2(cellRect.x, cellRect.y + 1),
                                 cellRect.height - 2, cellRect.width);
                             break;
-                        case Columns.Tags:
+                        case Columns.Versions:
                             DrawBadges(entryItem.Entry.Versions, new Vector2(cellRect.x, cellRect.y + 1),
                                 cellRect.height - 2, cellRect.width);
-                            break;
-                        case Columns.Message:
-                            GUI.Label(cellRect, GetText(item, columnIndex));
                             break;
                         default:
                             throw new NotImplementedException();
@@ -204,18 +199,20 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     Columns.GroupNameOrAddress => groupItem.Group.DisplayName,
                     Columns.AssetPath => null,
                     Columns.Labels => null,
-                    Columns.Tags => null,
-                    Columns.Message => null,
+                    Columns.Versions => null,
                     _ => throw new ArgumentOutOfRangeException()
                 },
                 EntryItem entryItem => (Columns)columnIndex switch
                 {
                     Columns.GroupNameOrAddress => entryItem.Entry.Address,
                     Columns.AssetPath => entryItem.Entry.AssetPath,
-                    Columns.Labels => "TODO",
-                    Columns.Tags => "TODO",
-                    Columns.Message => entryItem.Entry.Messages,
-                    _ => throw new NotImplementedException()
+                    Columns.Labels => entryItem.Entry.Labels != null
+                        ? string.Join(", ", entryItem.Entry.Labels)
+                        : null,
+                    Columns.Versions => entryItem.Entry.Versions != null
+                        ? string.Join(", ", entryItem.Entry.Versions)
+                        : null,
+                    _ => throw new ArgumentOutOfRangeException(nameof(columnIndex), columnIndex, null)
                 },
                 _ => null
             };
@@ -300,9 +297,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     autoResize = false,
                     allowToggleVisibility = true
                 };
-                var tagsColumn = new MultiColumnHeaderState.Column
+                var versionsColumn = new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent("Tags"),
+                    headerContent = new GUIContent("Versions"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
                     width = 100,
@@ -310,17 +307,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     autoResize = false,
                     allowToggleVisibility = true
                 };
-                var messagesColumn = new MultiColumnHeaderState.Column
-                {
-                    headerContent = new GUIContent("Messages"),
-                    headerTextAlignment = TextAlignment.Center,
-                    canSort = false,
-                    width = 200,
-                    minWidth = 50,
-                    autoResize = false,
-                    allowToggleVisibility = true
-                };
-                return new[] { groupNameAddressColumn, assetPathColumn, labelsColumn, tagsColumn, messagesColumn };
+                return new[] { groupNameAddressColumn, assetPathColumn, labelsColumn, versionsColumn };
             }
         }
     }
