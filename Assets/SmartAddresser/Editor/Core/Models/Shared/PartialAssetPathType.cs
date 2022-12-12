@@ -6,8 +6,8 @@ namespace SmartAddresser.Editor.Core.Models.Shared
 {
     public enum PartialAssetPathType
     {
-        AssetName,
-        AssetNameWithoutExtensions,
+        FileName,
+        FileNameWithoutExtensions,
         AssetPath
     }
 
@@ -19,8 +19,8 @@ namespace SmartAddresser.Editor.Core.Models.Shared
 
             return self switch
             {
-                PartialAssetPathType.AssetName => Path.GetFileName(assetPath),
-                PartialAssetPathType.AssetNameWithoutExtensions => Path.GetFileNameWithoutExtension(assetPath),
+                PartialAssetPathType.FileName => Path.GetFileName(assetPath),
+                PartialAssetPathType.FileNameWithoutExtensions => Path.GetFileNameWithoutExtension(assetPath),
                 PartialAssetPathType.AssetPath => assetPath,
                 _ => throw new ArgumentOutOfRangeException()
             };

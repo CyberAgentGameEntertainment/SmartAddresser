@@ -7,7 +7,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared
     [Serializable]
     public abstract class AssetPathBasedProvider : IProvider<string>
     {
-        [SerializeField] private PartialAssetPathType _source = PartialAssetPathType.AssetNameWithoutExtensions;
+        [SerializeField] private PartialAssetPathType _source = PartialAssetPathType.FileNameWithoutExtensions;
         [SerializeField] private bool _replaceWithRegex;
         [SerializeField] private string _pattern;
         [SerializeField] private string _replacement;

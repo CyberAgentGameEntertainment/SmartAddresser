@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
+using UnityEditor;
+using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor
 {
@@ -100,32 +103,102 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
         private void SetupViewEventHandlers()
         {
             _view.AddButtonClickedAsObservable.Subscribe(x => AddRule()).DisposeWith(_viewEventDisposables);
-
-            #region Local methods
-
-            void AddRule()
-            {
-                if (!_didSetupView)
-                    return;
-
-                var rule = new VersionRule();
-                _history.Register($"Add Version Rule {rule.Id}", () =>
-                {
-                    _rules.Add(rule);
-                    _saveService.Save();
-                }, () =>
-                {
-                    _rules.Remove(rule);
-                    _saveService.Save();
-                });
-            }
-
-            #endregion
+            _view.TreeView.RightClickMenuRequested += OnRightClickMenuRequested;
         }
 
         private void CleanupViewEventHandlers()
         {
+            _view.TreeView.RightClickMenuRequested -= OnRightClickMenuRequested;
             _viewEventDisposables.Clear();
+        }
+
+        private void AddRule()
+        {
+            if (!_didSetupView)
+                return;
+
+            var rule = new VersionRule();
+            _history.Register($"Add Version Rule {rule.Id}", () =>
+            {
+                _rules.Add(rule);
+                _saveService.Save();
+            }, () =>
+            {
+                _rules.Remove(rule);
+                _saveService.Save();
+            });
+        }
+
+        private void RemoveRule(VersionRule rule)
+        {
+            if (!_didSetupView)
+                return;
+
+            _history.Register($"Remove Version Rule {rule.Id}", () =>
+            {
+                _rules.Remove(rule);
+                _saveService.Save();
+            }, () =>
+            {
+                _rules.Add(rule);
+                _saveService.Save();
+            });
+        }
+
+        private void RemoveSelectedItems()
+        {
+            var rules = _view.TreeView
+                .GetSelection()
+                .Where(x => _view.TreeView.HasItem(x))
+                .Select(x =>
+                {
+                    var item = (VersionRuleListTreeView.Item)_view.TreeView.GetItem(x);
+                    return item.Rule;
+                })
+                .ToArray();
+
+            foreach (var rule in rules)
+                RemoveRule(rule);
+        }
+
+        private GenericMenu OnRightClickMenuRequested()
+        {
+            var treeView = _view.TreeView;
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent("Create"), false, AddRule);
+            if (treeView.HasSelection())
+                menu.AddItem(new GUIContent("Remove"), false, RemoveSelectedItems);
+            else
+                menu.AddDisabledItem(new GUIContent("Remove"));
+            menu.AddItem(new GUIContent("Copy Asset Groups Description"), false,
+                CopySelectedAssetGroupDescriptionAsText);
+            menu.AddItem(new GUIContent("Copy Version Rule Description"), false,
+                CopySelectedVersionRuleDescriptionAsText);
+            return menu;
+
+            #region Local methods
+
+            void CopySelectedAssetGroupDescriptionAsText()
+            {
+                var selections = _view.TreeView.GetSelection();
+                if (selections == null || selections.Count == 0) return;
+
+                var selection = selections[0];
+                var item = (VersionRuleListTreeView.Item)_view.TreeView.GetItem(selection);
+                GUIUtility.systemCopyBuffer = item.Rule.AssetGroupDescription.Value;
+            }
+
+            void CopySelectedVersionRuleDescriptionAsText()
+            {
+                var selections = _view.TreeView.GetSelection();
+                if (selections == null || selections.Count == 0) return;
+
+                var selection = selections[0];
+                var item = (VersionRuleListTreeView.Item)_view.TreeView.GetItem(selection);
+                GUIUtility.systemCopyBuffer = item.Rule.VersionProviderDescription.Value;
+            }
+
+            #endregion
         }
     }
 }

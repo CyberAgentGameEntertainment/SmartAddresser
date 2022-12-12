@@ -5,7 +5,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace SmartAddresser.Editor.Core.Tools
+namespace SmartAddresser.Editor.Core.Tools.Shared
 {
     internal static class EditorGUIUtil
     {

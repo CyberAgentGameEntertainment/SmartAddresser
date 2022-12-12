@@ -3,6 +3,7 @@ using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using SmartAddresser.Editor.Foundation.SemanticVersioning;
+using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.Services
 {
@@ -26,15 +27,39 @@ namespace SmartAddresser.Editor.Core.Models.Services
 
         /// <summary>
         ///     If you want to process multiple asset by this instance, you should call this method before you call
-        ///     <see cref="Execute" /> and set <c>false</c> to the <c>doSetup</c> argument of the <see cref="Execute" />.
+        ///     <see cref="TryAddEntry" /> and set <c>false</c> to the <c>doSetup</c> argument of the <see cref="TryAddEntry" />.
         ///     If you want to process single asset by this instance, you should not call this method and set <c>true</c> to the
-        ///     <c>doSetup</c> argument of the <see cref="Execute" />.
+        ///     <c>doSetup</c> argument of the <see cref="TryAddEntry" />.
         /// </summary>
         public void Setup()
         {
             _layoutRule.SetupForAddress();
             _layoutRule.SetupForLabels();
             _layoutRule.SetupForVersion();
+        }
+
+        /// <summary>
+        ///     Apply the layout rule to the addressable settings for all assets.
+        /// </summary>
+        public void UpdateAllEntries()
+        {
+            Setup();
+
+            // Remove all entries in the addressable groups that are under control of this layout rule.
+            var groupNames = _layoutRule
+                .AddressRules
+                .Where(x => x.Control.Value)
+                .Select(x => x.AddressableGroup.Name);
+            foreach (var groupName in groupNames)
+                _addressableSettingsAdapter.RemoveAllEntries(groupName);
+
+            // Add all entries to the addressable asset system.
+            var versionExpression = _layoutRule.Settings.VersionExpression;
+            foreach (var assetPath in _assetDatabaseAdapter.GetAllAssetPaths())
+            {
+                var guid = _assetDatabaseAdapter.AssetPathToGUID(assetPath);
+                TryAddEntry(guid, false, versionExpression.Value);
+            }
         }
 
         /// <summary>
@@ -51,14 +76,15 @@ namespace SmartAddresser.Editor.Core.Models.Services
         ///     If the layout rule was applied to the addressable asset system, return true.
         ///     Returns false if no suitable layout rule was found.
         /// </returns>
-        public bool Execute(string assetGuid, bool doSetup, string versionExpression = null)
+        public bool TryAddEntry(string assetGuid, bool doSetup, string versionExpression = null)
         {
             var assetPath = _assetDatabaseAdapter.GUIDToAssetPath(assetGuid);
             var assetType = _assetDatabaseAdapter.GetMainAssetTypeAtPath(assetPath);
             var isFolder = _assetDatabaseAdapter.IsValidFolder(assetPath);
 
             // If the layout rule was not found, return false.
-            if (!_layoutRule.TryProvideAddressAndAddressableGroup(assetPath, assetType, isFolder, doSetup, out var address,
+            if (!_layoutRule.TryProvideAddressAndAddressableGroup(assetPath, assetType, isFolder, doSetup,
+                    out var address,
                     out var addressableGroup))
                 return false;
 
@@ -73,6 +99,9 @@ namespace SmartAddresser.Editor.Core.Models.Services
             {
                 var comparator = _versionExpressionParser.CreateComparator(versionExpression);
                 var versionText = _layoutRule.ProvideVersion(assetPath, assetType, isFolder, doSetup);
+
+                if (string.IsNullOrEmpty(versionText) && _layoutRule.Settings.ExcludeUnversioned.Value)
+                    return false;
 
                 // If the version is not satisfied, return false.
                 if (!string.IsNullOrEmpty(versionText)
@@ -92,9 +121,12 @@ namespace SmartAddresser.Editor.Core.Models.Services
                 if (!addressableLabels.Contains(label))
                     _addressableSettingsAdapter.AddLabel(label);
 
-            // Set labels.
-            foreach (var label in entryAdapter.Labels)
+            // Remove old labels.
+            var oldLabels = entryAdapter.Labels.ToArray();
+            foreach (var label in oldLabels)
                 entryAdapter.SetLabel(label, false);
+
+            // Add new labels.
             foreach (var label in labels)
                 entryAdapter.SetLabel(label, true);
 

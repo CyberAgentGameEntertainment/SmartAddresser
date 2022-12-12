@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
+using SmartAddresser.Editor.Core.Models.LayoutRules.Settings;
 using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using UnityEditor.AddressableAssets.Settings;
@@ -13,10 +14,12 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
     [Serializable]
     public sealed class LayoutRule
     {
+        [SerializeField] private LayoutRuleSettings _settings = new LayoutRuleSettings();
         [SerializeField] private ObservableList<AddressRule> _addressRules = new ObservableList<AddressRule>();
         [SerializeField] private ObservableList<LabelRule> _labelRules = new ObservableList<LabelRule>();
         [SerializeField] private ObservableList<VersionRule> _versionRules = new ObservableList<VersionRule>();
 
+        public LayoutRuleSettings Settings => _settings;
         public IObservableList<AddressRule> AddressRules => _addressRules;
         public IObservableList<LabelRule> LabelRules => _labelRules;
         public IObservableList<VersionRule> VersionRules => _versionRules;
@@ -93,7 +96,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             for (int i = 0, count = _labelRules.Count; i < count; i++)
             {
                 var labelRule = _labelRules[i];
-                
+
                 if (doSetup)
                     labelRule.Setup();
 

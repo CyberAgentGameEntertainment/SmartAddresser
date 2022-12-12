@@ -1,27 +1,26 @@
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using UnityEditor;
-using UnityEngine;
+using UnityEditor.Callbacks;
 
 namespace SmartAddresser.Editor.Core.Models.LayoutRules
 {
-    [CustomEditor(typeof(LayoutRuleData))]
-    internal sealed class LayoutRuleDataEditor : UnityEditor.Editor
+    public static class LayoutRuleDataOpener
     {
-        public override void OnInspectorGUI()
+        [OnOpenAsset(0)]
+        public static bool OnOpen(int instanceID, int line)
         {
-            var data = (LayoutRuleData)target;
+            var asset = EditorUtility.InstanceIDToObject(instanceID);
 
-            if (GUILayout.Button("Open Editor"))
+            if (asset is LayoutRuleData data)
             {
                 var repository = new LayoutRuleDataRepository();
                 repository.SetActiveData(data);
                 LayoutRuleEditorWindow.Open();
+                return true;
             }
 
-            GUI.enabled = false;
-            base.OnInspectorGUI();
-            GUI.enabled = true;
+            return false;
         }
     }
 }

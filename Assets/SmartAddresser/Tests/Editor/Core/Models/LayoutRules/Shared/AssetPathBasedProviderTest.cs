@@ -6,8 +6,8 @@ namespace SmartAddresser.Tests.Editor.Core.Models.LayoutRules.Shared
 {
     internal sealed class AssetPathBasedProviderTest
     {
-        [TestCase(PartialAssetPathType.AssetName, ExpectedResult = "Dummy.asset")]
-        [TestCase(PartialAssetPathType.AssetNameWithoutExtensions, ExpectedResult = "Dummy")]
+        [TestCase(PartialAssetPathType.FileName, ExpectedResult = "Dummy.asset")]
+        [TestCase(PartialAssetPathType.FileNameWithoutExtensions, ExpectedResult = "Dummy")]
         [TestCase(PartialAssetPathType.AssetPath, ExpectedResult = "Assets/Dummy.asset")]
         public string SourceType(PartialAssetPathType sourceType)
         {

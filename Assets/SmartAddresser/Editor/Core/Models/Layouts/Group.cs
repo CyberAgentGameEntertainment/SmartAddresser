@@ -33,20 +33,7 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         {
             get
             {
-                if (_isErrorTypeDirty)
-                {
-                    _errorType = LayoutErrorType.None;
-                    for (int i = 0, entryCount = _entries.Count; i < entryCount; i++)
-                    {
-                        var entry = _entries[i];
-                        var entryErrorType = entry.ErrorType;
-                        if (entryErrorType.IsMoreCriticalThan(_errorType))
-                            _errorType = entryErrorType;
-                    }
-
-                    _isErrorTypeDirty = false;
-                }
-
+                UpdateErrorType();
                 return _errorType;
             }
         }
@@ -63,6 +50,32 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
             {
                 var entry = _entries[i];
                 entry.SetErrorTypeAndMessagesDirty();
+            }
+        }
+
+        internal void UpdateErrorType()
+        {
+            if (!_isErrorTypeDirty)
+                return;
+            
+            _errorType = LayoutErrorType.None;
+            for (int i = 0, entryCount = _entries.Count; i < entryCount; i++)
+            {
+                var entry = _entries[i];
+                var entryErrorType = entry.ErrorType;
+                if (entryErrorType.IsMoreCriticalThan(_errorType))
+                    _errorType = entryErrorType;
+            }
+
+            _isErrorTypeDirty = false;
+        }
+
+        internal void UpdateMessages()
+        {
+            for (int i = 0, entryCount = _entries.Count; i < entryCount; i++)
+            {
+                var entry = _entries[i];
+                entry.UpdateMessages();
             }
         }
     }

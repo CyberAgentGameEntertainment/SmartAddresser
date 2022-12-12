@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 
 namespace SmartAddresser.Tests.Editor.Foundation
@@ -38,6 +39,17 @@ namespace SmartAddresser.Tests.Editor.Foundation
         public bool RemoveEntry(string guid)
         {
             return _guidToEntryMap.Remove(guid);
+        }
+
+        public void RemoveAllEntries(string groupName)
+        {
+            var targetGuids = _guidToEntryMap
+                .Values
+                .Where(x => x.Adapter.GroupName == groupName)
+                .Select(x => x.AssetGuid)
+                .ToArray();
+            foreach (var guid in targetGuids)
+                _guidToEntryMap.Remove(guid);
         }
 
         /// <inheritdoc />

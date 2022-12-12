@@ -2,7 +2,9 @@ using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.SettingsEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor;
+using SmartAddresser.Editor.Core.Tools.Shared;
 using SmartAddresser.Editor.Foundation.EditorSplitView;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
@@ -26,9 +28,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
         public enum Tab
         {
-            AddressRule,
-            LabelRule,
-            VersionRule
+            AddressRules,
+            LabelRules,
+            VersionRules,
+            Settings
         }
 
         private readonly ObservableProperty<string> _activeAssetName = new ObservableProperty<string>();
@@ -50,6 +53,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             LabelRuleEditorView = new LabelRuleEditorView(labelTreeViewState, splitViewState, repaintParentWindow);
             VersionRuleEditorView =
                 new VersionRuleEditorView(versionTreeViewState, splitViewState, repaintParentWindow);
+            SettingsEditorView = new SettingsEditorView();
         }
 
         private string CreateViewMessage { get; } =
@@ -61,6 +65,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         public AddressRuleEditorView AddressRuleEditorView { get; }
         public LabelRuleEditorView LabelRuleEditorView { get; }
         public VersionRuleEditorView VersionRuleEditorView { get; }
+        public SettingsEditorView SettingsEditorView { get; }
         public IObservableProperty<Tab> ActiveTab => _activeTab;
         public IObservableProperty<Mode> ActiveMode => _activeMode;
         public IObservableProperty<string> ActiveAssetName => _activeAssetName;
@@ -74,6 +79,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             AddressRuleEditorView.Dispose();
             LabelRuleEditorView.Dispose();
             VersionRuleEditorView.Dispose();
+            SettingsEditorView.Dispose();
             _activeTab.Dispose();
             _activeMode.Dispose();
             _menuButtonClickedSubject.Dispose();
@@ -134,14 +140,17 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
             switch (ActiveTab.Value)
             {
-                case Tab.AddressRule:
+                case Tab.AddressRules:
                     AddressRuleEditorView.DoLayout();
                     break;
-                case Tab.LabelRule:
+                case Tab.LabelRules:
                     LabelRuleEditorView.DoLayout();
                     break;
-                case Tab.VersionRule:
+                case Tab.VersionRules:
                     VersionRuleEditorView.DoLayout();
+                    break;
+                case Tab.Settings:
+                    SettingsEditorView.DoLayout();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -184,9 +193,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         {
             return tab switch
             {
-                Tab.AddressRule => "Address Rule",
-                Tab.LabelRule => "Label Rule",
-                Tab.VersionRule => "Version Rule",
+                Tab.AddressRules => "Address Rules",
+                Tab.LabelRules => "Label Rules",
+                Tab.VersionRules => "Version Rules",
+                Tab.Settings => "Settings",
                 _ => throw new ArgumentOutOfRangeException(nameof(tab), tab, null)
             };
         }

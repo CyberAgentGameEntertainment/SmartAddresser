@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
+using SmartAddresser.Editor.Core.Tools.Shared;
 using SmartAddresser.Editor.Foundation;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;

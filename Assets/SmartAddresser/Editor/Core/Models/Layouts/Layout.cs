@@ -13,7 +13,7 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         [SerializeField] private List<Group> _groups = new List<Group>();
 
         [NonSerialized] private bool _isErrorTypeDirty = true;
-        
+
         public Layout()
         {
             _id = IdentifierFactory.Create();
@@ -23,30 +23,19 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         {
             get
             {
-                if (_isErrorTypeDirty)
-                {
-                    _errorType = LayoutErrorType.None;
-                    for (int i = 0, groupCount = _groups.Count; i < groupCount; i++)
-                    {
-                        var group = _groups[i];
-                        var groupErrorType = group.ErrorType;
-                        if (groupErrorType.IsMoreCriticalThan(_errorType))
-                            _errorType = groupErrorType;
-                    }
-
-                    _isErrorTypeDirty = false;
-                }
-
+                UpdateErrorType();
                 return _errorType;
             }
         }
+
         public List<Group> Groups => _groups;
         public bool HasValidated { get; private set; }
 
         /// <summary>
         ///     Validate all groups and entries in the layout.
         /// </summary>
-        public void Validate()
+        /// <param name="updateErrorTypeAndMessages">Update all error types and messages after the validation.</param>
+        public void Validate(bool updateErrorTypeAndMessages = false)
         {
             var assetPathToEntries = new Dictionary<string, List<Entry>>();
             var addressToEntries = new Dictionary<string, List<Entry>>();
@@ -86,6 +75,7 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
                         {
                             return "[Error] Multiple Versions: This asset has multiple versions.";
                         }
+
                         entry.Errors.Add(new EntryError(EntryErrorType.Error, CreateMessage));
                     }
                 }
@@ -155,6 +145,11 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
             // Set the dirty flag of the error type.
             SetErrorTypeDirty();
 
+            if (updateErrorTypeAndMessages)
+            {
+                UpdateErrorTypeAndMessages();
+            }
+
             HasValidated = true;
         }
 
@@ -166,6 +161,42 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
                 var group = _groups[i];
                 group.SetErrorTypeDirty();
             }
+        }
+
+        private void UpdateErrorType()
+        {
+            if (!_isErrorTypeDirty) 
+                return;
+            
+            _errorType = LayoutErrorType.None;
+            for (int i = 0, groupCount = _groups.Count; i < groupCount; i++)
+            {
+                var group = _groups[i];
+                var groupErrorType = group.ErrorType;
+                if (groupErrorType.IsMoreCriticalThan(_errorType))
+                    _errorType = groupErrorType;
+            }
+
+            _isErrorTypeDirty = false;
+        }
+
+        private void UpdateErrorTypeAndMessages()
+        {
+            if (!_isErrorTypeDirty) 
+                return;
+            
+            _errorType = LayoutErrorType.None;
+            for (int i = 0, groupCount = _groups.Count; i < groupCount; i++)
+            {
+                var group = _groups[i];
+                var groupErrorType = group.ErrorType;
+                if (groupErrorType.IsMoreCriticalThan(_errorType))
+                    _errorType = groupErrorType;
+                
+                group.UpdateMessages();
+            }
+
+            _isErrorTypeDirty = false;
         }
     }
 }
