@@ -119,13 +119,13 @@ Addressable アセットシステムでは、下図のようにアセットを *
 **Add Asset Group** ボタンを押下すると **Asset Group** も追加でき、**Asset Group** 同士は **OR** 条件で判定されます。
 
 **Address Provider** タブでは付与するアドレスを指定できます。  
-下図のように **Source** に **Asset Name Without Extensions** を指定すると拡張子なしのアセット名がアドレスになります。
+下図のように **Source** に **File Name Without Extensions** を指定すると拡張子なしのアセット名がアドレスになります。
 
 <p align="center">
   <img width="80%" src="Documentation/Images/setup_rules_05.png" alt="Address Provider">
 </p>
 
-各アドレスプロバイダの一覧や説明は [Address Provider](https://www.notion.so/Address-Provider-95ec7120635e424fb785c8634646fcd2)  を参照してください。
+各アドレスプロバイダの一覧や説明は [Address Provider](#address-provider)  を参照してください。
 
 ### ラベルルールを作成する
 
@@ -144,7 +144,7 @@ Addressable アセットシステムでは、下図のようにアセットを *
 いずれかの項目を選択すると、右側のパネルからラベルを付与するルールを設定できます。
 
 **Asset Groups** タブでは対象とするアセットを指定することができます。   
-使い方は [アドレスルールを作成する](https://www.notion.so/a60c1869ddc84beca2646022f83ffc35) と同様なのでこちらを参照してください。
+使い方は [アドレスルールを作成する](#アドレスルールを作成する) と同様なのでこちらを参照してください。
 
 **Label Provider** タブでは付与するラベルを指定できます。  
 下図では **test** という名前のラベルを設定しています。
@@ -154,7 +154,7 @@ Addressable アセットシステムでは、下図のようにアセットを *
 </p>
 
 **Change Provider** ボタンを押下すると他のラベルプロバイダを使用することもできます。
-各ラベルプロバイダの一覧や説明は [Label Provider](https://www.notion.so/Label-Provider-1a4ea556830948efa615ddd3bbd3ae3d)   を参照してください。
+各ラベルプロバイダの一覧や説明は [Label Provider](#label-provider)   を参照してください。
 
 ## バリデーションする
 
@@ -162,7 +162,7 @@ Addressable アセットシステムでは、下図のようにアセットを *
 
 - 一つのアセットに対して複数のアドレスが指定されている
 - 一つのアドレスに対して複数のアセットが指定されている
-- 一つのアドレスに対して複数の[バージョン](https://www.notion.so/Smart-Addresser-4dbca20424b14896b8b4a28c550fdee4)が指定されている
+- 一つのアドレスに対して複数の[バージョン](#バージョン管理機能)が指定されている
 
 このようなルールの設定ミスを検知するためのツールとして、**Layout Viewer** が用意されています。
 
@@ -199,7 +199,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 ### CLIで適用する
 
 コマンドラインインターフェース（CLI）で適用することもできます。
-詳しくは  [コマンドラインインターフェース (CLI)](https://www.notion.so/CLI-d437f9a1f4824e6b9819f4fee3d24f86)  を参照してください。
+詳しくは  [コマンドラインインターフェース (CLI)](#コマンドラインインターフェース-cli)  を参照してください。
 
 ## バージョン管理機能
 
@@ -240,7 +240,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 いずれかの項目を選択すると、右側のパネルからバージョンを付与するルールを設定できます。
 
 **Asset Groups** タブでは対象とするアセットを指定することができます。
-使い方は [アドレスルールを作成する](https://www.notion.so/a60c1869ddc84beca2646022f83ffc35) と同様なのでこちらを参照してください。
+使い方は [アドレスルールを作成する](#アドレスルールを作成する) と同様なのでこちらを参照してください。
 
 **Version Provider** タブでは付与するバージョンを指定できます。
 下図では **1.2.0** という名前のバージョンを設定しています。
@@ -250,7 +250,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 </p>
 
 **Change Provider** ボタンを押下すると他のバージョンプロバイダを使用することもできます。  
-各バージョンプロバイダの一覧や説明は [Version Provider](https://www.notion.so/Version-Privider-e3342b16170a4e168f6035423ef9deb0)  を参照してください。
+各バージョンプロバイダの一覧や説明は [Version Provider](#version-provider)  を参照してください。
 
 ### バージョンの範囲を指定して適用する
 
@@ -273,7 +273,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 このような依存関係があるとバージョン更新時に意図しないアセットまで更新される可能性があるためです。  
 例えば **1.2.0** のバージョンのアセットAが **1.3.0** のバージョンのアセットBを参照していると、**1.2.0** までのバージョンをビルド後に **1.3.0** を含めてビルドした際に、アセットBだけでなくアセットAにまで更新が入ってしまいます。
 
-通常であればこのような依存関係は構築されないと思われますが、ご注意ください。
+通常であればこのような依存関係は構築されないと思われますが、注意してください。
 
 ### 独自のバージョン範囲表現を使う
 
@@ -295,10 +295,10 @@ Layout Rule Editor からは以下の手順で適用することができます�
 
 コマンドライン引数は以下の通りです。
 
-| 引数名                                   | 説明                                                    |
-|---------------------------------------|-------------------------------------------------------|
-| -layoutRuleAssetPath <assetPath>      | 適用するレイアウトルールデータのアセットパス。<br>指定されない場合は最初に見つかったものを使用します。 |
-| -versionExpression <versionExpression> | 設定する Version Expression。                              |
+| 引数名                               | 説明                                                    |
+|-----------------------------------|-------------------------------------------------------|
+| -layoutRuleAssetPath \<assetPath\> | 適用するレイアウトルールデータのアセットパス。<br>指定されない場合は最初に見つかったものを使用します。 |
+| -versionExpression \<versionExpression\> | 設定する Version Expression。                              |
 
 実行が完了すると自動的にUnityを終了し、戻り値として以下の値を返します。
 
@@ -319,9 +319,9 @@ Layout Rule Editor からは以下の手順で適用することができます�
 
 | 引数名                             | 説明                                                                                                      |
 |---------------------------------|---------------------------------------------------------------------------------------------------------|
-| -layoutRuleAssetPath <assetPath> | 適用するレイアウトルールデータのアセットパス。<br>指定されない場合は最初に見つかったものを使用します。                                                   |
+| -layoutRuleAssetPath \<assetPath\> | 適用するレイアウトルールデータのアセットパス。<br>指定されない場合は最初に見つかったものを使用します。                                                   |
 | -validate                       | このオプションを有効にした場合、反映する前にバリデーションが実行されます。<br>バリデーションは処理時間のかかるプロセスであるため、レイアウトルールに問題がないことが保証されている場合にはスキップできます。 |
-| -resultFilePath <filePath>      | バリデーション結果の出力ファイルパス。<br>デフォルトはSmartAddresser/validate_result.json。                                       |
+| -resultFilePath \<filePath\>      | バリデーション結果の出力ファイルパス。<br>デフォルトはSmartAddresser/validate_result.json。                                       |
 | -failWhenWarning                | このオプションを有効にした場合、バリデーションで警告が発生した場合に実行エラーとみなします。                                                          |
 
 実行が完了すると自動的にUnityを終了し、戻り値として以下の値を返します。
@@ -396,7 +396,7 @@ public static class Example
         // Set the address pattern of this rule.
         // In this case, set the asset name as the address.
         var addressProvider = new AssetPathBasedAddressProvider();
-        addressProvider.Source = PartialAssetPathType.AssetName;
+        addressProvider.Source = PartialAssetPathType.FileName;
         addressRule.AddressProvider.Value = addressProvider;
 
         return addressRule;
