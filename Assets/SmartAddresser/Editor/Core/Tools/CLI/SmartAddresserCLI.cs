@@ -54,7 +54,7 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                 var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
                 var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
 
-                if (options.DoValidate)
+                if (options.ShouldValidate)
                 {
                     // Build and validate the Layout.
                     var buildLayoutService = new BuildLayoutService(assetDatabaseAdapter);

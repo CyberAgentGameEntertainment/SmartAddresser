@@ -15,9 +15,7 @@ namespace SmartAddresser.Editor.Foundation
         public static string GetStringValue(string argName)
         {
             if (!TryGetStringValue(argName, out var value))
-            {
                 throw new InvalidOperationException($"Argument {argName} or its value is not found.");
-            }
 
             return value;
         }
@@ -52,9 +50,7 @@ namespace SmartAddresser.Editor.Foundation
             }
 
             if (!bool.TryParse(strValue, out value))
-            {
                 return false;
-            }
 
             return true;
         }
@@ -73,9 +69,7 @@ namespace SmartAddresser.Editor.Foundation
             }
 
             if (!int.TryParse(strValue, out value))
-            {
                 return false;
-            }
 
             return true;
         }
@@ -94,9 +88,7 @@ namespace SmartAddresser.Editor.Foundation
             }
 
             if (!float.TryParse(strValue, out value))
-            {
                 return false;
-            }
 
             return true;
         }
@@ -104,9 +96,7 @@ namespace SmartAddresser.Editor.Foundation
         private static string[] GetCommandLineArgs()
         {
             if (_args == null)
-            {
                 _args = Environment.GetCommandLineArgs().ToArray();
-            }
 
             return _args;
         }

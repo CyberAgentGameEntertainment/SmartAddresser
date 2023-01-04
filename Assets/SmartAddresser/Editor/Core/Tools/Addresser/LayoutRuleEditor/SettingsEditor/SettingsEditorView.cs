@@ -25,6 +25,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.SettingsEd
         public void Dispose()
         {
             _versionExpression.Dispose();
+            _excludeUnversioned.Dispose();
         }
 
         public void DoLayout()

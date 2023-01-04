@@ -5,13 +5,13 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
     public sealed class ApplyRulesCLIOptions
     {
         private const string LayoutRuleAssetPathArgName = "-layoutRuleAssetPath";
-        private const string DoValidateArgName = "-validate";
+        private const string ShouldValidateArgName = "-validate";
         private const string ResultFilePathArgName = "-resultFilePath";
         private const string FailWhenWarningArgName = "-failWhenWarning";
         private const string DefaultResultFilePathWithoutExtensions = "SmartAddresser/validate_result";
 
         public string LayoutRuleAssetPath { get; private set; }
-        public bool DoValidate { get; private set; }
+        public bool ShouldValidate { get; private set; }
         public string ResultFilePath { get; private set; }
         public bool FailWhenWarning { get; private set; }
 
@@ -29,7 +29,7 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
             options.ResultFilePath = resultFilePath;
 
             // Do Validate
-            options.DoValidate = CommandLineUtility.Contains(DoValidateArgName);
+            options.ShouldValidate = CommandLineUtility.Contains(ShouldValidateArgName);
 
             // Fail When Warning
             options.FailWhenWarning = CommandLineUtility.Contains(FailWhenWarningArgName);
