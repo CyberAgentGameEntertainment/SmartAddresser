@@ -88,7 +88,7 @@ Addressable アセットシステムでは、下図のようにアセットを *
 このアセットはプロジェクト内に複数作成可能です。  
 また **Editor** フォルダ配下の任意の場所に配置可能です。
 
-レイアウトデータアセットをダブルクリックするか Inspector から **Open Editor** ボタンを押下すると、**レイアウトルールエディタ**が開かれます。
+レイアウトデータアセットをダブルクリックするか Inspector から **Open Editor** ボタンを押下すると、**レイアウトルールエディタ**が開きます。
 
 <p align="center">
   <img width="80%" src="Documentation/Images/setup_rules_02.png" alt="Layout Rule Editor">
@@ -114,7 +114,7 @@ Addressable アセットシステムでは、下図のようにアセットを *
   <img width="80%" src="Documentation/Images/setup_rules_04.png" alt="Asset Groups">
 </p>
 
-**Object Filter** 以外のフィルタの詳細は [Asset Group の Asset Filter](https://www.notion.so/Asset-Group-Asset-Filter-e1aa8bde8b4341e58a8d75b6b628cebb) を参照してください。
+**Object Filter** 以外のフィルタの詳細は [Asset Group の Asset Filter](#asset-group-の-asset-filter) を参照してください。
 また、**Object Filter** は複数指定でき、**AND** 条件で判定されます。  
 **Add Asset Group** ボタンを押下すると **Asset Group** も追加でき、**Asset Group** 同士は **OR** 条件で判定されます。
 
