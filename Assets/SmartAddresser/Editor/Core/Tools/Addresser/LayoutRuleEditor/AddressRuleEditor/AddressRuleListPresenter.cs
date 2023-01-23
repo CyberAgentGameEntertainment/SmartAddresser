@@ -5,6 +5,8 @@ using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
+using UnityEditor;
+using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor
 {
@@ -13,10 +15,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
     /// </summary>
     internal sealed class AddressRuleListPresenter : IDisposable
     {
-        private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
-
         private readonly Dictionary<string, AddressRuleListTreeView.Item> _ruleIdToTreeViewItem =
             new Dictionary<string, AddressRuleListTreeView.Item>();
+
+        private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
 
         private readonly AddressRuleListView _view;
 
@@ -24,11 +26,13 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             IAssetSaveService saveService)
         {
             _view = view;
+            SetupViewEventHandlers();
         }
 
         public void Dispose()
         {
             CleanupView();
+            CleanupViewEventHandlers();
         }
 
         public void SetupView(IObservableList<AddressRule> rules)
@@ -76,6 +80,50 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             _view.TreeView.ClearItems();
             _view.TreeView.Reload();
             _ruleIdToTreeViewItem.Clear();
+        }
+
+        private void SetupViewEventHandlers()
+        {
+            _view.TreeView.RightClickMenuRequested += OnRightClickMenuRequested;
+        }
+
+        private void CleanupViewEventHandlers()
+        {
+            _view.TreeView.RightClickMenuRequested -= OnRightClickMenuRequested;
+        }
+
+        private GenericMenu OnRightClickMenuRequested()
+        {
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent("Copy Asset Groups Description"), false,
+                CopySelectedAssetGroupDescriptionAsText);
+            menu.AddItem(new GUIContent("Copy Address Rule Description"), false,
+                CopySelectedAddressRuleDescriptionAsText);
+            return menu;
+
+            #region Local methods
+
+            void CopySelectedAssetGroupDescriptionAsText()
+            {
+                var selections = _view.TreeView.GetSelection();
+                if (selections == null || selections.Count == 0) return;
+
+                var selection = selections[0];
+                var item = (AddressRuleListTreeView.Item)_view.TreeView.GetItem(selection);
+                GUIUtility.systemCopyBuffer = item.Rule.AssetGroupDescription.Value;
+            }
+
+            void CopySelectedAddressRuleDescriptionAsText()
+            {
+                var selections = _view.TreeView.GetSelection();
+                if (selections == null || selections.Count == 0) return;
+
+                var selection = selections[0];
+                var item = (AddressRuleListTreeView.Item)_view.TreeView.GetItem(selection);
+                GUIUtility.systemCopyBuffer = item.Rule.AddressProviderDescription.Value;
+            }
+
+            #endregion
         }
     }
 }

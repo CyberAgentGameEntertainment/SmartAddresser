@@ -15,6 +15,11 @@ namespace SmartAddresser.Editor.Foundation.AssetDatabaseAdapter
             return AssetDatabase.GUIDToAssetPath(guid);
         }
 
+        public string AssetPathToGUID(string assetPath)
+        {
+            return AssetDatabase.AssetPathToGUID(assetPath);
+        }
+
         public Type GetMainAssetTypeAtPath(string assetPath)
         {
             return AssetDatabase.GetMainAssetTypeAtPath(assetPath);

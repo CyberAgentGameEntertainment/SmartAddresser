@@ -7,6 +7,8 @@ namespace SmartAddresser.Editor.Foundation.AssetDatabaseAdapter
         string[] GetAllAssetPaths();
         
         string GUIDToAssetPath(string guid);
+        
+        string AssetPathToGUID(string assetPath);
 
         Type GetMainAssetTypeAtPath(string assetPath);
 

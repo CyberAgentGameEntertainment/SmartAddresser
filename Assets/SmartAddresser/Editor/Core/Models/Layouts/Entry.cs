@@ -16,7 +16,7 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         [SerializeField] private LayoutErrorType _errorType;
         [SerializeField] private string _messages;
         [SerializeField] private List<EntryError> _errors = new List<EntryError>();
-        
+
         [NonSerialized] private bool _isErrorTypeDirty = true;
         [NonSerialized] private bool _isMessagesDirty = true;
 
@@ -42,29 +42,7 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         {
             get
             {
-                if (_isErrorTypeDirty)
-                {
-                    _errorType = LayoutErrorType.None;
-                    for (int i = 0, errorCount = _errors.Count; i < errorCount; i++)
-                    {
-                        var error = _errors[i];
-                        switch (error.Type)
-                        {
-                            case EntryErrorType.Warning:
-                                if (_errorType == LayoutErrorType.None)
-                                    _errorType = LayoutErrorType.Warning;
-                                break;
-                            case EntryErrorType.Error:
-                                _errorType = LayoutErrorType.Error;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    }
-
-                    _isErrorTypeDirty = false;
-                }
-
+                UpdateErrorType();
                 return _errorType;
             }
         }
@@ -77,20 +55,7 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         {
             get
             {
-                if (_isMessagesDirty)
-                {
-                    _messages = null;
-                    for (int i = 0, errorCount = _errors.Count; i < errorCount; i++)
-                    {
-                        var error = _errors[i];
-                        if (!string.IsNullOrEmpty(_messages))
-                            _messages += Environment.NewLine;
-                        _messages += error.Message;
-                    }
-
-                    _isMessagesDirty = false;
-                }
-
+                UpdateMessages();
                 return _messages;
             }
         }
@@ -99,6 +64,49 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         ///     Warnings and errors of the entry.
         /// </summary>
         public List<EntryError> Errors => _errors;
+
+        internal void UpdateErrorType()
+        {
+            if (!_isErrorTypeDirty)
+                return;
+
+            _errorType = LayoutErrorType.None;
+            for (int i = 0, errorCount = _errors.Count; i < errorCount; i++)
+            {
+                var error = _errors[i];
+                switch (error.Type)
+                {
+                    case EntryErrorType.Warning:
+                        if (_errorType == LayoutErrorType.None)
+                            _errorType = LayoutErrorType.Warning;
+                        break;
+                    case EntryErrorType.Error:
+                        _errorType = LayoutErrorType.Error;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            _isErrorTypeDirty = false;
+        }
+
+        internal void UpdateMessages()
+        {
+            if (!_isMessagesDirty)
+                return;
+
+            _messages = null;
+            for (int i = 0, errorCount = _errors.Count; i < errorCount; i++)
+            {
+                var error = _errors[i];
+                if (!string.IsNullOrEmpty(_messages))
+                    _messages += Environment.NewLine;
+                _messages += error.Message;
+            }
+
+            _isMessagesDirty = false;
+        }
 
         internal void SetErrorTypeAndMessagesDirty()
         {

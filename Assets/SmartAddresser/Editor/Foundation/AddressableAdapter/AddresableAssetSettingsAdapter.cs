@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.AddressableAssets.Settings;
 
 namespace SmartAddresser.Editor.Foundation.AddressableAdapter
@@ -31,6 +33,18 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         public bool RemoveEntry(string guid)
         {
             return _settings.RemoveAssetEntry(guid);
+        }
+
+        /// <inheritdoc />
+        public void RemoveAllEntries(string groupName)
+        {
+            var group = _settings.groups.FirstOrDefault(x => x.Name == groupName);
+            if (group == null)
+                throw new InvalidOperationException($"Specified group '{groupName}' was not found.");
+
+            var entries = group.entries.ToArray();
+            foreach (var entry in entries)
+                group.RemoveAssetEntry(entry);
         }
 
         /// <inheritdoc />

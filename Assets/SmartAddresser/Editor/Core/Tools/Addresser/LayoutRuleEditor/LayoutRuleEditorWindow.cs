@@ -70,8 +70,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             var assetSaveService = new AssetSaveService();
             _view = new LayoutRuleEditorView(_addressTreeViewState, _labelTreeViewState, _versionTreeViewState,
                 _splitViewState, Repaint);
-            _presenter = new LayoutRuleEditorPresenter(_view, _history, assetSaveService,
-                new AddressableAssetSettingsRepository());
+            _presenter = new LayoutRuleEditorPresenter(_view, _history, assetSaveService);
             _presenter.SetupView(new LayoutRuleDataRepository());
         }
 

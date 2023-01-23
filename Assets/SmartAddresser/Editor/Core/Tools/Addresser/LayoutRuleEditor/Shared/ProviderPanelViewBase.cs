@@ -1,4 +1,5 @@
 using System;
+using SmartAddresser.Editor.Core.Tools.Shared;
 using SmartAddresser.Editor.Foundation.CustomDrawers;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using UnityEditor;

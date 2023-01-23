@@ -43,7 +43,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
                 {
                     var isActive = _tabType.Value == Tab.AssetGroups;
                     isActive = GUILayout.Toggle(isActive, "Asset Groups", EditorStyles.toolbarButton,
-                        GUILayout.Width(80));
+                        GUILayout.Width(110));
                     if (ccs.changed && isActive)
                         _tabType.Value = Tab.AssetGroups;
                 }
@@ -51,8 +51,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
                 using (var ccs = new EditorGUI.ChangeCheckScope())
                 {
                     var isActive = _tabType.Value == Tab.LabelRule;
-                    isActive = GUILayout.Toggle(isActive, "Label Rule", EditorStyles.toolbarButton,
-                        GUILayout.Width(80));
+                    isActive = GUILayout.Toggle(isActive, "Label Provider", EditorStyles.toolbarButton,
+                        GUILayout.Width(110));
                     if (ccs.changed && isActive)
                         _tabType.Value = Tab.LabelRule;
                 }

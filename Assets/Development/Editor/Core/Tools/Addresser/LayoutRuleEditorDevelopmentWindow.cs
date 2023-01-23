@@ -54,10 +54,7 @@ namespace Development.Editor.Core.Tools.Addresser
             var layoutDataLoadService = new FakeLayoutRuleDataRepository();
             layoutDataLoadService.AddData(layoutRuleData);
 
-            var addressableSettingsRepository = new FakeAddressableAssetSettingsRepository();
-            addressableSettingsRepository.DataSettingsMap.Add(layoutRuleData, settings);
-            _presenter = new LayoutRuleEditorPresenter(_view, _history, new FakeAssetSaveService(),
-                addressableSettingsRepository);
+            _presenter = new LayoutRuleEditorPresenter(_view, _history, new FakeAssetSaveService());
             _presenter.SetupView(layoutDataLoadService);
         }
 

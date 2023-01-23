@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.AddressableAssets.Settings;
 
 namespace SmartAddresser.Editor.Foundation.AddressableAdapter
 {
@@ -28,6 +29,11 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         /// <param name="guid">The  guid of the asset.</param>
         /// <returns>True if the entry was found and removed.</returns>
         bool RemoveEntry(string guid);
+
+        /// <summary>
+        ///     Remove all asset entries.
+        /// </summary>
+        void RemoveAllEntries(string groupName);
 
         /// <summary>
         ///     Gets the list of all defined labels.

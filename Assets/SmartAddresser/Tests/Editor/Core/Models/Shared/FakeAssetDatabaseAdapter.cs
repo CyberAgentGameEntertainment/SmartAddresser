@@ -22,6 +22,12 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared
             return entry?.AssetPath;
         }
 
+        public string AssetPathToGUID(string assetPath)
+        {
+            var entry = _entries.FirstOrDefault(x => x.AssetPath == assetPath);
+            return entry?.Guid;
+        }
+
         public Type GetMainAssetTypeAtPath(string assetPath)
         {
             var entry = _entries.FirstOrDefault(x => x.AssetPath == assetPath);

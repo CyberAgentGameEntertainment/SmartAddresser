@@ -31,14 +31,14 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetType = typeof(ScriptableObject);
             const bool isFolder = false;
 
-            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.AssetName);
+            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.FileName);
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.Execute(assetGuid, true);
+            var result = service.TryAddEntry(assetGuid, true);
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(result, Is.True);
             Assert.That(assetEntry, Is.Not.Null);
@@ -53,7 +53,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetType = typeof(ScriptableObject);
             const bool isFolder = false;
 
-            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.AssetName);
+            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.FileName);
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
@@ -61,7 +61,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             service.Setup();
-            var result = service.Execute(assetGuid, false);
+            var result = service.TryAddEntry(assetGuid, false);
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(result, Is.True);
             Assert.That(assetEntry, Is.Not.Null);
@@ -77,14 +77,14 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             const bool isFolder = false;
 
             var layoutRule = CreateLayoutRule(TestAddressableGroupName, "Assets/NotMatchedAssetPath.asset",
-                PartialAssetPathType.AssetName);
+                PartialAssetPathType.FileName);
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.Execute(assetGuid, true);
+            var result = service.TryAddEntry(assetGuid, true);
             Assert.That(result, Is.False);
         }
 
@@ -96,14 +96,14 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             const bool isFolder = false;
 
             var layoutRule =
-                CreateLayoutRule((AddressableAssetGroup)null, TestAssetPath, PartialAssetPathType.AssetName);
+                CreateLayoutRule((AddressableAssetGroup)null, TestAssetPath, PartialAssetPathType.FileName);
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.Execute(assetGuid, true);
+            var result = service.TryAddEntry(assetGuid, true);
             Assert.That(result, Is.False);
         }
 
@@ -114,7 +114,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetType = typeof(ScriptableObject);
             const bool isFolder = false;
 
-            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.AssetName,
+            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.FileName,
                 version: "1.2.3");
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
@@ -122,7 +122,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.Execute(assetGuid, true, "[1.2.3,1.2.4)");
+            var result = service.TryAddEntry(assetGuid, true, "[1.2.3,1.2.4)");
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(result, Is.True);
             Assert.That(assetEntry, Is.Not.Null);
@@ -137,7 +137,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetType = typeof(ScriptableObject);
             const bool isFolder = false;
 
-            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.AssetName,
+            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.FileName,
                 version: "1.2.3");
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
@@ -145,7 +145,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.Execute(assetGuid, true, "(1.2.3,1.3)");
+            var result = service.TryAddEntry(assetGuid, true, "(1.2.3,1.3)");
             Assert.That(result, Is.False);
         }
 
@@ -156,7 +156,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var assetType = typeof(ScriptableObject);
             const bool isFolder = false;
 
-            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.AssetName,
+            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.FileName,
                 version: "1.2.3");
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
@@ -164,7 +164,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            Assert.That(() => service.Execute(assetGuid, true, "(1.2.3, 1.3)"), Throws.InstanceOf<Exception>());
+            Assert.That(() => service.TryAddEntry(assetGuid, true, "(1.2.3, 1.3)"), Throws.InstanceOf<Exception>());
         }
 
         [Test]
@@ -175,7 +175,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             const bool isFolder = false;
             const string LabelName = "TestLabel";
 
-            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.AssetName,
+            var layoutRule = CreateLayoutRule(TestAddressableGroupName, TestAssetPath, PartialAssetPathType.FileName,
                 LabelName);
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
@@ -183,7 +183,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.Execute(assetGuid, true);
+            var result = service.TryAddEntry(assetGuid, true);
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(result, Is.True);
             Assert.That(assetEntry, Is.Not.Null);

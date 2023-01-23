@@ -1,5 +1,6 @@
 using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
+using SmartAddresser.Editor.Core.Tools.Shared;
 using SmartAddresser.Editor.Foundation.EasyTreeView;
 using SmartAddresser.Editor.Foundation.EditorSplitView;
 using SmartAddresser.Editor.Foundation.TinyRx;
