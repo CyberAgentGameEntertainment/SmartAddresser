@@ -191,10 +191,12 @@ Layout Rule Editor からは以下の手順で適用することができます�
   <img width="80%" src="Documentation/Images/apply_01.png" alt="Apply by Editor">
 </p>
 
-### エディタ操作中に自動的に適用する
+### ルールを自動的に適用する
+**Project Settings** の **Primary Data** に **Layout Rule Data** を設定すると、アセットがインポートされた際やルールが編集された際に、そのルールが自動的に **Addressable** アセットシステムに適用されます。
 
-> **Warning**  
-> これから実装予定です
+<p align="center">
+  <img width="80%" src="Documentation/Images/apply_02.png" alt="Apply Automatically">
+</p>
 
 ### CLIで適用する
 
@@ -557,8 +559,79 @@ public static class Example
 
 ## 独自のアセットフィルタ、プロバイダを作成する
 
-> **Warning**
-> 後で書きます
+### 独自のアセットフィルタを作成する
+独自のアセットフィルタを作成するにはまず **AssetFilterAsset** を継承したクラスを作成します。
+
+```cs
+using System;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
+
+public sealed class ExampleAssetFilter : AssetFilterAsset
+{
+    public override void SetupForMatching()
+    {
+        // IsMatchの前に呼ばれる処理
+        // IsMatchがアセットごとに呼ばれるのに対して、この処理は一度だけ呼ばれる
+        // したがって重い処理はここで行う
+    }
+
+    public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
+    {
+        // 引数に与えられたアセットがこのフィルタにマッチしていたらtrueを返す
+    }
+
+    public override string GetDescription()
+    {
+        // このフィルタの状態を文字列で返す（エディタ用）
+    }
+}
+```
+
+次にこのクラスの **ScriptableObject** アセットを作成します（**AssetFilterAsset** は **ScriptableObject** を継承しています）。
+
+最後に **Layout Rule Editor** の **Asset Group** に **Example Asset Filter** を追加し、**Asset Filter** プロパティに先ほど作った **ScriptableObject** をアサインすれば完了です。
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/custom_filter_provider_01.png" alt="Custom Asset Filter">
+</p>
+
+### 独自のプロバイダを作成する
+独自のプロバイダを作成するにはまず、**AddressProviderAsset** / **LabelProviderAsset** / **VersionProviderAsset** のいずれかを継承したクラスを実装します。
+
+```cs
+using System;
+using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
+using UnityEngine;
+
+public sealed class ExampleAddressProvider : AddressProviderAsset
+{
+    public override void Setup()
+    {
+        // Provideの前に呼ばれる処理
+        // Provideがアセットごとに呼ばれるのに対して、この処理は一度だけ呼ばれる
+        // したがって重い処理はここで行う
+    }
+
+    public override string Provide(string assetPath, Type assetType, bool isFolder)
+    {
+        // 引数に与えられたアセットに対応するアドレスを返す
+        // 該当するアドレスが無い場合にはnullを返す
+    }
+
+    public override string GetDescription()
+    {
+        // このフィルタの状態を文字列で返す（エディタ用）
+    }
+}
+```
+
+次にこのクラスの **ScriptableObject** アセットを作成します（各**ProviderAsset** は **ScriptableObject** を継承しています）。
+
+最後に **Layout Rule Editor** の 各 **Provider** の **Change Provider** ボタンを押下してから **Custom Provider** を選択し、**Address Provider** プロパティに先ほど作った **ScriptableObject** をアサインすれば完了です。
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/custom_filter_provider_02.png" alt="Custom Provider">
+</p>
 
 ## ライセンス
 本ソフトウェアはMITライセンスで公開しています。  
