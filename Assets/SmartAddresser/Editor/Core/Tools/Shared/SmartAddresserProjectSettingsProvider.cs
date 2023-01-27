@@ -1,5 +1,10 @@
 using System.Collections.Generic;
+using SmartAddresser.Editor.Core.Models.LayoutRules;
+using SmartAddresser.Editor.Core.Models.Services;
+using SmartAddresser.Editor.Foundation.AddressableAdapter;
+using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Shared
@@ -25,6 +30,36 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
             using (new GUIScope())
             {
                 var projectSettings = SmartAddresserProjectSettings.instance;
+
+                using (var ccs = new EditorGUI.ChangeCheckScope())
+                {
+                    var oldData = projectSettings.PrimaryData;
+                    projectSettings.PrimaryData =
+                        (LayoutRuleData)EditorGUILayout.ObjectField("Primary Data",
+                            projectSettings.PrimaryData,
+                            typeof(LayoutRuleData), false);
+
+                    if (ccs.changed && projectSettings.PrimaryData != null)
+                    {
+                        if (EditorUtility.DisplayDialog("Confirmation",
+                                "If you change the Primary Data, it will be applied immediately. Do you want change it?",
+                                "OK", "Cancel"))
+                        {
+                            var layoutRule = projectSettings.PrimaryData.LayoutRule;
+                            var versionExpressionParser = new VersionExpressionParserRepository().Load();
+                            var assetDatabaseAdapter = new AssetDatabaseAdapter();
+                            var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
+                            var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
+                            var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
+                                addressableSettingsAdapter, assetDatabaseAdapter);
+                            applyService.UpdateAllEntries();
+                        }
+                        else
+                        {
+                            projectSettings.PrimaryData = oldData;
+                        }
+                    }
+                }
 
                 projectSettings.VersionExpressionParser =
                     (MonoScript)EditorGUILayout.ObjectField("Version Expression Paraser",

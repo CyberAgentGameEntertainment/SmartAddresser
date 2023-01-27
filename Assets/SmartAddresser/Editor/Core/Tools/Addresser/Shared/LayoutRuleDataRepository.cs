@@ -9,8 +9,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
 {
     public sealed class LayoutRuleDataRepository : ILayoutRuleDataRepository
     {
-        public IReadOnlyObservableProperty<LayoutRuleData> ActiveData
-            => SmartAddresserPreferences.instance.ActiveLayoutRuleData;
+        public LayoutRuleData PrimaryData => SmartAddresserProjectSettings.instance.PrimaryData;
+
+        public IReadOnlyObservableProperty<LayoutRuleData> EditingData =>
+            SmartAddresserPreferences.instance.EditingData;
 
         public IReadOnlyList<LayoutRuleData> LoadAll()
         {
@@ -23,14 +25,14 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
                 .ToArray();
         }
 
-        public void SetActiveData(LayoutRuleData data)
+        public void SetEditingData(LayoutRuleData data)
         {
-            SmartAddresserPreferences.instance.SetActiveLayoutRuleData(data);
+            SmartAddresserPreferences.instance.SetEditingData(data);
         }
 
-        public void SetActiveDataAndNotNotify(LayoutRuleData data)
+        public void SetEditingDataAndNotNotify(LayoutRuleData data)
         {
-            SmartAddresserPreferences.instance.SetActiveLayoutRuleDataAndNotNotify(data);
+            SmartAddresserPreferences.instance.SetEditingDataAndNotNotify(data);
         }
     }
 }

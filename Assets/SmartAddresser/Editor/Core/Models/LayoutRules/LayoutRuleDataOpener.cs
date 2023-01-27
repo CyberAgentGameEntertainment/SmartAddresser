@@ -15,7 +15,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             if (asset is LayoutRuleData data)
             {
                 var repository = new LayoutRuleDataRepository();
-                repository.SetActiveData(data);
+                repository.SetEditingData(data);
                 LayoutRuleEditorWindow.Open();
                 return true;
             }

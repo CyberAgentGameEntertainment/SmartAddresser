@@ -8,30 +8,30 @@ namespace Development.Editor.Core.Tools.Addresser.Shared
 {
     internal sealed class FakeLayoutRuleDataRepository : ILayoutRuleDataRepository
     {
-        private readonly ObservableProperty<LayoutRuleData> _activeData = new ObservableProperty<LayoutRuleData>();
+        private readonly ObservableProperty<LayoutRuleData> _editingData = new ObservableProperty<LayoutRuleData>();
         private readonly List<LayoutRuleData> _dataList = new List<LayoutRuleData>();
 
-        public IReadOnlyObservableProperty<LayoutRuleData> ActiveData => _activeData;
+        public IReadOnlyObservableProperty<LayoutRuleData> EditingData=> _editingData;
 
         public IReadOnlyList<LayoutRuleData> LoadAll()
         {
             return _dataList;
         }
 
-        public void SetActiveData(LayoutRuleData data)
+        public void SetEditingData(LayoutRuleData data)
         {
-            _activeData.Value = data;
+            _editingData.Value = data;
         }
 
-        public void SetActiveDataAndNotNotify(LayoutRuleData data)
+        public void SetEditingDataAndNotNotify(LayoutRuleData data)
         {
-            _activeData.SetValueAndNotNotify(data);
+            _editingData.SetValueAndNotNotify(data);
         }
 
         public void AddData(LayoutRuleData data)
         {
             if (_dataList.Count == 0)
-                SetActiveData(data);
+                SetEditingData(data);
             _dataList.Add(data);
         }
     }

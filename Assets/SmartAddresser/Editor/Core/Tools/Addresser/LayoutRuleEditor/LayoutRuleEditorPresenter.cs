@@ -26,13 +26,13 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
     /// </summary>
     internal sealed class LayoutRuleEditorPresenter : IDisposable
     {
-        private readonly ObservableProperty<LayoutRuleData> _activeData = new ObservableProperty<LayoutRuleData>();
         private readonly AddressRuleEditorPresenter _addressRuleEditorPresenter;
         private readonly IAssetSaveService _assetSaveService;
+        private readonly ObservableProperty<LayoutRuleData> _editingData = new ObservableProperty<LayoutRuleData>();
         private readonly LabelRuleEditorPresenter _labelRuleEditorPresenter;
+        private readonly SettingsEditorPresenter _settingsEditorPresenter;
         private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
         private readonly VersionRuleEditorPresenter _versionRuleEditorPresenter;
-        private readonly SettingsEditorPresenter _settingsEditorPresenter;
         private readonly LayoutRuleEditorView _view;
         private readonly CompositeDisposable _viewEventDisposables = new CompositeDisposable();
         private AddressableAssetSettings _addressableAssetSettings;
@@ -57,7 +57,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             SetupViewEventHandlers();
         }
 
-        public IReadOnlyObservableProperty<LayoutRuleData> ActiveData => _activeData;
+        public IReadOnlyObservableProperty<LayoutRuleData> EditingData => _editingData;
 
         public void Dispose()
         {
@@ -67,14 +67,14 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             _settingsEditorPresenter.Dispose();
             CleanupView();
             CleanupViewEventHandlers();
-            _activeData.Dispose();
+            _editingData.Dispose();
         }
 
         public void SetupView(ILayoutRuleDataRepository dataRepository)
         {
             _setupViewDisposables.Clear();
             _dataRepository = dataRepository;
-            dataRepository.ActiveData
+            dataRepository.EditingData
                 .Subscribe(SetupActiveView)
                 .DisposeWith(_setupViewDisposables);
         }
@@ -86,12 +86,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             if (data == null)
             {
                 _view.ActiveMode.Value = LayoutRuleEditorView.Mode.Create;
-                _activeData.Value = null;
+                _editingData.Value = null;
                 _assetSaveService.SetAsset(data);
                 return;
             }
 
-            if (data == _activeData.Value)
+            if (data == _editingData.Value)
                 return;
 
             var addressableAssetSettings = AddressableAssetSettingsDefaultObject.Settings;
@@ -99,16 +99,16 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             if (addressableAssetSettings == null)
             {
                 _view.ActiveMode.Value = LayoutRuleEditorView.Mode.NoAddressableSettings;
-                _activeData.Value = null;
+                _editingData.Value = null;
                 _assetSaveService.SetAsset(data);
                 return;
             }
 
-            _activeData.Value = data;
+            _editingData.Value = data;
             _assetSaveService.SetAsset(data);
 
-            data.LayoutRule.SyncAddressRulesWithAddressableAssetGroups(addressableAssetSettings.groups);
-            _assetSaveService.MarkAsDirty();
+            if (data.LayoutRule.SyncAddressRulesWithAddressableAssetGroups(addressableAssetSettings.groups))
+                _assetSaveService.MarkAsDirty();
 
             _addressRuleEditorPresenter.SetupView(data.LayoutRule.AddressRules);
             _labelRuleEditorPresenter.SetupView(data.LayoutRule.LabelRules);
@@ -130,7 +130,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 || e == AddressableAssetSettings.ModificationEvent.GroupRemoved
                 || e == AddressableAssetSettings.ModificationEvent.GroupRenamed)
                 // If the addressable asset group is changed, reload.
-                SetupActiveView(_activeData.Value);
+                SetupActiveView(_editingData.Value);
         }
 
         public void CleanupView()
@@ -150,7 +150,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 _addressableAssetSettings.OnModification -= OnAddressableAssetSettingsModified;
             _addressableAssetSettings = null;
             _view.ActiveMode.Value = LayoutRuleEditorView.Mode.Create;
-            _activeData.Value = null;
+            _editingData.Value = null;
             _didSetupView = false;
         }
 
@@ -177,7 +177,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             void OnBeforeLayout()
             {
                 // If the LayoutRuleData asset was deleted, set the first data instead.
-                if (_activeData.Value == null)
+                if (_editingData.Value == null)
                 {
                     var data = _dataRepository.LoadAll().FirstOrDefault();
                     if (data == null)
@@ -187,7 +187,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                     else
                     {
                         SetupActiveView(data);
-                        _dataRepository.SetActiveData(data);
+                        _dataRepository.SetEditingData(data);
                     }
                 }
 
@@ -195,12 +195,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 // If the AddressableAssetSettings asset was deleted, reload.
                 if (_view.ActiveMode.Value != LayoutRuleEditorView.Mode.NoAddressableSettings
                     && addressableAssetSettings == null)
-                    SetupActiveView(_activeData.Value);
+                    SetupActiveView(_editingData.Value);
 
                 // If the AddressableAssetSettings asset was created, reload.
                 if (_view.ActiveMode.Value == LayoutRuleEditorView.Mode.NoAddressableSettings
                     && addressableAssetSettings != null)
-                    SetupActiveView(_activeData.Value);
+                    SetupActiveView(_editingData.Value);
             }
 
             void OnAssetSelectButtonClicked()
@@ -212,7 +212,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
                 var sourceAssets = _dataRepository.LoadAll().ToList();
                 var sourceAssetNames = sourceAssets.Select(y => y.name).ToArray();
-                var activeSourceAssetIndex = sourceAssets.IndexOf(_activeData.Value);
+                var activeSourceAssetIndex = sourceAssets.IndexOf(_editingData.Value);
                 if (activeSourceAssetIndex == -1)
                     activeSourceAssetIndex = 0;
 
@@ -225,7 +225,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                     {
                         var asset = sourceAssets[idx];
                         SetupActiveView(asset);
-                        _dataRepository.SetActiveData(asset);
+                        _dataRepository.SetEditingData(asset);
                     });
                 }
 
@@ -242,7 +242,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 menu.AddItem(new GUIContent("Apply to Addressables"), false, () =>
                 {
                     // Apply the layout rules to the addressable asset system.
-                    var layoutRule = _activeData.Value.LayoutRule;
+                    var layoutRule = _editingData.Value.LayoutRule;
                     var versionExpressionParser = new VersionExpressionParserRepository().Load();
                     var assetDatabaseAdapter = new AssetDatabaseAdapter();
                     var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
@@ -263,7 +263,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                     $"{nameof(LayoutRuleData)}", "asset", "", "Assets");
                 if (string.IsNullOrEmpty(assetPath))
                     return;
-                
+
                 var asset = ScriptableObject.CreateInstance<LayoutRuleData>();
                 AssetDatabase.CreateAsset(asset, assetPath);
                 SetupActiveView(asset);

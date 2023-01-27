@@ -6,12 +6,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
 {
     public interface ILayoutRuleDataRepository
     {
-        IReadOnlyObservableProperty<LayoutRuleData> ActiveData { get; }
+        IReadOnlyObservableProperty<LayoutRuleData> EditingData { get; }
 
         IReadOnlyList<LayoutRuleData> LoadAll();
 
-        void SetActiveData(LayoutRuleData data);
+        void SetEditingData(LayoutRuleData data);
 
-        void SetActiveDataAndNotNotify(LayoutRuleData data);
+        void SetEditingDataAndNotNotify(LayoutRuleData data);
     }
 }

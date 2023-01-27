@@ -9,25 +9,25 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
     public sealed class SmartAddresserPreferences : ScriptableSingleton<SmartAddresserPreferences>
     {
         [SerializeField]
-        private ObservableProperty<LayoutRuleData> _activeLayoutRuleData = new ObservableProperty<LayoutRuleData>();
+        private ObservableProperty<LayoutRuleData> editingData = new ObservableProperty<LayoutRuleData>();
 
-        public IReadOnlyObservableProperty<LayoutRuleData> ActiveLayoutRuleData => _activeLayoutRuleData;
+        public IReadOnlyObservableProperty<LayoutRuleData> EditingData => editingData;
 
-        public void SetActiveLayoutRuleData(LayoutRuleData value)
+        public void SetEditingData(LayoutRuleData value)
         {
-            if (value == _activeLayoutRuleData.Value)
+            if (value == editingData.Value)
                 return;
 
-            _activeLayoutRuleData.Value = value;
+            editingData.Value = value;
             Save(true);
         }
 
-        public void SetActiveLayoutRuleDataAndNotNotify(LayoutRuleData value)
+        public void SetEditingDataAndNotNotify(LayoutRuleData value)
         {
-            if (value == _activeLayoutRuleData.Value)
+            if (value == editingData.Value)
                 return;
 
-            _activeLayoutRuleData.SetValueAndNotNotify(value);
+            editingData.SetValueAndNotNotify(value);
             Save(true);
         }
     }

@@ -1,10 +1,16 @@
+using SmartAddresser.Editor.Core.Models.Services;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
+using SmartAddresser.Editor.Core.Tools.Shared;
+using SmartAddresser.Editor.Foundation.AddressableAdapter;
+using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.EditorSplitView;
+using SmartAddresser.Editor.Foundation.TinyRx;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
@@ -19,8 +25,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         [SerializeField] private EditorGUILayoutSplitViewState _splitViewState;
 
         private readonly AutoIncrementHistory _history = new AutoIncrementHistory();
+        private bool _hasAnyDataChanged;
 
         private LayoutRuleEditorPresenter _presenter;
+        private CompositeDisposable _setupDisposables;
         private LayoutRuleEditorView _view;
 
         private void OnEnable()
@@ -33,6 +41,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         {
             _presenter?.Dispose();
             _view?.Dispose();
+            _setupDisposables?.Dispose();
         }
 
         private void OnGUI()
@@ -53,8 +62,35 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             _view.DoLayout();
         }
 
+        private void OnLostFocus()
+        {
+            if (focusedWindow is PopupWindow)
+                return;
+
+            // If any of data has been changed, apply it to addressable asset system.
+            if (_hasAnyDataChanged)
+            {
+                var projectSettings = SmartAddresserProjectSettings.instance;
+                var primaryData = projectSettings.PrimaryData;
+                if (primaryData != null)
+                {
+                    var layoutRule = primaryData.LayoutRule;
+                    var versionExpressionParser = new VersionExpressionParserRepository().Load();
+                    var assetDatabaseAdapter = new AssetDatabaseAdapter();
+                    var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
+                    var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
+                    var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
+                        addressableSettingsAdapter, assetDatabaseAdapter);
+                    applyService.UpdateAllEntries();
+                }
+
+                _hasAnyDataChanged = false;
+            }
+        }
+
         private void Setup()
         {
+            _setupDisposables = new CompositeDisposable();
             _presenter?.Dispose();
             _view?.Dispose();
 
@@ -68,6 +104,21 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 _splitViewState = new EditorGUILayoutSplitViewState(LayoutDirection.Horizontal, 0.75f);
 
             var assetSaveService = new AssetSaveService();
+
+            // Observes that any data has changed.
+            assetSaveService.IsDirty
+                .Subscribe(x =>
+                {
+                    var projectSettings = SmartAddresserProjectSettings.instance;
+                    if (x
+                        && !_hasAnyDataChanged
+                        && assetSaveService.Asset != null
+                        && assetSaveService.Asset == projectSettings.PrimaryData)
+                        _hasAnyDataChanged = true;
+                })
+                .DisposeWith(_setupDisposables);
+
+            // Set up presenter and view.
             _view = new LayoutRuleEditorView(_addressTreeViewState, _labelTreeViewState, _versionTreeViewState,
                 _splitViewState, Repaint);
             _presenter = new LayoutRuleEditorPresenter(_view, _history, assetSaveService);

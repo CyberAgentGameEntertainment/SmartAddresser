@@ -18,7 +18,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
     /// </summary>
     internal sealed class LayoutViewerPresenter : IDisposable
     {
-        private readonly ObservableProperty<LayoutRuleData> _activeData = new ObservableProperty<LayoutRuleData>();
+        private readonly ObservableProperty<LayoutRuleData> _editingData = new ObservableProperty<LayoutRuleData>();
         private readonly BuildLayoutService _buildLayoutService;
         private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
         private readonly LayoutViewerView _view;
@@ -36,14 +36,14 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             SetupViewEventHandlers();
         }
 
-        public IReadOnlyObservableProperty<LayoutRuleData> ActiveData => _activeData;
+        public IReadOnlyObservableProperty<LayoutRuleData> EditingData => _editingData;
 
         public void Dispose()
         {
             CleanupView();
             CleanupViewEventHandlers();
 
-            _activeData.Dispose();
+            _editingData.Dispose();
         }
 
         private void AddGroupView(Group group, bool reload = true)
@@ -57,7 +57,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
         {
             _setupViewDisposables.Clear();
             _dataRepository = dataRepository;
-            dataRepository.ActiveData
+            dataRepository.EditingData
                 .Subscribe(SetupActiveView)
                 .DisposeWith(_setupViewDisposables);
         }
@@ -68,16 +68,16 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
             if (data == null)
             {
-                _activeData.Value = null;
+                _editingData.Value = null;
                 return;
             }
 
-            if (data == _activeData.Value)
+            if (data == _editingData.Value)
                 return;
 
-            _activeData.Value = data;
+            _editingData.Value = data;
 
-            var layout = _buildLayoutService.Execute(_activeData.Value.LayoutRule);
+            var layout = _buildLayoutService.Execute(_editingData.Value.LayoutRule);
             layout.Validate();
             _layout = layout;
             foreach (var group in layout.Groups)
@@ -101,7 +101,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             _view.TreeView.ClearItems();
             _view.TreeView.Reload();
             _layout = null;
-            _activeData.Value = null;
+            _editingData.Value = null;
             _view.ActiveMode.Value = LayoutViewerView.Mode.Empty;
 
             _didSetupView = false;
@@ -128,7 +128,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             void OnBeforeLayout()
             {
                 // If the LayoutRuleData asset was deleted, set the first data instead.
-                if (_activeData.Value == null)
+                if (_editingData.Value == null)
                 {
                     var data = _dataRepository.LoadAll().FirstOrDefault();
                     if (data == null)
@@ -138,7 +138,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     else
                     {
                         SetupActiveView(data);
-                        _dataRepository.SetActiveData(data);
+                        _dataRepository.SetEditingData(data);
                     }
                 }
             }
@@ -152,7 +152,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
                 var sourceAssets = _dataRepository.LoadAll().ToArray();
                 var sourceAssetNames = sourceAssets.Select(y => y.name).ToArray();
-                var activeSourceAssetIndex = Array.IndexOf(sourceAssets, _activeData.Value);
+                var activeSourceAssetIndex = Array.IndexOf(sourceAssets, _editingData.Value);
                 if (activeSourceAssetIndex == -1)
                     activeSourceAssetIndex = 0;
 
@@ -165,7 +165,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     {
                         var asset = sourceAssets[idx];
                         SetupActiveView(asset);
-                        _dataRepository.SetActiveData(asset);
+                        _dataRepository.SetEditingData(asset);
                     });
                 }
 
@@ -174,7 +174,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
             void OnRefreshButtonClicked()
             {
-                var layout = _buildLayoutService.Execute(_activeData.Value.LayoutRule);
+                var layout = _buildLayoutService.Execute(_editingData.Value.LayoutRule);
                 layout.Validate();
                 _layout = layout;
 
