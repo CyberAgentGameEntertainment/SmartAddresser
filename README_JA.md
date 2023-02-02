@@ -192,7 +192,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 </p>
 
 ### ルールを自動的に適用する
-**Project Settings** の **Primary Data** に **Layout Rule Data** を設定すると、アセットがインポートされた際やルールが編集された際に、そのルールが自動的に **Addressable** アセットシステムに適用されます。
+**Project Settings > Smart Addresser** の **Primary Data** に **Layout Rule Data** を設定すると、アセットがインポートされた際やルールが編集された際に、そのルールが自動的に **Addressable** アセットシステムに適用されます。
 
 <p align="center">
   <img width="80%" src="Documentation/Images/apply_02.png" alt="Apply Automatically">
