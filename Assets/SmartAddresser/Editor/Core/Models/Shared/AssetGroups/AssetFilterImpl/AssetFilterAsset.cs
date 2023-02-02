@@ -5,7 +5,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
 {
     public abstract class AssetFilterAsset : ScriptableObject, IAssetFilter
     {
-        public string Id => throw new InvalidOperationException();
+        string IAssetFilter.Id => throw new InvalidOperationException();
 
         /// <inheritdoc />
         public abstract void SetupForMatching();
