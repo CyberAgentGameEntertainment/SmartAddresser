@@ -43,12 +43,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                 for (var i = 0; i < addressableGroups.Count; i++)
                 {
                     var addressableGroup = addressableGroups[i];
-                    if (_addressRules.Count <= i)
-                    {
-                        isDirty = true;
-                        break;
-                    }
-                
                     var addressRule = _addressRules[i];
                     if (addressRule.AddressableGroup == null || addressRule.AddressableGroup != addressableGroup)
                     {
