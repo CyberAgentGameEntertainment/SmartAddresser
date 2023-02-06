@@ -29,8 +29,32 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         ///     <para>* Remove address rules that hold addressable groups that no longer exists.</para>
         ///     <para>* Order address group by addressable group.</para>
         /// </summary>
-        public void SyncAddressRulesWithAddressableAssetGroups(List<AddressableAssetGroup> addressableGroups)
+        /// <param name="addressableGroups"></param>
+        /// <returns>If true, address rules have been changed.</returns>
+        public bool SyncAddressRulesWithAddressableAssetGroups(List<AddressableAssetGroup> addressableGroups)
         {
+            var isDirty = false;
+            if (addressableGroups.Count != _addressRules.Count)
+            {
+                isDirty = true;
+            }
+            else
+            {
+                for (var i = 0; i < addressableGroups.Count; i++)
+                {
+                    var addressableGroup = addressableGroups[i];
+                    var addressRule = _addressRules[i];
+                    if (addressRule.AddressableGroup == null || addressRule.AddressableGroup != addressableGroup)
+                    {
+                        isDirty = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isDirty)
+                return false;
+            
             var newList = new List<AddressRule>();
             foreach (var addressableGroup in addressableGroups)
             {
@@ -42,6 +66,8 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             _addressRules.Clear();
             foreach (var addressRule in newList)
                 _addressRules.Add(addressRule);
+
+            return true;
         }
 
         public void SetupForAddress()

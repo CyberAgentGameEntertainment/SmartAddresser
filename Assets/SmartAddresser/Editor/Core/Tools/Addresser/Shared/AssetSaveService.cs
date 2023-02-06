@@ -1,16 +1,14 @@
 using System;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
-using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
 {
     internal sealed class AssetSaveService : IAssetSaveService, IDisposable
     {
+        private readonly ObservableProperty<bool> _isDirty = new ObservableProperty<bool>();
         private readonly Foundation.AssetSaveService _saveService = new Foundation.AssetSaveService();
-
-        private ObservableProperty<bool> _isDirty;
         private bool _saveReserved;
 
         public AssetSaveService()
@@ -20,20 +18,18 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
 
         public void SetAsset(Object asset)
         {
-            if (Asset != null)
-            {
-                if (_saveReserved)
-                    SaveImmediate();
+            // Save asset if dirty.
+            if (EditorUtility.IsDirty(asset))
+                _saveService.Run(asset);
 
-                _isDirty.Dispose();
-            }
-            _isDirty = new ObservableProperty<bool>(EditorUtility.IsDirty(asset));
+            if (Asset != null && _saveReserved)
+                SaveImmediate();
+
+            _isDirty.Value = EditorUtility.IsDirty(asset);
             Asset = asset;
         }
 
         public Object Asset { get; private set; }
-
-        public int SaveIntervalFrame { get; set; } = 10;
 
         public IReadOnlyObservableProperty<bool> IsDirty => _isDirty;
 
@@ -41,7 +37,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
         {
             if (Asset == null)
                 return;
-            
+
             MarkAsDirty();
             _saveReserved = true;
         }
@@ -50,7 +46,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
         {
             if (Asset == null)
                 return;
-            
+
             MarkAsDirty();
             _saveService.Run(Asset);
         }
@@ -59,7 +55,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
         {
             if (Asset == null)
                 return;
-            
+
             EditorUtility.SetDirty(Asset);
         }
 
@@ -67,7 +63,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
         {
             if (Asset == null)
                 return;
-            
+
             EditorUtility.ClearDirty(Asset);
         }
 
@@ -84,10 +80,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
         {
             if (Asset == null)
                 return;
-            
+
             CheckIsDirty();
 
-            if (_saveReserved && Time.frameCount % SaveIntervalFrame == 0)
+            if (_saveReserved)
             {
                 SaveImmediate();
                 _saveReserved = false;
@@ -96,6 +92,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
 
         private void CheckIsDirty()
         {
+            if (Asset == null)
+                return;
+
             var isDirty = EditorUtility.IsDirty(Asset);
             if (isDirty != _isDirty.Value)
                 _isDirty.Value = isDirty;

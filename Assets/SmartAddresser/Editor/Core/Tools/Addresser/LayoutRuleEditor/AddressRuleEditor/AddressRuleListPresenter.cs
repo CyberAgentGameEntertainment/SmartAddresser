@@ -15,6 +15,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
     /// </summary>
     internal sealed class AddressRuleListPresenter : IDisposable
     {
+        private readonly IAssetSaveService _assetSaveService;
+
+        private readonly Dictionary<string, CompositeDisposable> _perRuleDisposables =
+            new Dictionary<string, CompositeDisposable>();
+
         private readonly Dictionary<string, AddressRuleListTreeView.Item> _ruleIdToTreeViewItem =
             new Dictionary<string, AddressRuleListTreeView.Item>();
 
@@ -26,6 +31,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             IAssetSaveService saveService)
         {
             _view = view;
+            _assetSaveService = saveService;
             SetupViewEventHandlers();
         }
 
@@ -50,14 +56,26 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
 
             void AddRuleView(AddressRule rule, int index = -1, bool reload = true)
             {
+                var perRuleDisposables = new CompositeDisposable();
+                rule.Control
+                    .Subscribe(_ =>
+                    {
+                        _assetSaveService.MarkAsDirty();
+                        _assetSaveService.Save();
+                    })
+                    .DisposeWith(perRuleDisposables);
                 var item = _view.TreeView.AddItem(rule, index);
                 _ruleIdToTreeViewItem.Add(rule.Id, item);
+                _perRuleDisposables.Add(rule.Id, perRuleDisposables);
                 if (reload)
                     _view.TreeView.Reload();
             }
 
             void RemoveRuleView(AddressRule rule)
             {
+                var disposables = _perRuleDisposables[rule.Id];
+                disposables.Dispose();
+                _perRuleDisposables.Remove(rule.Id);
                 var item = _ruleIdToTreeViewItem[rule.Id];
                 _ruleIdToTreeViewItem.Remove(rule.Id);
                 _view.TreeView.RemoveItem(item.id);
@@ -68,6 +86,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             {
                 _view.TreeView.ClearItems();
                 _view.TreeView.Reload();
+                foreach (var disposables in _perRuleDisposables.Values)
+                    disposables.Dispose();
+                _perRuleDisposables.Clear();
                 _ruleIdToTreeViewItem.Clear();
             }
 
@@ -79,6 +100,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             _setupViewDisposables.Clear();
             _view.TreeView.ClearItems();
             _view.TreeView.Reload();
+            _perRuleDisposables.Clear();
             _ruleIdToTreeViewItem.Clear();
         }
 

@@ -15,7 +15,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             if (GUILayout.Button("Open Editor"))
             {
                 var repository = new LayoutRuleDataRepository();
-                repository.SetActiveData(data);
+                repository.SetEditingData(data);
                 LayoutRuleEditorWindow.Open();
             }
 
