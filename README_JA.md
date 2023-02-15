@@ -6,8 +6,8 @@
 
 **ドキュメント** ([English](README.md), [日本語](README_JA.md))
 
-**Unity** の **Addressable アセットシステム**のアドレスやラベルを自動化するためのツールです。  
-アドレスやラベルはGUIツールを使って、ルールベースで効率的に設定できます。  
+**Unity** の **Addressable アセットシステム**のアドレスやラベルの付与を自動化するためのツールです。  
+アドレスやラベルはGUIツールを使って、ルールベースで簡単に設定できます。  
 また、リリース前のアセットをビルド対象から外すバージョン管理も備えています。
 
 ## 目次
@@ -57,8 +57,50 @@ Addressable アセットシステムでは、下図のようにアセットを *
 
 ### インストール
 
-> **Warning**  
-> 後で書きます
+インストールは以下の手順で行います。
+
+1. **Window > Package Manager** を選択
+2. **「+」ボタン > Add package from git URL** を選択
+3. 以下を入力してインストール
+    - https://github.com/CyberAgentGameEntertainment/SmartAddresser.git?path=/Assets/SmartAddresser
+
+<p align="center">
+  <img width=500 src="Documentation/setup_01.png" alt="Package Manager">
+</p>
+
+あるいは **Packages/manifest.json** を開き、**dependencies** ブロックに以下を追記します。
+
+```json
+{
+   "dependencies": {
+      "jp.co.cyberagent.smartaddresser": "https://github.com/CyberAgentGameEntertainment/SmartAddresser.git?path=/Assets/SmartAddresser"
+   }
+}
+```
+
+バージョンを指定したい場合には以下のように記述します（バージョンは適宜書き換えてください）。
+
+* https://github.com/CyberAgentGameEntertainment/SmartAddresser.git?path=/Assets/SmartAddresser#1.0.0
+
+バージョンを更新するには上述の手順でバージョンを書き換えてください。  
+バージョンを指定しない場合には、**Packages/package-lock.json** ファイルを開いて本ライブラリの箇所のハッシュを書き換えることで更新できます。
+
+```json
+{
+   "dependencies": {
+      "jp.co.cyberagent.smartaddresser": {
+         "version": "https://github.com/CyberAgentGameEntertainment/SmartAddresser.git?path=/Assets/SmartAddresser",
+         "depth": 0,
+         "source": "git",
+         "dependencies": {},
+         "hash": "..."
+      }
+   }
+}
+```
+
+> **Note**  
+> `No 'git' executable was found. Please install Git on your system and restart Unity`のようなメッセージが出た場合、マシンにGitをセットアップする必要がある点にご注意ください。
 
 ## アドレスを付与するルールを設定する
 
