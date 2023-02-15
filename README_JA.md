@@ -1,3 +1,8 @@
+<p align="center">
+  <img width=500 src="Documentation/Images/logo_white.png#gh-dark-mode-only" alt="Smart Addresser">
+  <img width=500 src="Documentation/Images/logo_color.png#gh-light-mode-only" alt="Smart Addresser">
+</p>
+
 # Smart Addresser: Addressableアドレス付与自動化・バージョン管理ツール
 
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
