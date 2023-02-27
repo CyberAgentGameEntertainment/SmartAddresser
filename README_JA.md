@@ -70,7 +70,7 @@ Addressable アセットシステムでは、下図のようにアセットを *
     - https://github.com/CyberAgentGameEntertainment/SmartAddresser.git?path=/Assets/SmartAddresser
 
 <p align="center">
-  <img width=500 src="Documentation/setup_01.png" alt="Package Manager">
+  <img width="80%" src="Documentation/Images/setup_01.png" alt="Package Manager">
 </p>
 
 あるいは **Packages/manifest.json** を開き、**dependencies** ブロックに以下を追記します。
@@ -103,9 +103,6 @@ Addressable アセットシステムでは、下図のようにアセットを *
    }
 }
 ```
-
-> **Note**  
-> `No 'git' executable was found. Please install Git on your system and restart Unity`のようなメッセージが出た場合、マシンにGitをセットアップする必要がある点にご注意ください。
 
 ## アドレスを付与するルールを設定する
 

@@ -96,14 +96,11 @@ If you don't want to specify a version, you can also update the version by editi
 }
 ```
 
-> **Note**
-> If you get a message like `No 'git' executable was found. Please install Git on your system and restart Unity`, you will need to set up Git on your machine.
-
 ## Set up rules to assign addresses
 
 ### Set up Addressable Asset System
 
-> **Warning**
+> **Note**
 > If you already have set up Addressable Asset System, skip this section.
 
 Before you use **Smart Addresser**, you need to set up the Addressable Asset System.
@@ -211,7 +208,7 @@ Use this tool to adjust the layout rules and eliminate warnings and errors.
 
 ## Apply to Addressable Asset System
 
-Next, you need to apply the rules to the Addressable Asset System.
+Now that you have set up the rules, you can apply them to the Addressable Asset System.
 
 ### Apply from Layout Rule Editor
 
@@ -344,7 +341,7 @@ When completed, Unity is automatically closed and returns the following value.
 - If successful: 0
 - If failed: 1
 
-### Apply Layout Rules to Addressables
+### Apply Layout Rules to Addressable Asset System
 
 You can apply the layout rules to the Addressable Asset System by calling the following method.
 
@@ -487,7 +484,7 @@ public static class Example
 }
 ```
 
-### Validation and Apply to Addressables
+### Validation and Apply to Addressable Asset System
 
 The following is an example of how to validate and apply the layout rules to the Addressable Asset System from scripts.
 
@@ -578,22 +575,22 @@ public static class Example
 
 ### Address Provider
 
-| 名前                                | 概要と各プロパティの説明                                                                                                                                                                                                                                                            |
+| Name                              | Overview and Property Description                                                                                                                                                                                                                                       |
 |-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Asset Path Based Address Provider | Provides an address based on the asset path of the target asset.<br><br>**Source**<br>How to specify the address.<br>* File Name<br>* File Name Without Extensions<br>* Asset Path<br><br>**Replace With Regex**<br>If checked, the Source will be replaced with regex. |
 
 ### Label Provider
 
-| 名前                              | 概要と各プロパティの説明                                                                                                                                                                                                                                                        |
+| Name                            | Overview and Property Description                                                                                                                                                                                                                                                        |
 |---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Constant Label Provider         | Provides an constant label.<br><br>Label<br>Label name.                                                                                                                                                                                                             |
 | Asset Path Based Label Provider | Provides an label based on the asset path of the target asset.<br><br>**Source**<br>How to specify the label.<br>* File Name<br>* File Name Without Extensions<br>* Asset Path<br><br>**Replace With Regex**<br>If checked, the Source will be replaced with regex. |
 
 ### Version Provider
 
-| 名前 | 概要と各プロパティの説明                                                                                                                                                                                                                                                            |
-| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Constant Version Provider | Provides an constant version.<br><br>Version<br>version name.                                                                                                                                                                                                           |
+| Name                              | Overview and Property Description                                                                                                                                                                                                                                                            |
+|-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Constant Version Provider         | Provides an constant version.<br><br>Version<br>version name.                                                                                                                                                                                                           |
 | Asset Path Based Version Provider | Provides an version based on the asset path of the target asset.<br><br>**Source**<br>How to specify the version.<br>* File Name<br>* File Name Without Extensions<br>* Asset Path<br><br>**Replace With Regex**<br>If checked, the Source will be replaced with regex. |
 
 ## Create your own Asset Filters / Providers
