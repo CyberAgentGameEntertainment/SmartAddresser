@@ -100,7 +100,7 @@ If you don't want to specify a version, you can also update the version by editi
 
 ### Set up Addressable Asset System
 
-> **Note**
+> **Note**  
 > If you already have set up Addressable Asset System, skip this section.
 
 Before you use **Smart Addresser**, you need to set up the Addressable Asset System.
