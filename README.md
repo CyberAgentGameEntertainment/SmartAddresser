@@ -3,7 +3,7 @@
   <img width=500 src="Documentation/Images/logo_color.png#gh-light-mode-only" alt="Smart Addresser">
 </p>
 
-# Smart Addresser : Automating Addressing, Labeling, Version Control System for Addressble
+# Smart Addresser: Automate Addressing, Labeling, and Version Control for Addressables
 
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.md)
 [![license](https://img.shields.io/badge/PR-welcome-green.svg)](https://github.com/CyberAgentGameEntertainment/AssetRegulationManager/pulls)
