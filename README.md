@@ -15,6 +15,10 @@ Smart Addresser is a tool for automating the assigning of addresses and labels i
 You can assign addresses and labels easily using GUI tool.
 And it also has the version management feature to exclude pre-release assets from the build.
 
+<p align="center">
+  <img width="80%" src="Documentation/Images/smart_addresser_en.gif" alt="ConceptMovie">
+</p>
+
 ## Table of Contents
 
 ## Concept

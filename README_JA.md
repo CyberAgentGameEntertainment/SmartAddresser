@@ -15,6 +15,11 @@
 アドレスやラベルはGUIツールを使って、ルールベースで簡単に設定できます。  
 また、リリース前のアセットをビルド対象から外すバージョン管理も備えています。
 
+<p align="center">
+  <img width="80%" src="Documentation/Images/smart_addresser_ja.gif" alt="ConceptMovie">
+</p>
+
+
 ## 目次
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
