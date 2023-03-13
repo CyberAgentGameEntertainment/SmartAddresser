@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Foundation.EasyTreeView;
+using SmartAddresser.Editor.Foundation.TinyRx;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -14,6 +15,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
     /// </summary>
     internal sealed class LabelRuleListTreeView : TreeViewBase
     {
+        private const string DragType = "LabelRuleListTreeView";
+        
         public enum Columns
         {
             Name,
@@ -22,6 +25,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
         }
 
         [NonSerialized] private int _currentId;
+
+        private readonly Subject<(Item item, int newIndex)> _itemIndexChangedSubject
+            = new Subject<(Item item, int newIndex)>();
+
+        public IObservable<(Item item, int newIndex)> ItemIndexChangedAsObservable => _itemIndexChangedSubject;
 
         public LabelRuleListTreeView(State state) : base(state)
         {
@@ -106,6 +114,76 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
         protected override bool CanBeParent(TreeViewItem item)
         {
             return false;
+        }
+
+        protected override bool CanStartDrag(CanStartDragArgs args)
+        {
+            return string.IsNullOrEmpty(searchString);
+        }
+
+        protected override void SetupDragAndDrop(SetupDragAndDropArgs args)
+        {
+            var selections = args.draggedItemIDs;
+            if (selections.Count <= 0) return;
+
+            var items = GetRows()
+                .Where(i => selections.Contains(i.id))
+                .Select(x => (Item)x)
+                .ToArray();
+
+            if (items.Length <= 0) return;
+
+            DragAndDrop.PrepareStartDrag();
+            DragAndDrop.SetGenericData(DragType, items);
+            DragAndDrop.StartDrag(items.Length > 1 ? "<Multiple>" : items[0].displayName);
+        }
+
+        protected override DragAndDropVisualMode HandleDragAndDrop(DragAndDropArgs args)
+        {
+            if (args.performDrop)
+            {
+                var data = DragAndDrop.GetGenericData(DragType);
+                var items = (Item[])data;
+
+                if (items == null || items.Length <= 0)
+                    return DragAndDropVisualMode.None;
+
+                switch (args.dragAndDropPosition)
+                {
+                    case DragAndDropPosition.BetweenItems:
+                        var afterIndex = args.insertAtIndex;
+                        foreach (var item in items)
+                        {
+                            var itemIndex = RootItem.children.IndexOf(item);
+                            if (itemIndex < afterIndex) afterIndex--;
+
+                            SetItemIndex(item.id, afterIndex, true);
+                            afterIndex++;
+                        }
+
+                        SetSelection(items.Select(x => x.id).ToArray());
+
+                        Reload();
+                        break;
+                    case DragAndDropPosition.UponItem:
+                    case DragAndDropPosition.OutsideItems:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return DragAndDropVisualMode.Move;
+        }
+
+        public void SetItemIndex(int itemId, int index, bool notify)
+        {
+            var item = (Item)GetItem(itemId);
+            var children = RootItem.children;
+            var itemIndex = RootItem.children.IndexOf(item);
+            children.RemoveAt(itemIndex);
+            children.Insert(index, item);
+            if (notify) _itemIndexChangedSubject.OnNext((item, index));
         }
 
         private string GetText(Item item, int columnIndex)
