@@ -48,5 +48,15 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.SetupForMatching();
             Assert.That(filter.IsMatch(TestAssetPaths.Dummy.PrefabDummy, typeof(GameObject), false), Is.False);
         }
+
+        [TestCase(null)]
+        [TestCase("")]
+        public void IsMatch_FilterIsNullOrWhiteSpace_ReturnFalse(string filterText)
+        {
+            var filter = new FindAssetsBasedAssetFilter();
+            filter.Filter = filterText;
+            filter.SetupForMatching();
+            Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture64, typeof(Texture2D), false), Is.False);
+        }
     }
 }
