@@ -64,18 +64,22 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
 
             var result = new StringBuilder();
             var elementCount = 0;
-            result.Append(_filter);
-            foreach (var targetFolder in targetFolder)
+            result.Append($"Filter: {_filter}");
+            foreach (var folder in targetFolder)
             {
-                if (targetFolder == null)
+                if (folder == null)
                     continue;
 
-                if (elementCount >= 1)
-                    result.Append(", ");
+                result.Append(elementCount == 0 ? " (Folder: " : ", ");
 
-                var path = AssetDatabase.GetAssetPath(targetFolder);
+                var path = AssetDatabase.GetAssetPath(folder);
                 result.Append(path);
                 elementCount++;
+            }
+
+            if (elementCount >= 1)
+            {
+                result.Append(")");
             }
 
             return result.ToString();
