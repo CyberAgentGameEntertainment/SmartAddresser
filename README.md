@@ -225,6 +225,8 @@ From the **Layout Rule Editor**, you can apply the rules by following the steps 
   <img width="80%" src="Documentation/Images/apply_01.png" alt="Apply by Editor">
 </p>
 
+It is possible to set whether to treat each of avobe issue as an error or a warning in **Project Settings > Smart Addresser > Validation Settings**.
+
 ### Apply rules automatically
 You can also apply rules automatically when you import assets or edit the rules.
 To do this, set the **Layout Rule Data** which you want to apply to the **Primary Data** of the **Project Settings**.
