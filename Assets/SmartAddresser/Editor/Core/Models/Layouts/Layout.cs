@@ -35,7 +35,13 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         ///     Validate all groups and entries in the layout.
         /// </summary>
         /// <param name="updateErrorTypeAndMessages">Update all error types and messages after the validation.</param>
-        public void Validate(bool updateErrorTypeAndMessages = false)
+        /// <param name="duplicateAddressesErrorType">Error type when same address is contained in multiple groups.</param>
+        /// <param name="duplicateAssetPathsErrorType">Error type when same assetPath is contained in multiple groups.</param>
+        /// <param name="entryHasMultipleVersionsErrorType">Error type when some entries have multiple versions.</param>
+        public void Validate(bool updateErrorTypeAndMessages = false,
+            EntryErrorType duplicateAddressesErrorType = EntryErrorType.Warning,
+            EntryErrorType duplicateAssetPathsErrorType = EntryErrorType.Error,
+            EntryErrorType entryHasMultipleVersionsErrorType = EntryErrorType.Error)
         {
             var assetPathToEntries = new Dictionary<string, List<Entry>>();
             var addressToEntries = new Dictionary<string, List<Entry>>();
@@ -68,7 +74,7 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
 
                     addressEntries.Add(entry);
 
-                    // If the entry has multiple versions, mark as error.
+                    // If the entry has multiple versions, mark as error/warning.
                     if (entry.Versions.Length >= 2)
                     {
                         string CreateMessage()
@@ -76,12 +82,12 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
                             return "[Error] Multiple Versions: This asset has multiple versions.";
                         }
 
-                        entry.Errors.Add(new EntryError(EntryErrorType.Error, CreateMessage));
+                        entry.Errors.Add(new EntryError(entryHasMultipleVersionsErrorType, CreateMessage));
                     }
                 }
             }
 
-            // If same assetPath is contained in multiple groups, mark as error.
+            // If same assetPath is contained in multiple groups, mark as error/warning.
             foreach (var assetPathEntries in assetPathToEntries)
             {
                 var entries = assetPathEntries.Value;
@@ -107,11 +113,11 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
                 for (int i = 0, entryCount = entries.Count; i < entryCount; i++)
                 {
                     var entry = entries[i];
-                    entry.Errors.Add(new EntryError(EntryErrorType.Error, CreateMessage));
+                    entry.Errors.Add(new EntryError(duplicateAssetPathsErrorType, CreateMessage));
                 }
             }
 
-            // If same address is contained in multiple groups, mark as warning.
+            // If same address is contained in multiple groups, mark as error/warning.
             foreach (var addressEntries in addressToEntries)
             {
                 var entries = addressEntries.Value;
@@ -134,21 +140,17 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
                     return message;
                 }
 
-                // Add warning to each entry.
                 for (int i = 0, entryCount = entries.Count; i < entryCount; i++)
                 {
                     var entry = entries[i];
-                    entry.Errors.Add(new EntryError(EntryErrorType.Warning, CreateMessage));
+                    entry.Errors.Add(new EntryError(duplicateAddressesErrorType, CreateMessage));
                 }
             }
 
             // Set the dirty flag of the error type.
             SetErrorTypeDirty();
 
-            if (updateErrorTypeAndMessages)
-            {
-                UpdateErrorTypeAndMessages();
-            }
+            if (updateErrorTypeAndMessages) UpdateErrorTypeAndMessages();
 
             HasValidated = true;
         }
@@ -165,9 +167,9 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
 
         private void UpdateErrorType()
         {
-            if (!_isErrorTypeDirty) 
+            if (!_isErrorTypeDirty)
                 return;
-            
+
             _errorType = LayoutErrorType.None;
             for (int i = 0, groupCount = _groups.Count; i < groupCount; i++)
             {
@@ -182,9 +184,9 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
 
         private void UpdateErrorTypeAndMessages()
         {
-            if (!_isErrorTypeDirty) 
+            if (!_isErrorTypeDirty)
                 return;
-            
+
             _errorType = LayoutErrorType.None;
             for (int i = 0, groupCount = _groups.Count; i < groupCount; i++)
             {
@@ -192,7 +194,7 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
                 var groupErrorType = group.ErrorType;
                 if (groupErrorType.IsMoreCriticalThan(_errorType))
                     _errorType = groupErrorType;
-                
+
                 group.UpdateMessages();
             }
 

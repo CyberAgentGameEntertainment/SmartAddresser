@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
+using SmartAddresser.Editor.Core.Models.Layouts;
 using SmartAddresser.Editor.Core.Models.Services;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
@@ -62,9 +63,25 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                 }
 
                 projectSettings.VersionExpressionParser =
-                    (MonoScript)EditorGUILayout.ObjectField("Version Expression Paraser",
+                    (MonoScript)EditorGUILayout.ObjectField("Version Expression Parser",
                         projectSettings.VersionExpressionParser,
                         typeof(MonoScript), false);
+
+                EditorGUILayout.LabelField("Validation Settings");
+                using (new EditorGUI.IndentLevelScope())
+                using (var ccs = new EditorGUI.ChangeCheckScope())
+                {
+                    var duplicateAddresses = (EntryErrorType)EditorGUILayout.EnumPopup("Duplicate Addresses",
+                        projectSettings.ValidationSettings.DuplicateAddresses);
+                    var duplicateAssetPaths = (EntryErrorType)EditorGUILayout.EnumPopup("Duplicate Asset Paths",
+                        projectSettings.ValidationSettings.DuplicateAssetPaths);
+                    var entryHasMultipleVersions =
+                        (EntryErrorType)EditorGUILayout.EnumPopup("Entry Has Multiple Versions",
+                            projectSettings.ValidationSettings.EntryHasMultipleVersions);
+                    if (ccs.changed)
+                        projectSettings.ValidationSettings = new SmartAddresserProjectSettings.Validation(duplicateAddresses,
+                            duplicateAssetPaths, entryHasMultipleVersions);
+                }
             }
         }
 

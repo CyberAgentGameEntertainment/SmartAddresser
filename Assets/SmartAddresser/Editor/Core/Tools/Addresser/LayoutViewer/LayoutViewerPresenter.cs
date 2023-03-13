@@ -5,6 +5,7 @@ using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Models.Layouts;
 using SmartAddresser.Editor.Core.Models.Services;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
+using SmartAddresser.Editor.Core.Tools.Shared;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
@@ -18,8 +19,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
     /// </summary>
     internal sealed class LayoutViewerPresenter : IDisposable
     {
-        private readonly ObservableProperty<LayoutRuleData> _editingData = new ObservableProperty<LayoutRuleData>();
         private readonly BuildLayoutService _buildLayoutService;
+        private readonly ObservableProperty<LayoutRuleData> _editingData = new ObservableProperty<LayoutRuleData>();
         private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
         private readonly LayoutViewerView _view;
         private readonly CompositeDisposable _viewEventDisposables = new CompositeDisposable();
@@ -77,8 +78,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
             _editingData.Value = data;
 
+            var projectSettings = SmartAddresserProjectSettings.instance;
+            var validationSettings = projectSettings.ValidationSettings;
             var layout = _buildLayoutService.Execute(_editingData.Value.LayoutRule);
-            layout.Validate();
+            layout.Validate(false, validationSettings.DuplicateAddresses, validationSettings.DuplicateAssetPaths,
+                validationSettings.EntryHasMultipleVersions);
             _layout = layout;
             foreach (var group in layout.Groups)
                 AddGroupView(group);
@@ -174,8 +178,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
             void OnRefreshButtonClicked()
             {
+                var projectSettings = SmartAddresserProjectSettings.instance;
+                var validationSettings = projectSettings.ValidationSettings;
                 var layout = _buildLayoutService.Execute(_editingData.Value.LayoutRule);
-                layout.Validate();
+                layout.Validate(false, validationSettings.DuplicateAddresses, validationSettings.DuplicateAssetPaths,
+                    validationSettings.EntryHasMultipleVersions);
                 _layout = layout;
 
                 _view.TreeView.ClearItems();
