@@ -16,7 +16,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     public sealed class FindAssetsBasedAssetFilter : AssetFilterBase
     {
         [SerializeField] private string _filter;
-        [SerializeField] private DefaultAssetListableProperty _targetFolders = new DefaultAssetListableProperty();
+        [SerializeField] private DefaultAssetListableProperty targetFolder = new DefaultAssetListableProperty();
 
         private readonly List<string> _foundAssetPaths = new List<string>();
 
@@ -29,15 +29,15 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         /// <summary>
         ///     Folders for filtering.
         /// </summary>
-        public DefaultAssetListableProperty TargetFolders => _targetFolders;
+        public DefaultAssetListableProperty TargetFolder => targetFolder;
 
         public override void SetupForMatching()
         {
             _foundAssetPaths.Clear();
             if (string.IsNullOrWhiteSpace(_filter))
                 return;
-                    
-            var targetFolderPaths = _targetFolders
+
+            var targetFolderPaths = targetFolder
                 .Where(x => x != null)
                 .Select(AssetDatabase.GetAssetPath)
                 .ToArray();
@@ -61,11 +61,11 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         {
             if (string.IsNullOrWhiteSpace(_filter))
                 return string.Empty;
-            
+
             var result = new StringBuilder();
             var elementCount = 0;
             result.Append(_filter);
-            foreach (var targetFolder in _targetFolders)
+            foreach (var targetFolder in targetFolder)
             {
                 if (targetFolder == null)
                     continue;

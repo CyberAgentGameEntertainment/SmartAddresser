@@ -295,6 +295,22 @@ namespace SmartAddresser.Editor.Foundation.ListableProperty
         }
     }
 
+    public sealed class DefaultAssetListablePropertyGUI : ListablePropertyGUI<DefaultAsset>
+    {
+        public DefaultAssetListablePropertyGUI(string displayName, ListableProperty<DefaultAsset> list,
+            bool allowSceneObject) : base(displayName, list, (rect, label, value, onValueChanged) =>
+        {
+            using (var ccs = new EditorGUI.ChangeCheckScope())
+            {
+                var newValue = (DefaultAsset)EditorGUI.ObjectField(rect, label, value, typeof(DefaultAsset), allowSceneObject);
+                if (ccs.changed)
+                    onValueChanged.Invoke(newValue);
+            }
+        })
+        {
+        }
+    }
+
     public sealed class Vector2ListablePropertyGUI : ListablePropertyGUI<Vector2>
     {
         public Vector2ListablePropertyGUI(string displayName, ListableProperty<Vector2> list)

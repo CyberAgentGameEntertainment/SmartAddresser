@@ -23,7 +23,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
         {
             var filter = new FindAssetsBasedAssetFilter();
             filter.Filter = "t:texture tex_test";
-            filter.TargetFolders.Value = AssetDatabase.LoadAssetAtPath<DefaultAsset>(TestAssetPaths.Shared.Folder);
+            filter.TargetFolder.Value = AssetDatabase.LoadAssetAtPath<DefaultAsset>(TestAssetPaths.Shared.Folder);
             filter.SetupForMatching();
             Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture64, typeof(Texture2D), false), Is.True);
             Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture128, typeof(Texture2D), false), Is.True);
@@ -44,7 +44,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
         {
             var filter = new FindAssetsBasedAssetFilter();
             filter.Filter = "t:texture tex_test";
-            filter.TargetFolders.Value = AssetDatabase.LoadAssetAtPath<DefaultAsset>(TestAssetPaths.Dummy.Folder);
+            filter.TargetFolder.Value = AssetDatabase.LoadAssetAtPath<DefaultAsset>(TestAssetPaths.Dummy.Folder);
             filter.SetupForMatching();
             Assert.That(filter.IsMatch(TestAssetPaths.Dummy.PrefabDummy, typeof(GameObject), false), Is.False);
         }
