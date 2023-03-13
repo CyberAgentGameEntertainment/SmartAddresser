@@ -104,6 +104,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
         {
             _view.AddButtonClickedAsObservable.Subscribe(x => AddRule()).DisposeWith(_viewEventDisposables);
             _view.TreeView.RightClickMenuRequested += OnRightClickMenuRequested;
+            _view.TreeView
+                .ItemIndexChangedAsObservable
+                .Subscribe(x => MoveRule(x.item.Rule, x.newIndex))
+                .DisposeWith(_viewEventDisposables);
         }
 
         private void CleanupViewEventHandlers()
@@ -141,6 +145,29 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
             }, () =>
             {
                 _rules.Add(rule);
+                _saveService.Save();
+            });
+        }
+
+        private void MoveRule(VersionRule rule, int newIndex)
+        {
+            if (!_didSetupView)
+                return;
+
+            var oldIndex = _rules.IndexOf(rule);
+            if (oldIndex == newIndex)
+                return;
+            
+            // To undo all the changes in the same frame, use Time.frameCount to actionTypeId.
+            _history.Register($"Move Label Rule {Time.frameCount}", () =>
+            {
+                _rules.RemoveAt(oldIndex);
+                _rules.Insert(newIndex, rule);
+                _saveService.Save();
+            }, () =>
+            {
+                _rules.RemoveAt(newIndex);
+                _rules.Insert(oldIndex, rule);
                 _saveService.Save();
             });
         }
