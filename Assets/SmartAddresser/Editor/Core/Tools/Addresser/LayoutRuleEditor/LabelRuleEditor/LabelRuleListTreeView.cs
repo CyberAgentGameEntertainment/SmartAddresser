@@ -15,7 +15,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
     /// </summary>
     internal sealed class LabelRuleListTreeView : TreeViewBase
     {
-        private const string DragType = "LabelRuleListTreeView";
+        private static string DragType => nameof(LabelRuleListTreeView);
         
         public enum Columns
         {

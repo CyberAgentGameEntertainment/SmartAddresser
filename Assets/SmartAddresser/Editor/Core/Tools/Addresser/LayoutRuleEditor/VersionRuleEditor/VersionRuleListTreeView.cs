@@ -15,7 +15,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
     /// </summary>
     internal sealed class VersionRuleListTreeView : TreeViewBase
     {
-        private const string DragType = "VersionRuleListTreeView";
+        private static string DragType => nameof(VersionRuleListTreeView);
         
         public enum Columns
         {
