@@ -241,15 +241,44 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
                 menu.AddItem(new GUIContent("Apply to Addressables"), false, () =>
                 {
-                    // Apply the layout rules to the addressable asset system.
-                    var layoutRule = _editingData.Value.LayoutRule;
-                    var versionExpressionParser = new VersionExpressionParserRepository().Load();
-                    var assetDatabaseAdapter = new AssetDatabaseAdapter();
-                    var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
-                    var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-                    var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
-                        addressableSettingsAdapter, assetDatabaseAdapter);
-                    applyService.UpdateAllEntries();
+                    var projectSettings = SmartAddresserProjectSettings.instance;
+                    var primaryData = projectSettings.PrimaryData;
+
+                    if (primaryData == null)
+                    {
+                        Apply();
+                        return;
+                    }
+
+                    if (primaryData == _editingData.Value)
+                    {
+                        Apply();
+                        return;
+                    }
+
+                    // If the primary data is not the same as the editing data, ask the user to confirm.
+                    // If the user confirms, remove the primary data and apply the editing data.
+                    const string dialogTitle = "Confirm";
+                    var dialogMessage =
+                        $"The {nameof(projectSettings.PrimaryData)} of the Project Settings is not the same as the data you are applying. Do you want to remove the primary data and apply the editing data?";
+                    if (EditorUtility.DisplayDialog(dialogTitle, dialogMessage, "Remove & Apply", "Cancel"))
+                    {
+                        projectSettings.PrimaryData = null;
+                        Apply();
+                    }
+
+                    void Apply()
+                    {
+                        // Apply the layout rules to the addressable asset system.
+                        var layoutRule = _editingData.Value.LayoutRule;
+                        var versionExpressionParser = new VersionExpressionParserRepository().Load();
+                        var assetDatabaseAdapter = new AssetDatabaseAdapter();
+                        var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
+                        var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
+                        var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
+                            addressableSettingsAdapter, assetDatabaseAdapter);
+                        applyService.UpdateAllEntries();
+                    }
                 });
 
                 menu.AddItem(new GUIContent("Open Layout Viewer"), false, LayoutViewerWindow.Open);
