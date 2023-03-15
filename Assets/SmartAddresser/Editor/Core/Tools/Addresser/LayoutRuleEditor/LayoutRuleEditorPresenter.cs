@@ -258,10 +258,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
                     // If the primary data is not the same as the editing data, ask the user to confirm.
                     // If the user confirms, remove the primary data and apply the editing data.
-                    const string dialogTitle = "Confirm";
                     var dialogMessage =
                         $"The {nameof(projectSettings.PrimaryData)} of the Project Settings is not the same as the data you are applying. Do you want to remove the {nameof(projectSettings.PrimaryData)} from Project Settings and apply the editing data?";
-                    if (EditorUtility.DisplayDialog(dialogTitle, dialogMessage, "Remove & Apply", "Cancel"))
+                    if (EditorUtility.DisplayDialog("Confirm", dialogMessage, "Remove & Apply", "Cancel"))
                     {
                         projectSettings.PrimaryData = null;
                         Apply();
