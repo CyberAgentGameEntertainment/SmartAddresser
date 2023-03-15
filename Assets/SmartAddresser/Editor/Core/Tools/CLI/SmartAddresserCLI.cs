@@ -33,7 +33,7 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                 EditorUtility.SetDirty(layoutRuleData);
                 var assetSaveService = new AssetSaveService();
                 assetSaveService.Run(layoutRuleData);
-                
+
                 EditorApplication.Exit(ErrorLevelNone);
             }
             catch (Exception e)
@@ -47,6 +47,8 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
         {
             try
             {
+                var projectSettings = SmartAddresserProjectSettings.instance;
+                var validationSettings = projectSettings.ValidationSettings;
                 var options = ApplyRulesCLIOptions.CreateFromCommandLineArgs();
                 var layoutRule = LoadLayoutRuleData(options.LayoutRuleAssetPath).LayoutRule;
                 var versionExpressionParser = new VersionExpressionParserRepository().Load();
@@ -59,7 +61,8 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                     // Build and validate the Layout.
                     var buildLayoutService = new BuildLayoutService(assetDatabaseAdapter);
                     var layout = buildLayoutService.Execute(layoutRule);
-                    layout.Validate(true);
+                    layout.Validate(true, validationSettings.DuplicateAddresses, validationSettings.DuplicateAssetPaths,
+                        validationSettings.EntryHasMultipleVersions);
 
                     // Export the result of the validation.
                     var validateResultExportService = new ValidateResultExportService(layout);
@@ -67,7 +70,7 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
 
                     // Exit if error occurred.
                     if (layout.ErrorType == LayoutErrorType.Error
-                        || options.FailWhenWarning && layout.ErrorType == LayoutErrorType.Warning)
+                        || (options.FailWhenWarning && layout.ErrorType == LayoutErrorType.Warning))
                     {
                         EditorApplication.Exit(ErrorLevelValidateFailed);
                         return;
