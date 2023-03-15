@@ -19,6 +19,12 @@ namespace SmartAddresser.Tests.Editor.Core
             public const string MaterialTex64 = Folder + "/mat_test_tex_64.mat";
             public const string PrefabTex64 = Folder + "/prefab_test_tex_64.prefab";
         }
+
+        public static class Dummy
+        {
+            public const string Folder = "Dummy";
+            public const string PrefabDummy = Folder + "/prefab_dummy.prefab";
+        }
     }
 
     public static class TestAssetPaths
@@ -52,6 +58,12 @@ namespace SmartAddresser.Tests.Editor.Core
             public static string Texture256 => CreateAbsoluteAssetPath(TestAssetRelativePaths.Shared.Texture256);
             public static string PrefabTex64 => CreateAbsoluteAssetPath(TestAssetRelativePaths.Shared.PrefabTex64);
             public static string MaterialTex64 => CreateAbsoluteAssetPath(TestAssetRelativePaths.Shared.MaterialTex64);
+        }
+
+        public static class Dummy
+        {
+            public static string Folder => CreateAbsoluteAssetPath(TestAssetRelativePaths.Dummy.Folder);
+            public static string PrefabDummy => CreateAbsoluteAssetPath(TestAssetRelativePaths.Dummy.PrefabDummy);
         }
     }
 }
