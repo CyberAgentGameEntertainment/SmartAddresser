@@ -9,3 +9,5 @@ jobs:
         with:
           FOLDING: true
           TOC_TITLE: Details
+permissions:
+  contents: write
