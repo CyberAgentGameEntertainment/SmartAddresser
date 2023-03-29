@@ -66,6 +66,10 @@ And it also has the version management feature to exclude pre-release assets fro
 </p>
 
 ## Table of Contents
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 ## Concept
 In the Addressable Asset System, you can register addresses by dragging and dropping assets into the **Addressables Group Window** as shown blow.
