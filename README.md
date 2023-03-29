@@ -1,3 +1,49 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+<details>
+<summary>Details</summary>
+
+- [Smart Addresser: Automate Addressing, Labeling, and Version Control for Addressables](#smart-addresser-automate-addressing-labeling-and-version-control-for-addressables)
+  - [Table of Contents](#table-of-contents)
+  - [Concept](#concept)
+  - [Setup](#setup)
+    - [Requirement](#requirement)
+    - [Install](#install)
+  - [Set up rules to assign addresses](#set-up-rules-to-assign-addresses)
+    - [Set up Addressable Asset System](#set-up-addressable-asset-system)
+    - [Create an asset to store the data](#create-an-asset-to-store-the-data)
+    - [Create Address Rules](#create-address-rules)
+    - [Create Label Rules](#create-label-rules)
+  - [Validation](#validation)
+  - [Apply to Addressable Asset System](#apply-to-addressable-asset-system)
+    - [Apply from Layout Rule Editor](#apply-from-layout-rule-editor)
+    - [Apply rules automatically](#apply-rules-automatically)
+    - [Apply by CLI](#apply-by-cli)
+  - [Version Management](#version-management)
+    - [Versioning Specification](#versioning-specification)
+    - [Create Version Rules](#create-version-rules)
+    - [Apply with specified version range](#apply-with-specified-version-range)
+    - [About versioning and asset dependencies](#about-versioning-and-asset-dependencies)
+    - [Use your own version range expression](#use-your-own-version-range-expression)
+  - [Command Line Interface (CLI)](#command-line-interface-cli)
+    - [Set Version Expression](#set-version-expression)
+    - [Apply Layout Rules to Addressable Asset System](#apply-layout-rules-to-addressable-asset-system)
+  - [Scripting](#scripting)
+    - [Edit Layout Rule Data](#edit-layout-rule-data)
+    - [Validation and Apply to Addressable Asset System](#validation-and-apply-to-addressable-asset-system)
+  - [List and descriptions of Asset Filter and Providers](#list-and-descriptions-of-asset-filter-and-providers)
+    - [Asset Filter of Asset Group](#asset-filter-of-asset-group)
+    - [Address Provider](#address-provider)
+    - [Label Provider](#label-provider)
+    - [Version Provider](#version-provider)
+  - [Create your own Asset Filters / Providers](#create-your-own-asset-filters--providers)
+    - [Create your own Asset Filter](#create-your-own-asset-filter)
+    - [Create your own Provider](#create-your-own-provider)
+  - [License](#license)
+
+</details>
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <p align="center">
   <img width=500 src="Documentation/Images/logo_white.png#gh-dark-mode-only" alt="Smart Addresser">
   <img width=500 src="Documentation/Images/logo_color.png#gh-light-mode-only" alt="Smart Addresser">
