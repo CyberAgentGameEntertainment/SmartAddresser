@@ -38,5 +38,10 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
             };
             return instance;
         }
+        
+        public bool IsValid()
+        {
+            return !string.IsNullOrEmpty(_assemblyQualifiedName);
+        }
     }
 }

@@ -9,11 +9,17 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 
         public void Setup()
         {
+            if (labelProvider == null)
+                return;
+
             labelProvider.Setup();
         }
 
         public string Provide(string assetPath, Type assetType, bool isFolder)
         {
+            if (labelProvider == null)
+                return null;
+
             return labelProvider.Provide(assetPath, assetType, isFolder);
         }
 

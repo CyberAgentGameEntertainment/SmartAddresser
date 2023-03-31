@@ -38,6 +38,9 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 if (typeRef == null)
                     continue;
 
+                if (!typeRef.IsValid())
+                    continue;
+
                 var type = System.Type.GetType(typeRef.AssemblyQualifiedName);
                 _types.Add(type);
             }
