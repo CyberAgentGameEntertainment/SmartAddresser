@@ -305,7 +305,7 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
             public StateBase()
             {
                 var columnStates = GetColumnStates();
-                _multiColumnHeaderState = columnStates == null ? null : new MultiColumnHeaderState(columnStates);
+                _multiColumnHeaderState = columnStates.Length == 0 ? null : new MultiColumnHeaderState(columnStates);
             }
 
             public MultiColumnHeaderState MultiColumnHeaderState => _multiColumnHeaderState;
