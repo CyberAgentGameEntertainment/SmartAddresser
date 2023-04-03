@@ -34,7 +34,7 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
             };
             RootItem = root;
 
-            if (state.MultiColumnHeaderState.columns.Length >= 1)
+            if (state.MultiColumnHeaderState != null)
             {
                 multiColumnHeader = new MultiColumnHeader(state.MultiColumnHeaderState);
                 multiColumnHeader.sortingChanged += OnSortingChanged;
@@ -310,6 +310,9 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
                         return _multiColumnHeaderState;
 
                     var columnStates = GetColumnStates();
+                    if (columnStates.Length == 0)
+                        return null;
+
                     _multiColumnHeaderState = new MultiColumnHeaderState(columnStates);
                     return _multiColumnHeaderState;
                 }
