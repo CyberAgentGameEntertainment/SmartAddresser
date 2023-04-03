@@ -34,7 +34,7 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
             };
             RootItem = root;
 
-            if (state.MultiColumnHeaderState != null)
+            if (state.MultiColumnHeaderState.columns.Length >= 1)
             {
                 multiColumnHeader = new MultiColumnHeader(state.MultiColumnHeaderState);
                 multiColumnHeader.sortingChanged += OnSortingChanged;
@@ -302,13 +302,18 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
         {
             [SerializeField] private MultiColumnHeaderState _multiColumnHeaderState;
 
-            public StateBase()
+            public MultiColumnHeaderState MultiColumnHeaderState
             {
-                var columnStates = GetColumnStates();
-                _multiColumnHeaderState = columnStates.Length == 0 ? null : new MultiColumnHeaderState(columnStates);
-            }
+                get
+                {
+                    if (_multiColumnHeaderState != null)
+                        return _multiColumnHeaderState;
 
-            public MultiColumnHeaderState MultiColumnHeaderState => _multiColumnHeaderState;
+                    var columnStates = GetColumnStates();
+                    _multiColumnHeaderState = new MultiColumnHeaderState(columnStates);
+                    return _multiColumnHeaderState;
+                }
+            }
 
             protected virtual MultiColumnHeaderState.Column[] GetColumnStates()
             {
