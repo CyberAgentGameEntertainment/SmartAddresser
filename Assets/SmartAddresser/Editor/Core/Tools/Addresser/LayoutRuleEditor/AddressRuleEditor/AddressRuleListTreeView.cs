@@ -27,7 +27,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
         public AddressRuleListTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
-            ColumnStates = state.ColumnStates;
             rowHeight = 16;
             Reload();
         }
@@ -137,18 +136,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
         }
 
         [Serializable]
-        public sealed class State : TreeViewState
+        public sealed class State : StateBase
         {
-            [SerializeField] private MultiColumnHeaderState.Column[] _columnStates;
-
-            public State()
-            {
-                _columnStates = GetColumnStates();
-            }
-
-            public MultiColumnHeaderState.Column[] ColumnStates => _columnStates;
-
-            private MultiColumnHeaderState.Column[] GetColumnStates()
+            protected override MultiColumnHeaderState.Column[] GetColumnStates()
             {
                 var groupsColumn = new MultiColumnHeaderState.Column
                 {
@@ -179,7 +169,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
                     width = 200,
                     minWidth = 50,
                     autoResize = true,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
                 var addressRuleColumn = new MultiColumnHeaderState.Column
                 {
@@ -189,7 +179,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
                     width = 200,
                     minWidth = 50,
                     autoResize = true,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
                 return new[] { groupsColumn, controlColumn, assetGroupsColumn, addressRuleColumn };
             }

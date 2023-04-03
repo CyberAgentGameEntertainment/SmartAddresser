@@ -32,7 +32,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
         public LayoutViewerTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
-            ColumnStates = state.ColumnStates;
             var badgeBgTexture = new Texture2D(1, 1);
             badgeBgTexture.SetPixel(0, 0, new Color32(34, 73, 128, 255));
             badgeBgTexture.Apply();
@@ -254,18 +253,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
         }
 
         [Serializable]
-        public sealed class State : TreeViewState
+        public sealed class State : StateBase
         {
-            [SerializeField] private MultiColumnHeaderState.Column[] _columnStates;
-
-            public State()
-            {
-                _columnStates = GetColumnStates();
-            }
-
-            public MultiColumnHeaderState.Column[] ColumnStates => _columnStates;
-
-            private MultiColumnHeaderState.Column[] GetColumnStates()
+            protected override MultiColumnHeaderState.Column[] GetColumnStates()
             {
                 var groupNameAddressColumn = new MultiColumnHeaderState.Column
                 {
@@ -295,7 +285,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     width = 100,
                     minWidth = 20,
                     autoResize = false,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
                 var versionsColumn = new MultiColumnHeaderState.Column
                 {
@@ -305,7 +295,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     width = 100,
                     minWidth = 20,
                     autoResize = false,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
                 return new[] { groupNameAddressColumn, assetPathColumn, labelsColumn, versionsColumn };
             }

@@ -34,7 +34,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
         public LabelRuleListTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
-            ColumnStates = state.ColumnStates;
             rowHeight = 16;
             Reload();
         }
@@ -216,18 +215,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
         }
 
         [Serializable]
-        public sealed class State : TreeViewState
+        public sealed class State : StateBase
         {
-            [SerializeField] private MultiColumnHeaderState.Column[] _columnStates;
-
-            public State()
-            {
-                _columnStates = GetColumnStates();
-            }
-
-            public MultiColumnHeaderState.Column[] ColumnStates => _columnStates;
-
-            private MultiColumnHeaderState.Column[] GetColumnStates()
+            protected override MultiColumnHeaderState.Column[] GetColumnStates()
             {
                 var nameColumn = new MultiColumnHeaderState.Column
                 {
@@ -236,7 +226,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
                     canSort = false,
                     width = 150,
                     minWidth = 50,
-                    autoResize = false,
+                    autoResize = true,
                     allowToggleVisibility = false
                 };
                 var assetGroupsColumn = new MultiColumnHeaderState.Column
@@ -247,7 +237,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
                     width = 200,
                     minWidth = 50,
                     autoResize = true,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
                 var labelRuleColumn = new MultiColumnHeaderState.Column
                 {
@@ -257,7 +247,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
                     width = 200,
                     minWidth = 50,
                     autoResize = true,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
                 return new[] { nameColumn, assetGroupsColumn, labelRuleColumn };
             }
