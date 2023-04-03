@@ -17,15 +17,14 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
     public abstract class TreeViewBase : TreeView
     {
         private readonly Dictionary<int, TreeViewItem> _items = new Dictionary<int, TreeViewItem>();
-        private MultiColumnHeaderState.Column[] _columnStates;
         private bool _isSortingNeeded;
         private int _searchColumnIndex;
 
         /// <summary>
         ///     Initialize.
         /// </summary>
-        /// <param name="treeViewState"></param>
-        protected TreeViewBase(TreeViewState treeViewState) : base(treeViewState)
+        /// <param name="state"></param>
+        protected TreeViewBase(StateBase state) : base(state)
         {
             var root = new TreeViewItem
             {
@@ -34,6 +33,14 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
                 depth = -1
             };
             RootItem = root;
+
+            if (state.MultiColumnHeaderState != null)
+            {
+                multiColumnHeader = new MultiColumnHeader(state.MultiColumnHeaderState);
+                multiColumnHeader.sortingChanged += OnSortingChanged;
+                _isSortingNeeded = true;
+                SortIfNeeded();
+            }
         }
 
         public TreeViewItem RootItem { get; }
@@ -52,33 +59,6 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
         }
 
         public Func<GenericMenu> RightClickMenuRequested { get; set; }
-
-        /// <summary>
-        ///     If you want to use multiple columns, override this property and specify the column information.
-        /// </summary>
-        protected MultiColumnHeaderState.Column[] ColumnStates
-        {
-            get => _columnStates;
-            set
-            {
-                if (value == null || value.Length == 0)
-                {
-                    multiColumnHeader = null;
-                }
-                else
-                {
-                    multiColumnHeader = CreateMultiColumnHeader(new MultiColumnHeaderState(value));
-                    multiColumnHeader.sortingChanged += OnSortingChanged;
-                }
-
-                _columnStates = value;
-            }
-        }
-
-        protected virtual MultiColumnHeader CreateMultiColumnHeader(MultiColumnHeaderState headerState)
-        {
-            return new MultiColumnHeader(headerState);
-        }
 
         /// <summary>
         ///     Callback for when the item is added.
@@ -288,7 +268,7 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
 
         private void SortIfNeeded()
         {
-            if (!_isSortingNeeded || multiColumnHeader == null) return;
+            if (!_isSortingNeeded || multiColumnHeader == null || rootItem == null) return;
 
             var keyColumnIndex = 0;
             var ascending = true;
@@ -315,6 +295,25 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
             foreach (var child in children)
                 if (child != null)
                     SortHierarchical(child.children, keyColumnIndex, ascending);
+        }
+
+        [Serializable]
+        public class StateBase : TreeViewState
+        {
+            [SerializeField] private MultiColumnHeaderState _multiColumnHeaderState;
+
+            public StateBase()
+            {
+                var columnStates = GetColumnStates();
+                _multiColumnHeaderState = columnStates == null ? null : new MultiColumnHeaderState(columnStates);
+            }
+
+            public MultiColumnHeaderState MultiColumnHeaderState => _multiColumnHeaderState;
+
+            protected virtual MultiColumnHeaderState.Column[] GetColumnStates()
+            {
+                return Array.Empty<MultiColumnHeaderState.Column>();
+            }
         }
     }
 }
