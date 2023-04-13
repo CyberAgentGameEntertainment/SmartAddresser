@@ -32,7 +32,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
         public LayoutViewerTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
-            ColumnStates = state.ColumnStates;
+            ColumnStates = state.GetColumnStates();
             var badgeBgTexture = new Texture2D(1, 1);
             badgeBgTexture.SetPixel(0, 0, new Color32(34, 73, 128, 255));
             badgeBgTexture.Apply();
@@ -258,56 +258,59 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
         {
             [SerializeField] private MultiColumnHeaderState.Column[] _columnStates;
 
-            public State()
+            public MultiColumnHeaderState.Column[] GetColumnStates()
             {
-                _columnStates = GetColumnStates();
-            }
+                var oldGroupNameAddressColumn = _columnStates?[0];
+                var oldAssetPathColumn = _columnStates?[1];
+                var oldLabelsColumn = _columnStates?[2];
+                var oldVersionsColumn = _columnStates?[3];
 
-            public MultiColumnHeaderState.Column[] ColumnStates => _columnStates;
-
-            private MultiColumnHeaderState.Column[] GetColumnStates()
-            {
                 var groupNameAddressColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldGroupNameAddressColumn?.width ?? 200,
+                    sortedAscending = oldGroupNameAddressColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Group Name / Address"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 200,
                     minWidth = 50,
                     autoResize = false,
                     allowToggleVisibility = false
                 };
                 var assetPathColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldAssetPathColumn?.width ?? 200,
+                    sortedAscending = oldAssetPathColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Asset Path"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 200,
                     minWidth = 50,
                     autoResize = false,
                     allowToggleVisibility = false
                 };
                 var labelsColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldLabelsColumn?.width ?? 100,
+                    sortedAscending = oldLabelsColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Labels"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 100,
                     minWidth = 20,
                     autoResize = false,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
                 var versionsColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldVersionsColumn?.width ?? 100,
+                    sortedAscending = oldVersionsColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Versions"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 100,
                     minWidth = 20,
                     autoResize = false,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
-                return new[] { groupNameAddressColumn, assetPathColumn, labelsColumn, versionsColumn };
+                _columnStates = new[] { groupNameAddressColumn, assetPathColumn, labelsColumn, versionsColumn };
+                return _columnStates;
             }
         }
     }

@@ -27,7 +27,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
         public AddressRuleListTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
-            ColumnStates = state.ColumnStates;
+            ColumnStates = state.GetColumnStates();
             rowHeight = 16;
             Reload();
         }
@@ -141,31 +141,31 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
         {
             [SerializeField] private MultiColumnHeaderState.Column[] _columnStates;
 
-            public State()
+            public MultiColumnHeaderState.Column[] GetColumnStates()
             {
-                _columnStates = GetColumnStates();
-            }
-
-            public MultiColumnHeaderState.Column[] ColumnStates => _columnStates;
-
-            private MultiColumnHeaderState.Column[] GetColumnStates()
-            {
+                var oldGroupsColumn = _columnStates?[0];
+                var oldControlColumn = _columnStates?[1];
+                var oldAssetGroupsColumn = _columnStates?[2];
+                var oldAddressRuleColumn = _columnStates?[3];
+                
                 var groupsColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldGroupsColumn?.width ?? 150,
+                    sortedAscending = oldGroupsColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Groups"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 150,
                     minWidth = 50,
                     autoResize = false,
                     allowToggleVisibility = false
                 };
                 var controlColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldControlColumn?.width ?? 60,
+                    sortedAscending = oldControlColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Control"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 60,
                     minWidth = 60,
                     maxWidth = 60,
                     autoResize = false,
@@ -173,25 +173,28 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
                 };
                 var assetGroupsColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldAssetGroupsColumn?.width ?? 200,
+                    sortedAscending = oldAssetGroupsColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Asset Groups"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 200,
                     minWidth = 50,
                     autoResize = true,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
                 var addressRuleColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldAddressRuleColumn?.width ?? 200,
+                    sortedAscending = oldAddressRuleColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Address Rule"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 200,
                     minWidth = 50,
                     autoResize = true,
-                    allowToggleVisibility = true
+                    allowToggleVisibility = false
                 };
-                return new[] { groupsColumn, controlColumn, assetGroupsColumn, addressRuleColumn };
+                _columnStates = new[] { groupsColumn, controlColumn, assetGroupsColumn, addressRuleColumn };
+                return _columnStates;
             }
         }
     }
