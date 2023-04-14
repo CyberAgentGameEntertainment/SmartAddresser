@@ -35,6 +35,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
         public VersionRuleListTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
+            ColumnStates = state.GetColumnStates();
             rowHeight = 16;
             Reload();
         }
@@ -216,41 +217,51 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
         }
 
         [Serializable]
-        public sealed class State : StateBase
+        public sealed class State : TreeViewState
         {
-            protected override MultiColumnHeaderState.Column[] GetColumnStates()
+            [SerializeField] private MultiColumnHeaderState.Column[] _columnStates;
+
+            public MultiColumnHeaderState.Column[] GetColumnStates()
             {
+                var oldNameColumn = _columnStates?[0];
+                var oldAssetGroupsColumn = _columnStates?[1];
+                var oldVersionRuleColumn = _columnStates?[2];
+                
                 var nameColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldNameColumn?.width ?? 150,
+                    sortedAscending = oldNameColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Name"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 150,
                     minWidth = 50,
-                    autoResize = true,
+                    autoResize = false,
                     allowToggleVisibility = false
                 };
                 var assetGroupsColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldAssetGroupsColumn?.width ?? 200,
+                    sortedAscending = oldAssetGroupsColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Asset Groups"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 200,
                     minWidth = 50,
                     autoResize = true,
                     allowToggleVisibility = false
                 };
                 var versionRuleColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldVersionRuleColumn?.width ?? 200,
+                    sortedAscending = oldVersionRuleColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Version Rule"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 200,
                     minWidth = 50,
                     autoResize = true,
                     allowToggleVisibility = false
                 };
-                return new[] { nameColumn, assetGroupsColumn, versionRuleColumn };
+                _columnStates = new[] { nameColumn, assetGroupsColumn, versionRuleColumn };
+                return _columnStates;
             }
         }
     }

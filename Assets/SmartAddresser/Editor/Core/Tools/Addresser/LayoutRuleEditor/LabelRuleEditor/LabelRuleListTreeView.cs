@@ -34,6 +34,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
         public LabelRuleListTreeView(State state) : base(state)
         {
             showAlternatingRowBackgrounds = true;
+            ColumnStates = state.GetColumnStates();
             rowHeight = 16;
             Reload();
         }
@@ -215,41 +216,51 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
         }
 
         [Serializable]
-        public sealed class State : StateBase
+        public sealed class State : TreeViewState
         {
-            protected override MultiColumnHeaderState.Column[] GetColumnStates()
+            [SerializeField] private MultiColumnHeaderState.Column[] _columnStates;
+
+            public MultiColumnHeaderState.Column[] GetColumnStates()
             {
+                var oldNameColumn = _columnStates?[0];
+                var oldAssetGroupsColumn = _columnStates?[1];
+                var oldLabelRuleColumn = _columnStates?[2];
+                
                 var nameColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldNameColumn?.width ?? 150,
+                    sortedAscending = oldNameColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Name"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 150,
                     minWidth = 50,
-                    autoResize = true,
+                    autoResize = false,
                     allowToggleVisibility = false
                 };
                 var assetGroupsColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldAssetGroupsColumn?.width ?? 200,
+                    sortedAscending = oldAssetGroupsColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Asset Groups"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 200,
                     minWidth = 50,
                     autoResize = true,
                     allowToggleVisibility = false
                 };
                 var labelRuleColumn = new MultiColumnHeaderState.Column
                 {
+                    width = oldLabelRuleColumn?.width ?? 200,
+                    sortedAscending = oldLabelRuleColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Label Rule"),
                     headerTextAlignment = TextAlignment.Center,
                     canSort = false,
-                    width = 200,
                     minWidth = 50,
                     autoResize = true,
                     allowToggleVisibility = false
                 };
-                return new[] { nameColumn, assetGroupsColumn, labelRuleColumn };
+                _columnStates = new[] { nameColumn, assetGroupsColumn, labelRuleColumn };
+                return _columnStates;
             }
         }
     }
