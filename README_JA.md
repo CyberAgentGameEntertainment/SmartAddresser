@@ -307,7 +307,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 - 1.2.3
 - 2.1.0-preview.7
 
-有効なバージョンの範囲を表現する方法については、Unity の [Version Define expressions](https://docs.unity3d.com/Manual/ScriptCompilationAssemblyDefinitionFiles.html) の仕様に合わせています。  
+有効なバージョンの範囲を表現する方法については、Unity の [Version Define expressions](https://docs.unity3d.com/Manual/ScriptCompilationAssemblyDefinitionFiles.html#version-define-expressions) の仕様に合わせています。  
 すなわち以下のようにバージョンxの範囲を表現することができます。
 
 - [1.3,3.4.1] は 1.3.0 <= x <= 3.4.1 を示す
@@ -370,7 +370,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 
 ### 独自のバージョン範囲表現を使う
 
-上述の通り、有効なバージョンの範囲を表現する方法については、Unity の [Version Define expressions](https://docs.unity3d.com/Manual/ScriptCompilationAssemblyDefinitionFiles.html) の仕様に合わせています。
+上述の通り、有効なバージョンの範囲を表現する方法については、Unity の [Version Define expressions](https://docs.unity3d.com/Manual/ScriptCompilationAssemblyDefinitionFiles.html#version-define-expressions) の仕様に合わせています。
 
 `IVersionExpressionParser`を実装したクラスを作成して **Project Settings > Smart Addresser > Version Expression Parser** にそのスクリプトをアサインすることで、独自のバージョン範囲表現を使うこともできます。
 

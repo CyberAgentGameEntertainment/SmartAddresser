@@ -297,7 +297,7 @@ For example, you can use the following versioning.
 * 1.2.3
 * 2.1.0-preview.7
 
-Expression of version range follows [Version Define expressions](https://docs.unity3d.com/Manual/ScriptCompilationAssemblyDefinitionFiles.html).
+Expression of version range follows [Version Define expressions](https://docs.unity3d.com/Manual/ScriptCompilationAssemblyDefinitionFiles.html#version-define-expressions).
 So you can express the version x range as follows.
 
 * [1.3,3.4.1] means 1.3.0 <= x <= 3.4.1
@@ -360,7 +360,7 @@ If you build **1.2.0** and then build **1.3.0**, not only asset B but also asset
 Normally, such as dependencies are not constructed, but beware.
 
 ### Use your own version range expression
-As noted above, the version range expression follows [Version Define expressions](https://docs.unity3d.com/Manual/ScriptCompilationAssemblyDefinitionFiles.html).
+As noted above, the version range expression follows [Version Define expressions](https://docs.unity3d.com/Manual/ScriptCompilationAssemblyDefinitionFiles.html#version-define-expressions).
 
 If you want to use your own version range expression, you can implement the `IVersionExpressionParser` interface and set the script to the **Project Settings > Smart Addresser > Version Expression Parser**.
 
