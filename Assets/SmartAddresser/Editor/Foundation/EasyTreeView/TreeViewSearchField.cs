@@ -118,8 +118,7 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
                         // If the columnName contains a slash, replace it with the Unicode slash \u2215.
                         // Otherwise, the slash will be recognized as a menu hierarchy separator.
                         // https://answers.unity.com/questions/398495/can-genericmenu-item-content-display-.html
-                        if (columnName.Contains("/"))
-                            columnName = columnName.Replace("/", "\u2215");
+                        columnName = columnName.Replace("/", "\u2215");
 
                         var index = targetColumn.Key;
                         menu.AddItem(new GUIContent(columnName), _selectedColumnIndex == index, () =>
