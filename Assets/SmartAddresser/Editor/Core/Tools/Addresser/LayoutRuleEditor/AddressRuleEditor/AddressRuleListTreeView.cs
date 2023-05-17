@@ -112,7 +112,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
                         ? "[Missing Reference]"
                         : item.Rule.AddressableGroup.name;
                 case Columns.Control:
-                    return item.Rule.Control.ToString();
+                    return item.Rule.Control.Value.ToString();
                 case Columns.AssetGroups:
                     if (GetSelection().FirstOrDefault() == item.id)
                         item.Rule.RefreshAssetGroupDescription();

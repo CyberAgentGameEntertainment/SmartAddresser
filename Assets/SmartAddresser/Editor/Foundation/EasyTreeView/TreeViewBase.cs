@@ -246,7 +246,10 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
 
         private bool DoesCellMatchSearch(TreeViewItem item, int columnIndex, string search)
         {
-            return GetTextForSearch(item, columnIndex).IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
+            var text = GetTextForSearch(item, columnIndex);
+            if (string.IsNullOrEmpty(text))
+                return false;
+            return text.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         protected override TreeViewItem BuildRoot()

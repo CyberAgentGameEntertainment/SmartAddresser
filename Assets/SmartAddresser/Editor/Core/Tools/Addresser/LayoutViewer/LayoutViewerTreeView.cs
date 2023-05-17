@@ -164,6 +164,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
         protected override string GetTextForSearch(TreeViewItem item, int columnIndex)
         {
+            // GroupItem is not a search target.
+            if (item is GroupItem)
+                return null;
             return GetText(item, columnIndex);
         }
 
