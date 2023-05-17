@@ -75,7 +75,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     switch ((Columns)columnIndex)
                     {
                         case Columns.GroupNameOrAddress:
-                            item.displayName = GetText(item, columnIndex);
+                            item.displayName = GetTextForDisplay(item, columnIndex);
                             item.icon = errorTypeIcon;
                             base.CellGUI(columnIndex, cellRect, args);
                             break;
@@ -98,10 +98,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                             statusIconRect.width = statusIconRect.height;
                             labelRect.xMin += statusIconRect.width + 2.0f;
                             GUI.DrawTexture(statusIconRect, errorTypeIcon);
-                            GUI.Label(labelRect, GetText(item, columnIndex));
+                            GUI.Label(labelRect, GetTextForDisplay(item, columnIndex));
                             break;
                         case Columns.AssetPath:
-                            GUI.Label(cellRect, GetText(item, columnIndex));
+                            GUI.Label(cellRect, GetTextForDisplay(item, columnIndex));
                             break;
                         case Columns.Labels:
                             DrawBadges(entryItem.Entry.Labels, new Vector2(cellRect.x, cellRect.y + 1),
@@ -162,9 +162,25 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                 : items.OrderByDescending(KeySelector, Comparer<string>.Create(EditorUtility.NaturalCompare));
         }
 
+        private string GetTextForDisplay(TreeViewItem item, int columnIndex)
+        {
+            return hasSearch ? GetTextForSearch(item, columnIndex) : GetText(item, columnIndex);
+        }
+
         protected override string GetTextForSearch(TreeViewItem item, int columnIndex)
         {
-            return GetText(item, columnIndex);
+            // GroupItem is not a search target.
+            if (item is GroupItem)
+                return null;
+
+            if (columnIndex != (int)Columns.GroupNameOrAddress)
+                return GetText(item, columnIndex);
+
+            var groupItem = item.parent;
+            var groupText = GetText(groupItem, columnIndex);
+            var entryText = GetText(item, columnIndex);
+            return $"[{groupText}] {entryText}";
+
         }
 
         protected override bool CanMultiSelect(TreeViewItem item)
