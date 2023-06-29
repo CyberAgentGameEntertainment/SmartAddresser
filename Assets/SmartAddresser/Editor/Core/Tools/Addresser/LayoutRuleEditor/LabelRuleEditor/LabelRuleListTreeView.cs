@@ -23,6 +23,24 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
             AssetGroups,
             LabelRule
         }
+        
+        private GUIStyle _cellLabelStyle;
+
+        private GUIStyle CellLabelStyle
+        {
+            get
+            {
+                if (_cellLabelStyle == null)
+                {
+                    _cellLabelStyle = new GUIStyle(EditorStyles.label)
+                    {
+                        wordWrap = false
+                    };
+                }
+                
+                return _cellLabelStyle;
+            }
+        }
 
         [NonSerialized] private int _currentId;
 
@@ -62,10 +80,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
                     base.CellGUI(columnIndex, cellRect, args);
                     break;
                 case Columns.AssetGroups:
-                    GUI.Label(cellRect, GetText(item, columnIndex));
+                    GUI.Label(cellRect, GetText(item, columnIndex), CellLabelStyle);
                     break;
                 case Columns.LabelRule:
-                    GUI.Label(cellRect, GetText(item, columnIndex));
+                    GUI.Label(cellRect, GetText(item, columnIndex), CellLabelStyle);
                     break;
                 default:
                     throw new NotImplementedException();
