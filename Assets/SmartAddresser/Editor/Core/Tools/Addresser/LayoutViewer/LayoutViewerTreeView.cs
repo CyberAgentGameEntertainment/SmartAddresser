@@ -21,7 +21,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             Labels,
             Versions
         }
-
+        
+        private static readonly int[] DefaultSkipSortingDepths = { 0 };
+        
         private readonly Texture2D _badgeBackgroundTexture;
         private readonly Texture2D _failedTexture;
         private readonly Texture2D _successTexture;
@@ -203,7 +205,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
         protected override IEnumerable<int> GetSkipSortingDepths()
         {
             // Exclude GroupItem from sorting targets.
-            return new[] { 0 };
+            return DefaultSkipSortingDepths;
         }
 
         protected override bool CanMultiSelect(TreeViewItem item)
