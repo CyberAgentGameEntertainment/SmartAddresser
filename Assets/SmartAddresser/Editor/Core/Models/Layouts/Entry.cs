@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartAddresser.Editor.Core.Models.Shared;
 using UnityEngine;
 
@@ -20,13 +21,14 @@ namespace SmartAddresser.Editor.Core.Models.Layouts
         [NonSerialized] private bool _isErrorTypeDirty = true;
         [NonSerialized] private bool _isMessagesDirty = true;
 
-        public Entry(string address, string assetPath, string[] labels, string[] versions)
+        public Entry(string address, string assetPath, IReadOnlyList<string> labels, IReadOnlyList<string> versions)
         {
             _id = IdentifierFactory.Create();
             _address = address;
             _assetPath = assetPath;
-            _labels = labels ?? Array.Empty<string>();
-            _versions = versions ?? Array.Empty<string>();
+            // Sort labels and versions for sorting of LayoutViewer.
+            _labels = labels == null ? Array.Empty<string>() : labels.OrderBy(x => x).ToArray();
+            _versions = versions == null ? Array.Empty<string>() : versions.OrderBy(x => x).ToArray();
         }
 
         public string Id => _id;

@@ -95,7 +95,7 @@ namespace SmartAddresser.Editor.Core.Models.Services
                         versions.Add(version);
                     }
 
-                    var entry = new Entry(address, assetPath, labels, versions.ToArray());
+                    var entry = new Entry(address, assetPath, labels, versions);
                     group.Entries.Add(entry);
                 }
 
