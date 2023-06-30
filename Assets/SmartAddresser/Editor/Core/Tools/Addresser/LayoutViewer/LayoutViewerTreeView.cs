@@ -21,11 +21,30 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             Labels,
             Versions
         }
-
+        
+        private static readonly int[] DefaultSkipSortingDepths = { 0 };
+        
         private readonly Texture2D _badgeBackgroundTexture;
         private readonly Texture2D _failedTexture;
         private readonly Texture2D _successTexture;
         private readonly Texture2D _warningTexture;
+        private GUIStyle _cellLabelStyle;
+
+        private GUIStyle CellLabelStyle
+        {
+            get
+            {
+                if (_cellLabelStyle == null)
+                {
+                    _cellLabelStyle = new GUIStyle(EditorStyles.label)
+                    {
+                        wordWrap = false
+                    };
+                }
+                
+                return _cellLabelStyle;
+            }
+        }
 
         [NonSerialized] private int _currentId;
 
@@ -98,10 +117,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                             statusIconRect.width = statusIconRect.height;
                             labelRect.xMin += statusIconRect.width + 2.0f;
                             GUI.DrawTexture(statusIconRect, errorTypeIcon);
-                            GUI.Label(labelRect, GetTextForDisplay(item, columnIndex));
+                            GUI.Label(labelRect, GetTextForDisplay(item, columnIndex), CellLabelStyle);
                             break;
                         case Columns.AssetPath:
-                            GUI.Label(cellRect, GetTextForDisplay(item, columnIndex));
+                            GUI.Label(cellRect, GetTextForDisplay(item, columnIndex), CellLabelStyle);
                             break;
                         case Columns.Labels:
                             DrawBadges(entryItem.Entry.Labels, new Vector2(cellRect.x, cellRect.y + 1),
@@ -142,7 +161,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                 GUI.DrawTexture(textureRect, _badgeBackgroundTexture, ScaleMode.StretchToFill, true, 0, Color.white,
                     Vector4.zero, cornerRadius);
                 var labelRect = new Rect(pos.x + 6, pos.y, labelWidth, height);
-                GUI.Label(labelRect, text);
+                GUI.Label(labelRect, text, CellLabelStyle);
 
                 pos.x += textureRect.width;
                 pos.x += 3; // space between badges
@@ -181,6 +200,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             var entryText = GetText(item, columnIndex);
             return $"[{groupText}] {entryText}";
 
+        }
+
+        protected override IEnumerable<int> GetSkipSortingDepths()
+        {
+            // Exclude GroupItem from sorting targets.
+            return DefaultSkipSortingDepths;
         }
 
         protected override bool CanMultiSelect(TreeViewItem item)
@@ -287,7 +312,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     sortedAscending = oldGroupNameAddressColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Group Name / Address"),
                     headerTextAlignment = TextAlignment.Center,
-                    canSort = false,
+                    canSort = true,
                     minWidth = 50,
                     autoResize = false,
                     allowToggleVisibility = false
@@ -298,7 +323,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     sortedAscending = oldAssetPathColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Asset Path"),
                     headerTextAlignment = TextAlignment.Center,
-                    canSort = false,
+                    canSort = true,
                     minWidth = 50,
                     autoResize = false,
                     allowToggleVisibility = false
@@ -309,7 +334,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     sortedAscending = oldLabelsColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Labels"),
                     headerTextAlignment = TextAlignment.Center,
-                    canSort = false,
+                    canSort = true,
                     minWidth = 20,
                     autoResize = false,
                     allowToggleVisibility = false
@@ -320,7 +345,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     sortedAscending = oldVersionsColumn?.sortedAscending ?? true,
                     headerContent = new GUIContent("Versions"),
                     headerTextAlignment = TextAlignment.Center,
-                    canSort = false,
+                    canSort = true,
                     minWidth = 20,
                     autoResize = false,
                     allowToggleVisibility = false

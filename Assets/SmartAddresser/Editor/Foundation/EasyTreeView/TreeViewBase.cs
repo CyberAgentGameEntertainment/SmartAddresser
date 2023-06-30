@@ -310,7 +310,11 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
         {
             if (children == null) return;
 
-            var orderedChildren = OrderItems(children, keyColumnIndex, ascending).ToList();
+            var depth = children[0].depth;
+            var isSkipSortingTarget = GetSkipSortingDepths().Contains(depth);
+            var orderedChildren = isSkipSortingTarget
+                ? new List<TreeViewItem>(children)
+                : OrderItems(children, keyColumnIndex, ascending).ToList();
 
             children.Clear();
             foreach (var orderedChild in orderedChildren) children.Add(orderedChild);
@@ -318,6 +322,11 @@ namespace SmartAddresser.Editor.Foundation.EasyTreeView
             foreach (var child in children)
                 if (child != null)
                     SortHierarchical(child.children, keyColumnIndex, ascending);
+        }
+
+        protected virtual IEnumerable<int> GetSkipSortingDepths()
+        {
+            return Array.Empty<int>();
         }
     }
 }

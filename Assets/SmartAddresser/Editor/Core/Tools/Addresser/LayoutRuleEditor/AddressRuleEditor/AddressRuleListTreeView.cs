@@ -21,6 +21,24 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             AssetGroups,
             AddressRule
         }
+        
+        private GUIStyle _cellLabelStyle;
+
+        private GUIStyle CellLabelStyle
+        {
+            get
+            {
+                if (_cellLabelStyle == null)
+                {
+                    _cellLabelStyle = new GUIStyle(EditorStyles.label)
+                    {
+                        wordWrap = false
+                    };
+                }
+                
+                return _cellLabelStyle;
+            }
+        }
 
         [NonSerialized] private int _currentId;
 
@@ -52,7 +70,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
             {
                 case Columns.Groups:
                     GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly && item.Rule.Control.Value;
-                    GUI.Label(cellRect, GetText(item, columnIndex));
+                    GUI.Label(cellRect, GetText(item, columnIndex), CellLabelStyle);
                     break;
                 case Columns.Control:
                     GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly;
@@ -62,11 +80,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
                     break;
                 case Columns.AssetGroups:
                     GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly && item.Rule.Control.Value;
-                    GUI.Label(cellRect, GetText(item, columnIndex));
+                    GUI.Label(cellRect, GetText(item, columnIndex), CellLabelStyle);
                     break;
                 case Columns.AddressRule:
                     GUI.enabled = addressableGroup != null && !addressableGroup.ReadOnly && item.Rule.Control.Value;
-                    GUI.Label(cellRect, GetText(item, columnIndex));
+                    GUI.Label(cellRect, GetText(item, columnIndex), CellLabelStyle);
                     break;
                 default:
                     throw new NotImplementedException();
