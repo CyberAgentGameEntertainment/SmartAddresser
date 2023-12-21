@@ -9,6 +9,7 @@ using SmartAddresser.Editor.Core.Tools.Shared;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -213,14 +214,22 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
             var id = ids[0];
             var treeViewItem = _view.TreeView.GetItem(id);
-            if (treeViewItem is LayoutViewerTreeView.GroupItem)
+            if (treeViewItem is LayoutViewerTreeView.GroupItem groupItem)
             {
                 _view.Message = string.Empty;
+                var asset = groupItem.Group.AddressableGroup;
+                EditorGUIUtility.PingObject(asset);
+                Selection.activeObject = asset;
                 return;
             }
 
             if (treeViewItem is LayoutViewerTreeView.EntryItem entryItem)
+            {
                 _view.Message = entryItem.Entry.Messages;
+                var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(entryItem.Entry.AssetPath);
+                EditorGUIUtility.PingObject(asset);
+                Selection.activeObject = asset;
+            }
         }
     }
 }
