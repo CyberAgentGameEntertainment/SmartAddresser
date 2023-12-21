@@ -9,7 +9,6 @@ using SmartAddresser.Editor.Core.Tools.Shared;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
-using UnityEditor.AddressableAssets;
 using UnityEngine;
 using UnityEngine.Assertions;
 
