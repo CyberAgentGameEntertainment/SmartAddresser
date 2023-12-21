@@ -64,7 +64,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 if (objectIsFolder)
                 {
                     var isInclusion = !isSelf && !isFolder &&
-                                      assetPath.StartsWith(objectAssetPath, StringComparison.Ordinal);
+                                      assetPath.StartsWith(objectAssetPath + "/", StringComparison.Ordinal);
                     switch (FolderTargetingMode)
                     {
                         case FolderTargetingMode.IncludedNonFolderAssets:
@@ -72,11 +72,11 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                                 return true;
                             break;
                         case FolderTargetingMode.Self:
-                            if (isSelf)
+                            if (isSelf && isFolder)
                                 return true;
                             break;
                         case FolderTargetingMode.Both:
-                            if (isInclusion || isSelf)
+                            if (isInclusion || (isSelf && isFolder))
                                 return true;
                             break;
                         default:

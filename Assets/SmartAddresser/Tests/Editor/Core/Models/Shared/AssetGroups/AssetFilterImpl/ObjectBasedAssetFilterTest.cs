@@ -40,6 +40,25 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset));
         }
 
+        [TestCase(FolderTargetingMode.IncludedNonFolderAssets, TestAssetRelativePaths.Dummy1.Folder, typeof(DefaultAsset), ExpectedResult = false)]
+        [TestCase(FolderTargetingMode.IncludedNonFolderAssets, TestAssetRelativePaths.Dummy1.PrefabDummy, typeof(GameObject), ExpectedResult = false)]
+        [TestCase(FolderTargetingMode.IncludedNonFolderAssets, TestAssetRelativePaths.PrefabDummy, typeof(GameObject), ExpectedResult = false)]
+        [TestCase(FolderTargetingMode.Self, TestAssetRelativePaths.Dummy1.Folder, typeof(DefaultAsset), ExpectedResult = false)]
+        [TestCase(FolderTargetingMode.Self, TestAssetRelativePaths.Dummy1.PrefabDummy, typeof(GameObject), ExpectedResult = false)]
+        [TestCase(FolderTargetingMode.Self, TestAssetRelativePaths.PrefabDummy, typeof(GameObject), ExpectedResult = false)]
+        [TestCase(FolderTargetingMode.Both, TestAssetRelativePaths.Dummy1.Folder, typeof(DefaultAsset), ExpectedResult = false)]
+        [TestCase(FolderTargetingMode.Both, TestAssetRelativePaths.Dummy1.PrefabDummy, typeof(GameObject), ExpectedResult = false)]
+        [TestCase(FolderTargetingMode.Both, TestAssetRelativePaths.PrefabDummy, typeof(GameObject), ExpectedResult = false)]
+        public bool IsMatch_ObjectIsFolder_ContainsFilterDirectoryName_ReturnFalse(FolderTargetingMode targetingMode, string relativeAssetPath, Type assetType)
+        {
+            var filter = new ObjectBasedAssetFilter();
+            filter.FolderTargetingMode = targetingMode;
+            filter.Object.Value = AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Dummy.Folder);
+            filter.SetupForMatching();
+            var assetPath = TestAssetPaths.CreateAbsoluteAssetPath(relativeAssetPath);
+            return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset));
+        }
+
         [Test]
         public void IsMatch_RegisterNotMatchedObject_ReturnFalse()
         {
@@ -69,6 +88,16 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Object.AddValue(AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Texture256));
             filter.SetupForMatching();
             Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture64, typeof(Texture2D), false), Is.False);
+        }
+        
+        [Test]
+        public void IsMatch_AnotherDirectoryContainsFilterDirectoryName_ReturnFalse()
+        {
+            var filter = new ObjectBasedAssetFilter();
+            filter.Object.IsListMode = true;
+            filter.Object.AddValue(AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Dummy.Folder));
+            filter.SetupForMatching();
+            Assert.That(filter.IsMatch(TestAssetPaths.Dummy1.PrefabDummy, typeof(GameObject), false), Is.False);
         }
     }
 }

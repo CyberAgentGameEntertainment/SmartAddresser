@@ -10,6 +10,7 @@ namespace SmartAddresser.Tests.Editor.Core
 {
     public static class TestAssetRelativePaths
     {
+        public const string PrefabDummy = "Dummy";
         public static class Shared
         {
             public const string Folder = "Shared";
@@ -24,6 +25,12 @@ namespace SmartAddresser.Tests.Editor.Core
         {
             public const string Folder = "Dummy";
             public const string PrefabDummy = Folder + "/prefab_dummy.prefab";
+        }
+        
+        public static class Dummy1
+        {
+            public const string Folder = "Dummy1";
+            public const string PrefabDummy = Folder + "/prefab_dummy_1.prefab";
         }
     }
 
@@ -50,6 +57,7 @@ namespace SmartAddresser.Tests.Editor.Core
             return $"{Folder}/{relativeAssetPath}";
         }
 
+        public static string DummyPrefab => CreateAbsoluteAssetPath(TestAssetRelativePaths.PrefabDummy);
         public static class Shared
         {
             public static string Folder => CreateAbsoluteAssetPath(TestAssetRelativePaths.Shared.Folder);
@@ -64,6 +72,12 @@ namespace SmartAddresser.Tests.Editor.Core
         {
             public static string Folder => CreateAbsoluteAssetPath(TestAssetRelativePaths.Dummy.Folder);
             public static string PrefabDummy => CreateAbsoluteAssetPath(TestAssetRelativePaths.Dummy.PrefabDummy);
+        }
+
+        public static class Dummy1
+        {
+            public static string Folder => CreateAbsoluteAssetPath(TestAssetRelativePaths.Dummy1.Folder);
+            public static string PrefabDummy => CreateAbsoluteAssetPath(TestAssetRelativePaths.Dummy1.PrefabDummy);
         }
     }
 }
