@@ -14,7 +14,7 @@ namespace SmartAddresser.Editor.Foundation.AssetDatabaseAdapter
             {
                 return allAssetPaths;
             }
-            Array.Sort(allAssetPaths);
+            Array.Sort(allAssetPaths, StringComparer.OrdinalIgnoreCase);
             return allAssetPaths;
         }
 
