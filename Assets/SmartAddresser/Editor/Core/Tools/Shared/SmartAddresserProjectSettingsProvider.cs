@@ -82,6 +82,13 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                         projectSettings.ValidationSettings = new SmartAddresserProjectSettings.Validation(duplicateAddresses,
                             duplicateAssetPaths, entryHasMultipleVersions);
                 }
+
+                using (var ccs = new EditorGUI.ChangeCheckScope())
+                {
+                    var sortByAssetPaths = EditorGUILayout.Toggle("Sort by assetPaths", projectSettings.SortByAssetPaths);
+                    if (ccs.changed)
+                        projectSettings.SortByAssetPaths = sortByAssetPaths;
+                }
             }
         }
 
