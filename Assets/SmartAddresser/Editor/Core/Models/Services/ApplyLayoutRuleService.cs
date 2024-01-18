@@ -51,15 +51,17 @@ namespace SmartAddresser.Editor.Core.Models.Services
                 .Where(x => x.Control.Value)
                 .Select(x => x.AddressableGroup.Name);
             foreach (var groupName in groupNames)
-                _addressableSettingsAdapter.RemoveAllEntries(groupName);
+                _addressableSettingsAdapter.RemoveAllEntries(groupName, false);
 
             // Add all entries to the addressable asset system.
             var versionExpression = _layoutRule.Settings.VersionExpression;
             foreach (var assetPath in _assetDatabaseAdapter.GetAllAssetPaths())
             {
                 var guid = _assetDatabaseAdapter.AssetPathToGUID(assetPath);
-                TryAddEntry(guid, false, versionExpression.Value);
+                TryAddEntry(guid, false, false, versionExpression.Value);
             }
+            
+            _addressableSettingsAdapter.InvokeBatchModificationEvent();
         }
 
         /// <summary>
@@ -71,12 +73,16 @@ namespace SmartAddresser.Editor.Core.Models.Services
         ///     When you call this method multiple times, set this false and call <see cref="Setup" /> before.
         ///     If you call this method only once, set this true and don't call <see cref="Setup" />.
         /// </param>
+        /// <param name="invokeModificationEvent">
+        ///     If true, call <see cref="AddressableAssetSettings.OnModification" /> after
+        ///     creating or moving.
+        /// </param>
         /// <param name="versionExpression"></param>
         /// <returns>
         ///     If the layout rule was applied to the addressable asset system, return true.
         ///     Returns false if no suitable layout rule was found.
         /// </returns>
-        public bool TryAddEntry(string assetGuid, bool doSetup, string versionExpression = null)
+        public bool TryAddEntry(string assetGuid, bool doSetup, bool invokeModificationEvent, string versionExpression = null)
         {
             var assetPath = _assetDatabaseAdapter.GUIDToAssetPath(assetGuid);
             var assetType = _assetDatabaseAdapter.GetMainAssetTypeAtPath(assetPath);
@@ -111,7 +117,7 @@ namespace SmartAddresser.Editor.Core.Models.Services
             }
 
             // Set group and address.
-            var entryAdapter = _addressableSettingsAdapter.CreateOrMoveEntry(addressableGroupName, assetGuid);
+            var entryAdapter = _addressableSettingsAdapter.CreateOrMoveEntry(addressableGroupName, assetGuid, invokeModificationEvent);
             entryAdapter.SetAddress(address);
 
             // Add labels to addressable settings if not exists.
@@ -131,6 +137,11 @@ namespace SmartAddresser.Editor.Core.Models.Services
                 entryAdapter.SetLabel(label, true);
 
             return true;
+        }
+        
+        public void InvokeBatchModificationEvent()
+        {
+            _addressableSettingsAdapter.InvokeBatchModificationEvent();
         }
     }
 }
