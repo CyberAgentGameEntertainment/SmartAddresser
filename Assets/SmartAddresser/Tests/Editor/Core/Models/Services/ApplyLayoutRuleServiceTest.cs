@@ -38,7 +38,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.TryAddEntry(assetGuid, true);
+            var result = service.TryAddEntry(assetGuid, true, false);
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(result, Is.True);
             Assert.That(assetEntry, Is.Not.Null);
@@ -61,7 +61,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
             service.Setup();
-            var result = service.TryAddEntry(assetGuid, false);
+            var result = service.TryAddEntry(assetGuid, false, false);
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(result, Is.True);
             Assert.That(assetEntry, Is.Not.Null);
@@ -84,7 +84,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.TryAddEntry(assetGuid, true);
+            var result = service.TryAddEntry(assetGuid, true, false);
             Assert.That(result, Is.False);
         }
 
@@ -103,7 +103,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.TryAddEntry(assetGuid, true);
+            var result = service.TryAddEntry(assetGuid, true, false);
             Assert.That(result, Is.False);
         }
 
@@ -122,7 +122,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.TryAddEntry(assetGuid, true, "[1.2.3,1.2.4)");
+            var result = service.TryAddEntry(assetGuid, true, false, "[1.2.3,1.2.4)");
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(result, Is.True);
             Assert.That(assetEntry, Is.Not.Null);
@@ -145,7 +145,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.TryAddEntry(assetGuid, true, "(1.2.3,1.3)");
+            var result = service.TryAddEntry(assetGuid, true, false, "(1.2.3,1.3)");
             Assert.That(result, Is.False);
         }
 
@@ -164,7 +164,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            Assert.That(() => service.TryAddEntry(assetGuid, true, "(1.2.3, 1.3)"), Throws.InstanceOf<Exception>());
+            Assert.That(() => service.TryAddEntry(assetGuid, true, false, "(1.2.3, 1.3)"), Throws.InstanceOf<Exception>());
         }
 
         [Test]
@@ -183,7 +183,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new ApplyLayoutRuleService(layoutRule, new UnityVersionExpressionParser(),
                 addressableSettingsAdapter, assetDatabaseAdapter);
 
-            var result = service.TryAddEntry(assetGuid, true);
+            var result = service.TryAddEntry(assetGuid, true, false);
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(result, Is.True);
             Assert.That(assetEntry, Is.Not.Null);
