@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using UnityEditor;
 
 namespace SmartAddresser.Editor.Foundation.AssetDatabaseAdapter
@@ -8,9 +7,8 @@ namespace SmartAddresser.Editor.Foundation.AssetDatabaseAdapter
     {
         public string[] GetAllAssetPaths()
         {
-            var allAssetPaths = AssetDatabase.GetAllAssetPaths().ToList();
-            allAssetPaths = allAssetPaths.OrderBy(a => Guid.NewGuid()).ToList();
-            return allAssetPaths.ToArray();
+            var allAssetPaths = AssetDatabase.GetAllAssetPaths();
+            return allAssetPaths;
         }
 
         public string GUIDToAssetPath(string guid)
