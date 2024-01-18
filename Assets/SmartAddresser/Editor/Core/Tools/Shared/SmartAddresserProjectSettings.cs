@@ -12,6 +12,7 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
         [SerializeField] private LayoutRuleData primaryData;
         [SerializeField] private MonoScript versionExpressionParser;
         [SerializeField] private Validation validation = new Validation();
+        [SerializeField] private bool sortByAssetPaths = false;
 
         public LayoutRuleData PrimaryData
         {
@@ -49,6 +50,19 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
 
                 validation = value;
                 Save(true);
+            }
+        }
+
+        public bool SortByAssetPaths
+        {
+            get => sortByAssetPaths;
+            set
+            {
+                if (value == sortByAssetPaths)
+                    return;
+
+                sortByAssetPaths = value;
+                Save(true);    
             }
         }
 
