@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using SmartAddresser.Editor.Foundation.SemanticVersioning;
-using UnityEngine;
+using UnityEditor.AddressableAssets.Settings;
 
 namespace SmartAddresser.Editor.Core.Models.Services
 {
@@ -45,21 +46,20 @@ namespace SmartAddresser.Editor.Core.Models.Services
         {
             Setup();
 
-            // Remove all entries in the addressable groups that are under control of this layout rule.
-            var groupNames = _layoutRule
-                .AddressRules
-                .Where(x => x.Control.Value)
-                .Select(x => x.AddressableGroup.Name);
-            foreach (var groupName in groupNames)
-                _addressableSettingsAdapter.RemoveAllEntries(groupName, false);
-
             // Add all entries to the addressable asset system.
+            var removeTargetAssetGuids = new List<string>();
             var versionExpression = _layoutRule.Settings.VersionExpression;
             foreach (var assetPath in _assetDatabaseAdapter.GetAllAssetPaths())
             {
                 var guid = _assetDatabaseAdapter.AssetPathToGUID(assetPath);
-                TryAddEntry(guid, false, false, versionExpression.Value);
+                var result = TryAddEntry(guid, false, false, versionExpression.Value);
+                if (!result)
+                    removeTargetAssetGuids.Add(guid);
             }
+            
+            // Remove all entries that are not under control of this layout rule (if the entry is exists).
+            foreach (var guid in removeTargetAssetGuids)
+                _addressableSettingsAdapter.RemoveEntry(guid, false);
             
             _addressableSettingsAdapter.InvokeBatchModificationEvent();
         }
