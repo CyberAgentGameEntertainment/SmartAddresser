@@ -5,7 +5,6 @@ using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
-using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Importer
 {
