@@ -16,7 +16,7 @@ namespace SmartAddresser.Tests.Editor.Foundation
         }
 
         /// <inheritdoc />
-        public IAddressableAssetEntryAdapter CreateOrMoveEntry(string groupName, string guid)
+        public IAddressableAssetEntryAdapter CreateOrMoveEntry(string groupName, string guid, bool invokeModificationEvent)
         {
             if (_guidToEntryMap.TryGetValue(guid, out var entry))
             {
@@ -36,12 +36,12 @@ namespace SmartAddresser.Tests.Editor.Foundation
         }
 
         /// <inheritdoc />
-        public bool RemoveEntry(string guid)
+        public bool RemoveEntry(string guid, bool invokeModificationEvent)
         {
             return _guidToEntryMap.Remove(guid);
         }
 
-        public void RemoveAllEntries(string groupName)
+        public void RemoveAllEntries(string groupName, bool invokeModificationEvent)
         {
             var targetGuids = _guidToEntryMap
                 .Values
@@ -50,6 +50,11 @@ namespace SmartAddresser.Tests.Editor.Foundation
                 .ToArray();
             foreach (var guid in targetGuids)
                 _guidToEntryMap.Remove(guid);
+        }
+
+        public void InvokeBatchModificationEvent()
+        {
+            // Do nothing when testing.
         }
 
         /// <inheritdoc />
