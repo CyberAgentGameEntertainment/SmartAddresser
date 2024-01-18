@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using SmartAddresser.Editor.Foundation.SemanticVersioning;
 using UnityEditor.AddressableAssets.Settings;
-using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.Services
 {
