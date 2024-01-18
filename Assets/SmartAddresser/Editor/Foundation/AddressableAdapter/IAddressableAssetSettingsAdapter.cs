@@ -20,20 +20,38 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         /// </summary>
         /// <param name="groupName"></param>
         /// <param name="guid">The asset guid.</param>
+        /// <param name="invokeModificationEvent">
+        ///     If true, call <see cref="AddressableAssetSettings.OnModification" /> after
+        ///     creating or moving.
+        /// </param>
         /// <returns>The created entry adapter.</returns>
-        IAddressableAssetEntryAdapter CreateOrMoveEntry(string groupName, string guid);
+        IAddressableAssetEntryAdapter CreateOrMoveEntry(string groupName, string guid, bool invokeModificationEvent);
 
         /// <summary>
         ///     Remove an asset entry.
         /// </summary>
         /// <param name="guid">The  guid of the asset.</param>
+        /// <param name="invokeModificationEvent">
+        ///     If true, call <see cref="AddressableAssetSettings.OnModification" /> after
+        ///     removing.
+        /// </param>
         /// <returns>True if the entry was found and removed.</returns>
-        bool RemoveEntry(string guid);
+        bool RemoveEntry(string guid, bool invokeModificationEvent);
 
         /// <summary>
         ///     Remove all asset entries.
         /// </summary>
-        void RemoveAllEntries(string groupName);
+        /// <param name="groupName"></param>
+        /// <param name="invokeModificationEvent">
+        ///     If true, call <see cref="AddressableAssetSettings.OnModification" /> after
+        ///     removing each entry.
+        /// </param>
+        void RemoveAllEntries(string groupName, bool invokeModificationEvent);
+
+        /// <summary>
+        ///     Invoke the modification event.
+        /// </summary>
+        void InvokeBatchModificationEvent();
 
         /// <summary>
         ///     Gets the list of all defined labels.

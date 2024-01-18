@@ -22,21 +22,21 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         }
 
         /// <inheritdoc />
-        public IAddressableAssetEntryAdapter CreateOrMoveEntry(string groupName, string guid)
+        public IAddressableAssetEntryAdapter CreateOrMoveEntry(string groupName, string guid, bool invokeModificationEvent)
         {
             var group = _settings.FindGroup(groupName);
-            var entry = _settings.CreateOrMoveEntry(guid, group);
+            var entry = _settings.CreateOrMoveEntry(guid, group, postEvent: invokeModificationEvent);
             return entry == null ? null : new AddressableAssetEntryAdapter(entry);
         }
 
         /// <inheritdoc />
-        public bool RemoveEntry(string guid)
+        public bool RemoveEntry(string guid, bool invokeModificationEvent)
         {
-            return _settings.RemoveAssetEntry(guid);
+            return _settings.RemoveAssetEntry(guid, invokeModificationEvent);
         }
 
         /// <inheritdoc />
-        public void RemoveAllEntries(string groupName)
+        public void RemoveAllEntries(string groupName, bool invokeModificationEvent)
         {
             var group = _settings.groups.FirstOrDefault(x => x.Name == groupName);
             if (group == null)
@@ -44,7 +44,14 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
 
             var entries = group.entries.ToArray();
             foreach (var entry in entries)
-                group.RemoveAssetEntry(entry);
+                group.RemoveAssetEntry(entry, invokeModificationEvent);
+        }
+
+        public void InvokeBatchModificationEvent()
+        {
+            _settings.OnModification.Invoke(_settings,
+                AddressableAssetSettings.ModificationEvent.BatchModification,
+                null);
         }
 
         /// <inheritdoc />
