@@ -276,7 +276,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                         var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
                         var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
                             addressableSettingsAdapter, assetDatabaseAdapter);
-                        applyService.UpdateAllEntries();
+                        applyService.ApplyAll();
                     }
                 });
 
