@@ -36,13 +36,13 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
             foreach (var importedAssetPath in importedAssetPaths)
             {
                 var guid = AssetDatabase.AssetPathToGUID(importedAssetPath);
-                applyService.TryAddEntry(guid, false, false, versionExpression);
+                applyService.Apply(guid, false, true, versionExpression);
             }
 
             foreach (var movedAssetPath in movedAssetPaths)
             {
                 var guid = AssetDatabase.AssetPathToGUID(movedAssetPath);
-                applyService.TryAddEntry(guid, false, false, versionExpression);
+                applyService.Apply(guid, false, true, versionExpression);
             }
             
             applyService.InvokeBatchModificationEvent();
