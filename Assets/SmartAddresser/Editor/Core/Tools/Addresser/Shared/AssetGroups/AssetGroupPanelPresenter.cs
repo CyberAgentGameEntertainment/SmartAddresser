@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using UnityEditor;
@@ -228,6 +229,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
                 // Get types of all asset filter.
                 var types = TypeCache.GetTypesDerivedFrom<IAssetFilter>()
                     .Where(x => !x.IsAbstract)
+                    .Where(x => !typeof(AssetFilterAsset).IsAssignableFrom(x))
                     .Where(x => x.GetCustomAttribute<IgnoreAssetFilterAttribute>() == null);
 
                 // Show filter selection menu.
