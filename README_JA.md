@@ -597,7 +597,7 @@ public static class Example
             // Apply the layout rules to the addressable asset system.
             var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
                 addressableSettingsAdapter, assetDatabaseAdapter);
-            applyService.UpdateAllEntries();
+            applyService.ApplyAll();
         }
     }
 
