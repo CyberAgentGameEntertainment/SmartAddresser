@@ -49,7 +49,7 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
 
         public void InvokeBatchModificationEvent()
         {
-            _settings.OnModification.Invoke(_settings,
+            _settings.OnModification?.Invoke(_settings,
                 AddressableAssetSettings.ModificationEvent.BatchModification,
                 null);
         }
