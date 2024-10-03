@@ -17,6 +17,18 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
             string[] movedFromAssetPaths
         )
         {
+            // Delay 1 frame because AddressableAssetSettingsDefaultObject.Settings may be null at this point when the Library folder is deleted.
+            EditorApplication.delayCall += () =>
+                LazyOnPostprocessAllAssets(importedAssetPaths, deletedAssetPaths, movedAssetPaths, movedFromAssetPaths);
+        }
+
+        private static void LazyOnPostprocessAllAssets(
+            string[] importedAssetPaths,
+            string[] deletedAssetPaths,
+            string[] movedAssetPaths,
+            string[] movedFromAssetPaths
+        )
+        {
             var layoutRuleDataRepository = new LayoutRuleDataRepository();
             var primaryData = layoutRuleDataRepository.PrimaryData;
 
