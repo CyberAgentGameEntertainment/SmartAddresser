@@ -43,6 +43,43 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
             }
         }
 
+        public static void ValidateLayoutRules()
+        {
+            try
+            {
+                var options = ValidateLayoutRuleCLIOptions.CreateFromCommandLineArgs();
+                var layoutRule = LoadLayoutRuleData(options.LayoutRuleAssetPath).LayoutRule;
+                var versionExpressionParser = new VersionExpressionParserRepository().Load();
+                var assetDatabaseAdapter = new AssetDatabaseAdapter();
+                var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
+                var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
+
+                var applyService = new ApplyLayoutRuleService(layoutRule,
+                    versionExpressionParser,
+                    addressableSettingsAdapter,
+                    assetDatabaseAdapter);
+
+                applyService.Setup();
+                try
+                {
+                    applyService.ValidateLayoutRules(LayoutRuleCorruptionNotificationType.ThrowException);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                    EditorApplication.Exit(ErrorLevelValidateFailed);
+                    return;
+                }
+
+                EditorApplication.Exit(ErrorLevelNone);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                EditorApplication.Exit(ErrorLevelFailed);
+            }
+        }
+
         public static void ApplyRules()
         {
             try

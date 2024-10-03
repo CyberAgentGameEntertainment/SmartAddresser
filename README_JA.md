@@ -420,6 +420,28 @@ Layout Rule Editor からは以下の手順で適用することができます�
 - 実行が成功した場合: 0
 - 実行中にエラーが発生した場合: 2
 
+### レイアウトルールの破損をチェックする
+
+コマンドラインから **Version Expression** を設定するには`SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules`を呼びます。
+
+以下はMacでコマンドライン実行を行う例です。
+
+```
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod Assets/SmartAddresser/Editor/Core/Tools/CLI/SmartAddresserCLI.ValidateLayoutRules
+```
+
+コマンドライン引数は以下の通りです。
+
+| 引数名                               | 説明                                                    |
+|-----------------------------------|-------------------------------------------------------|
+| -layoutRuleAssetPath \<assetPath\> | 適用するレイアウトルールデータのアセットパス。<br>指定されない場合は最初に見つかったものを使用します。 |
+
+実行が完了すると自動的にUnityを終了し、戻り値として以下の値を返します。
+
+- 実行が成功した場合: 0
+- レイアウトルールに破損があった場合: 1
+- 実行中にエラーが発生した場合: 2
+
 ### レイアウトルールを Addressables に反映する
 
 コマンドラインからレイアウトルールを反映するには `SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ApplyRules` を呼びます。

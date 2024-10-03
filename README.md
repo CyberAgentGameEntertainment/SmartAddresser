@@ -413,6 +413,28 @@ When completed, Unity is automatically closed and returns the following value.
 - If successful: 0
 - If failed: 1
 
+### Detecting corrupted layout rules
+
+You can use the `SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules` method to check for corrupted layout rules from the command line.
+
+The following is an example of how to check for corrupted layout rules from the command line in Mac.
+
+```
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod Assets/SmartAddresser/Editor/Core/Tools/CLI/SmartAddresserCLI.ValidateLayoutRules
+```
+
+Command line arguments are as follows.
+
+| Argument Name                            | Description                                                                                     |
+|------------------------------------------|-------------------------------------------------------------------------------------------------|
+| -layoutRuleAssetPath \<assetPath\>       | Asset Path of the Layout Rule Data to be applied.<br>If not specified, use the first one found. |
+
+When completed, Unity is automatically closed and returns the following value.
+
+- If successful: 0
+- If the layout rule is corrupted: 1
+- If an error occurred during execution: 2
+
 ### Apply Layout Rules to Addressable Asset System
 
 You can apply the layout rules to the Addressable Asset System by calling the following method.
