@@ -294,6 +294,28 @@ Layout Rule Editor からは以下の手順で適用することができます�
 コマンドラインインターフェース（CLI）で適用することもできます。
 詳しくは  [コマンドラインインターフェース (CLI)](#コマンドラインインターフェース-cli)  を参照してください。
 
+### レイアウトルールの破損を検知する
+
+例えば Object Filter に設定していたオブジェクトが削除された場合など、設定していたレイアウトルールが破損するケースがあります。
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/apply_03.png" alt="Corrupted Rule">
+</p>
+
+**Project Settings > Smart Addresser > Layout Rule Corruption** を設定することでレイアウトルールの破損をチェックすることができます。
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/apply_04.png" alt="Corrupted Rule">
+</p>
+
+項目の説明は以下の通りです。
+
+| 項目名              | 説明                                     |
+|------------------|----------------------------------------|
+| Throws Exception | レイアウトルールが破損している場合に例外をスローする。適用処理はされない。  |
+| Log Error        | レイアウトルールが破損している場合にエラーログを出力する。適用処理はされる。 |
+| Ignore           | レイアウトルールが破損していても無視して適用処理を行う。           |
+
 ## バージョン管理機能
 
 **Smart Addresser** では、各アセットに対してバージョンを付与することができます。  

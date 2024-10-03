@@ -284,6 +284,28 @@ To do this, set the **Layout Rule Data** which you want to apply to the **Primar
 You can also apply rules by CLI.
 See details in [Command Line Interface](#command-line-interface--cli-).
 
+### Detecting corrupted layout rules
+
+There are cases where the layout rules are corrupted, such as when the object set in the Object Filter is deleted.
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/apply_03.png" alt="Corrupted Rule">
+</p>
+
+You can check for corrupted layout rules by setting **Project Settings > Smart Addresser > Layout Rule Corruption**.
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/apply_04.png" alt="Corrupted Rule">
+</p>
+
+The items are as follows.
+
+| Item Name        | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| Throws Exception | Throw an exception if the layout rule is corrupted. The application process is not performed. |
+| Log Error        | Output an error log if the layout rule is corrupted. The application process is performed. |
+| Ignore           | Ignore the corrupted layout rule and apply the process.                     |
+
 ## Version Management
 
 **Smart Addresser** can provide version to each asset.
