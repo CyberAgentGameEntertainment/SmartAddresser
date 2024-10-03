@@ -85,7 +85,7 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                     addressableSettingsAdapter,
                     assetDatabaseAdapter);
 
-                applyService.ApplyAll(projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnApplyAll);
+                applyService.ApplyAll(projectSettings.LayoutRuleCorruptionSettings.NotificationType);
 
                 EditorApplication.Exit(ErrorLevelNone);
             }

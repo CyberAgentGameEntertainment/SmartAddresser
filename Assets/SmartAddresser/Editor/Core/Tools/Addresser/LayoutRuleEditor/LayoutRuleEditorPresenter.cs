@@ -291,7 +291,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
                             // Check Corruption
                             var corruptionNotificationType =
-                                projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnApplyAll;
+                                projectSettings.LayoutRuleCorruptionSettings.NotificationType;
                             applyService.ApplyAll(corruptionNotificationType);
                         }
                     });

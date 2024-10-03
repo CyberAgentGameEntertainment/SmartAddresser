@@ -49,7 +49,7 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
 
             // Check Corruption
             var projectSettings = SmartAddresserProjectSettings.instance;
-            var corruptionNotificationType = projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnImport;
+            var corruptionNotificationType = projectSettings.LayoutRuleCorruptionSettings.NotificationType;
             applyService.ValidateLayoutRules(corruptionNotificationType);
 
             var versionExpression = layoutRule.Settings.VersionExpression.Value;

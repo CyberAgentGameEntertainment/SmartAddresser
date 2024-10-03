@@ -1,7 +1,6 @@
 using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Models.Layouts;
-using SmartAddresser.Editor.Core.Models.Shared;
 using UnityEditor;
 using UnityEngine;
 
@@ -97,27 +96,21 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
         [Serializable]
         public sealed class LayoutRuleCorruption
         {
-            [SerializeField] private LayoutRuleCorruptionNotificationType notificationTypeOnApplyAll =
-                LayoutRuleCorruptionNotificationType.ThrowException;
-
-            [SerializeField] private LayoutRuleCorruptionNotificationType notificationTypeOnImport =
-                LayoutRuleCorruptionNotificationType.Ignore;
+            [SerializeField] private LayoutRuleCorruptionNotificationType notificationType =
+                LayoutRuleCorruptionNotificationType.LogError;
 
             public LayoutRuleCorruption()
             {
             }
 
             public LayoutRuleCorruption(
-                LayoutRuleCorruptionNotificationType notificationTypeOnApplyAll,
-                LayoutRuleCorruptionNotificationType notificationTypeOnImport
+                LayoutRuleCorruptionNotificationType notificationType
             )
             {
-                this.notificationTypeOnApplyAll = notificationTypeOnApplyAll;
-                this.notificationTypeOnImport = notificationTypeOnImport;
+                this.notificationType = notificationType;
             }
 
-            public LayoutRuleCorruptionNotificationType NotificationTypeOnApplyAll => notificationTypeOnApplyAll;
-            public LayoutRuleCorruptionNotificationType NotificationTypeOnImport => notificationTypeOnImport;
+            public LayoutRuleCorruptionNotificationType NotificationType => notificationType;
         }
     }
 }

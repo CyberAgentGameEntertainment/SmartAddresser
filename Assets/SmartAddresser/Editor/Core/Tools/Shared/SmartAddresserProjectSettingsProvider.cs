@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Models.Layouts;
 using SmartAddresser.Editor.Core.Models.Services;
-using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using UnityEditor;
@@ -66,7 +64,7 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
 
                             // Check Corruption
                             var corruptionNotificationType =
-                                projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnApplyAll;
+                                projectSettings.LayoutRuleCorruptionSettings.NotificationType;
                             applyService.ApplyAll(corruptionNotificationType);
                         }
                         else
@@ -100,22 +98,15 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                             entryHasMultipleVersions);
                 }
 
-                EditorGUILayout.LabelField("Layout Rule Corruption");
-                using (new EditorGUI.IndentLevelScope())
                 using (var ccs = new EditorGUI.ChangeCheckScope())
                 {
                     var notificationTypeOnApplyAll =
                         (LayoutRuleCorruptionNotificationType)EditorGUILayout.EnumPopup(
-                            "On Apply All",
-                            projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnApplyAll);
-                    var notificationTypeOnImport =
-                        (LayoutRuleCorruptionNotificationType)EditorGUILayout.EnumPopup(
-                            "On Import",
-                            projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnImport);
+                            "Layout Rule Corruption",
+                            projectSettings.LayoutRuleCorruptionSettings.NotificationType);
                     if (ccs.changed)
                         projectSettings.LayoutRuleCorruptionSettings =
-                            new SmartAddresserProjectSettings.LayoutRuleCorruption(notificationTypeOnApplyAll,
-                                notificationTypeOnImport);
+                            new SmartAddresserProjectSettings.LayoutRuleCorruption(notificationTypeOnApplyAll);
                 }
             }
         }
