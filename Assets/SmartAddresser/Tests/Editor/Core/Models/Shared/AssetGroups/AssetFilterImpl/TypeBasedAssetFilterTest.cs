@@ -15,7 +15,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.SetupForMatching();
             Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.True);
         }
-        
+
         [Test]
         public void IsMatch_SetDerivedType_ReturnTrue()
         {
@@ -24,7 +24,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.SetupForMatching();
             Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.True);
         }
-        
+
         [Test]
         public void IsMatch_SetNotMatchedType_ReturnFalse()
         {
@@ -54,6 +54,31 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Type.AddValue(TypeReference.Create(typeof(Texture2D)));
             filter.SetupForMatching();
             Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2DArray), false), Is.False);
+        }
+
+        [Test]
+        public void Validate_Valid_ReturnTrue()
+        {
+            var filter = new TypeBasedAssetFilter();
+            var invalidTypeReference = TypeReference.Create(typeof(Texture2D));
+            filter.Type.Value = invalidTypeReference;
+            filter.SetupForMatching();
+
+            Assert.That(filter.Validate(out _), Is.True);
+        }
+
+        [Test]
+        public void Validate_Invalid_ReturnFalse()
+        {
+            var filter = new TypeBasedAssetFilter();
+            var invalidTypeReference = new TypeReference();
+            invalidTypeReference.Name = "Name";
+            invalidTypeReference.FullName = "FullName";
+            invalidTypeReference.AssemblyQualifiedName = "AssemblyQualifiedName";
+            filter.Type.Value = invalidTypeReference;
+            filter.SetupForMatching();
+
+            Assert.That(filter.Validate(out _), Is.False);
         }
     }
 }
