@@ -17,10 +17,10 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         [SerializeField] private ObservableProperty<string> _name = new ObservableProperty<string>("New Label Rule");
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
 
+        [SerializeReference] private ILabelProvider _labelProviderInternal;
+
         private ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
         private ObservableProperty<string> _labelProviderDescription = new ObservableProperty<string>();
-
-        [SerializeReference] private ILabelProvider _labelProviderInternal;
 
         public LabelRule()
         {
@@ -65,6 +65,15 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
             LabelProvider.Value.Setup();
         }
 
+        public bool Validate(out string errorMessage)
+        {
+            if (_assetGroups.Validate(out errorMessage))
+                return true;
+
+            errorMessage = $"Label rule is corrupted: {_name.Value}{Environment.NewLine}{errorMessage}";
+            return false;
+        }
+
         /// <summary>
         ///     Create a label from asset information.
         /// </summary>
@@ -77,8 +86,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         ///     You can pass false if it is guaranteed to be valid.
         /// </param>
         /// <returns>Return true if successful.</returns>
-        public bool TryProvideLabel(string assetPath, Type assetType, bool isFolder, out string label,
-            bool checkIsPathValidForEntry = true)
+        public bool TryProvideLabel(
+            string assetPath,
+            Type assetType,
+            bool isFolder,
+            out string label,
+            bool checkIsPathValidForEntry = true
+        )
         {
             if (!_assetGroups.Contains(assetPath, assetType, isFolder))
             {

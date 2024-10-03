@@ -20,6 +20,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         [SerializeField] private ObjectListableProperty _object = new ObjectListableProperty();
 
         private List<string> _dependentAssetPaths = new List<string>();
+        private bool _hasNullObject;
 
         /// <summary>
         ///     If true, check only direct dependencies.
@@ -38,10 +39,14 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public override void SetupForMatching()
         {
             _dependentAssetPaths.Clear();
+            _hasNullObject = false;
             foreach (var obj in _object)
             {
                 if (obj == null)
+                {
+                    _hasNullObject = true;
                     continue;
+                }
 
                 var path = AssetDatabase.GetAssetPath(obj);
                 var dependencies = AssetDatabase.GetDependencies(path, !_onlyDirectDependencies);
@@ -49,6 +54,18 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             }
 
             _dependentAssetPaths = _dependentAssetPaths.Distinct().ToList();
+        }
+
+        public override bool Validate(out string errorMessage)
+        {
+            if (_hasNullObject)
+            {
+                errorMessage = "There are null reference objects.";
+                return false;
+            }
+
+            errorMessage = null;
+            return true;
         }
 
         /// <inheritdoc />

@@ -11,6 +11,13 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public abstract void SetupForMatching();
 
         /// <inheritdoc />
+        public virtual bool Validate(out string errorMessage)
+        {
+            errorMessage = null;
+            return true;
+        }
+        
+        /// <inheritdoc />
         public abstract bool IsMatch(string assetPath, Type assetType, bool isFolder);
 
         /// <inheritdoc />

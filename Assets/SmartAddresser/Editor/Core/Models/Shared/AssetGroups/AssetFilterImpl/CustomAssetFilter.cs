@@ -27,6 +27,11 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             assetFilter.SetupForMatching();
         }
 
+        public bool Validate(out string errorMessage)
+        {
+            return assetFilter.Validate(out errorMessage);
+        }
+
         public bool IsMatch(string assetPath, Type assetType, bool isFolder)
         {
             return assetFilter.IsMatch(assetPath, assetType, isFolder);

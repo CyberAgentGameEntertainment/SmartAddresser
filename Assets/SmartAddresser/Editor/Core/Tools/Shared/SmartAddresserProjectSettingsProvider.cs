@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Models.Layouts;
 using SmartAddresser.Editor.Core.Models.Services;
+using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using UnityEditor;
@@ -12,8 +14,11 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
 {
     public sealed class SmartAddresserProjectSettingsProvider : SettingsProvider
     {
-        public SmartAddresserProjectSettingsProvider(string path, SettingsScope scopes,
-            IEnumerable<string> keywords = null)
+        public SmartAddresserProjectSettingsProvider(
+            string path,
+            SettingsScope scopes,
+            IEnumerable<string> keywords = null
+        )
             : base(path, scopes, keywords)
         {
         }
@@ -22,7 +27,8 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
         public static SettingsProvider CreateProvider()
         {
             var keywords = new[] { "Smart Addresser" };
-            return new SmartAddresserProjectSettingsProvider("Project/Smart Addresser", SettingsScope.Project,
+            return new SmartAddresserProjectSettingsProvider("Project/Smart Addresser",
+                SettingsScope.Project,
                 keywords);
         }
 
@@ -38,22 +44,30 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                     projectSettings.PrimaryData =
                         (LayoutRuleData)EditorGUILayout.ObjectField("Primary Data",
                             projectSettings.PrimaryData,
-                            typeof(LayoutRuleData), false);
+                            typeof(LayoutRuleData),
+                            false);
 
                     if (ccs.changed && projectSettings.PrimaryData != null)
                     {
                         if (EditorUtility.DisplayDialog("Confirmation",
-                                "If you change the Primary Data, it will be applied immediately. Do you want change it?",
-                                "OK", "Cancel"))
+                            "If you change the Primary Data, it will be applied immediately. Do you want change it?",
+                            "OK",
+                            "Cancel"))
                         {
                             var layoutRule = projectSettings.PrimaryData.LayoutRule;
                             var versionExpressionParser = new VersionExpressionParserRepository().Load();
                             var assetDatabaseAdapter = new AssetDatabaseAdapter();
                             var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
                             var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-                            var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
-                                addressableSettingsAdapter, assetDatabaseAdapter);
-                            applyService.ApplyAll();
+                            var applyService = new ApplyLayoutRuleService(layoutRule,
+                                versionExpressionParser,
+                                addressableSettingsAdapter,
+                                assetDatabaseAdapter);
+
+                            // Check Corruption
+                            var corruptionNotificationType =
+                                projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnApplyAll;
+                            applyService.ApplyAll(corruptionNotificationType);
                         }
                         else
                         {
@@ -65,7 +79,8 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                 projectSettings.VersionExpressionParser =
                     (MonoScript)EditorGUILayout.ObjectField("Version Expression Parser",
                         projectSettings.VersionExpressionParser,
-                        typeof(MonoScript), false);
+                        typeof(MonoScript),
+                        false);
 
                 EditorGUILayout.LabelField("Validation Settings");
                 using (new EditorGUI.IndentLevelScope())
@@ -79,8 +94,28 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                         (EntryErrorType)EditorGUILayout.EnumPopup("Entry Has Multiple Versions",
                             projectSettings.ValidationSettings.EntryHasMultipleVersions);
                     if (ccs.changed)
-                        projectSettings.ValidationSettings = new SmartAddresserProjectSettings.Validation(duplicateAddresses,
-                            duplicateAssetPaths, entryHasMultipleVersions);
+                        projectSettings.ValidationSettings = new SmartAddresserProjectSettings.Validation(
+                            duplicateAddresses,
+                            duplicateAssetPaths,
+                            entryHasMultipleVersions);
+                }
+
+                EditorGUILayout.LabelField("Layout Rule Corruption");
+                using (new EditorGUI.IndentLevelScope())
+                using (var ccs = new EditorGUI.ChangeCheckScope())
+                {
+                    var notificationTypeOnApplyAll =
+                        (LayoutRuleCorruptionNotificationType)EditorGUILayout.EnumPopup(
+                            "On Apply All",
+                            projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnApplyAll);
+                    var notificationTypeOnImport =
+                        (LayoutRuleCorruptionNotificationType)EditorGUILayout.EnumPopup(
+                            "On Import",
+                            projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnImport);
+                    if (ccs.changed)
+                        projectSettings.LayoutRuleCorruptionSettings =
+                            new SmartAddresserProjectSettings.LayoutRuleCorruption(notificationTypeOnApplyAll,
+                                notificationTypeOnImport);
                 }
             }
         }

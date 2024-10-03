@@ -20,6 +20,21 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
                 group.Setup();
         }
 
+        public bool Validate(out string errorMessage)
+        {
+            var result = true;
+            var sb = new StringBuilder();
+            foreach (var group in this)
+            {
+                result &= group.Validate(out var message);
+                if (!string.IsNullOrEmpty(message))
+                    sb.Append(message);
+            }
+
+            errorMessage = sb.ToString();
+            return result;
+        }
+
         /// <summary>
         ///     Return true if this asset group contains the asset.
         /// </summary>

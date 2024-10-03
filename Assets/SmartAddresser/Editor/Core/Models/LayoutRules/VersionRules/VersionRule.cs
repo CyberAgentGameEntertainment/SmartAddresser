@@ -16,10 +16,10 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
         [SerializeField] private string _id;
         [SerializeField] private ObservableProperty<string> _name = new ObservableProperty<string>("New Version Rule");
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
-        private ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
-        private ObservableProperty<string> _versionProviderDescription = new ObservableProperty<string>();
 
         [SerializeReference] private IVersionProvider _versionProviderInternal;
+        private ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
+        private ObservableProperty<string> _versionProviderDescription = new ObservableProperty<string>();
 
         public VersionRule()
         {
@@ -64,6 +64,15 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
             VersionProvider.Value.Setup();
         }
 
+        public bool Validate(out string errorMessage)
+        {
+            if (_assetGroups.Validate(out errorMessage))
+                return true;
+            
+            errorMessage = $"Version rule is corrupted: {_name.Value}{Environment.NewLine}{errorMessage}";
+            return false;
+        }
+
         /// <summary>
         ///     Create a version from asset information.
         /// </summary>
@@ -76,8 +85,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
         ///     You can pass false if it is guaranteed to be valid.
         /// </param>
         /// <returns>Return true if successful.</returns>
-        public bool TryProvideVersion(string assetPath, Type assetType, bool isFolder, out string version,
-            bool checkIsPathValidForEntry = true)
+        public bool TryProvideVersion(
+            string assetPath,
+            Type assetType,
+            bool isFolder,
+            out string version,
+            bool checkIsPathValidForEntry = true
+        )
         {
             if (!_assetGroups.Contains(assetPath, assetType, isFolder))
             {
@@ -92,12 +106,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
             }
 
             version = VersionProvider.Value.Provide(assetPath, assetType, isFolder);
-            
+
             if (string.IsNullOrEmpty(version))
             {
                 version = null;
                 return false;
             }
+
             return true;
         }
 

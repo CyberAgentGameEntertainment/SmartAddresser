@@ -1,10 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
+using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using SmartAddresser.Editor.Foundation.SemanticVersioning;
 using UnityEditor.AddressableAssets.Settings;
+using UnityEngine;
+using Version = SmartAddresser.Editor.Foundation.SemanticVersioning.Version;
 
 namespace SmartAddresser.Editor.Core.Models.Services
 {
@@ -41,13 +46,55 @@ namespace SmartAddresser.Editor.Core.Models.Services
             _layoutRule.SetupForVersion();
         }
 
+        public void ValidateLayoutRules(LayoutRuleCorruptionNotificationType corruptionNotificationType)
+        {
+            if (corruptionNotificationType == LayoutRuleCorruptionNotificationType.Ignore)
+                return;
+
+            if (ValidateLayoutRulesInternal(out var errorMessage))
+                return;
+            
+            if (corruptionNotificationType == LayoutRuleCorruptionNotificationType.LogError)
+            {
+                Debug.LogError(errorMessage);
+                return;
+            }
+
+            if (corruptionNotificationType == LayoutRuleCorruptionNotificationType.ThrowException)
+                throw new Exception(errorMessage);
+        }
+
+        private bool ValidateLayoutRulesInternal(out string errorMessage)
+        {
+            var result = true;
+            var sb = new StringBuilder();
+            
+            result &= _layoutRule.ValidateForAddress(out var message);
+            if (!string.IsNullOrEmpty(message))
+                sb.AppendLine(message);
+
+            result &= _layoutRule.ValidateForLabels(out message);
+            if (!string.IsNullOrEmpty(message))
+                sb.AppendLine(message);
+
+            result &= _layoutRule.ValidateForVersion(out message);
+            if (!string.IsNullOrEmpty(message))
+                sb.AppendLine(message);
+
+            errorMessage = sb.ToString();
+            return result;
+        }
+
         /// <summary>
         ///     Apply the layout rule to the addressable settings for all assets.
         /// </summary>
-        public void ApplyAll()
+        public void ApplyAll(LayoutRuleCorruptionNotificationType layoutRuleCorruptionNotificationType = LayoutRuleCorruptionNotificationType.Ignore)
         {
             Setup();
 
+            // Check Corruption
+            ValidateLayoutRules(layoutRuleCorruptionNotificationType);
+            
             // Add all entries to the addressable asset system.
             var removeTargetAssetGuids = new List<string>();
             var versionExpression = _layoutRule.Settings.VersionExpression;

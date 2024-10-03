@@ -48,6 +48,12 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             _foundAssetPaths.AddRange(assetPaths);
         }
 
+        public override bool Validate(out string errorMessage)
+        {
+            errorMessage = null;
+            return true;
+        }
+
         /// <inheritdoc />
         public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
         {

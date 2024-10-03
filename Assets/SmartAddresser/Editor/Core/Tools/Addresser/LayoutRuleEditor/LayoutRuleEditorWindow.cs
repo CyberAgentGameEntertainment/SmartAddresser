@@ -79,9 +79,15 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                     var assetDatabaseAdapter = new AssetDatabaseAdapter();
                     var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
                     var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-                    var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
-                        addressableSettingsAdapter, assetDatabaseAdapter);
-                    applyService.ApplyAll();
+                    var applyService = new ApplyLayoutRuleService(layoutRule,
+                        versionExpressionParser,
+                        addressableSettingsAdapter,
+                        assetDatabaseAdapter);
+
+                    // Check Corruption
+                    var corruptionNotificationType =
+                        projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnApplyAll;
+                    applyService.ApplyAll(corruptionNotificationType);
                 }
 
                 _hasAnyDataChanged = false;
@@ -119,8 +125,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 .DisposeWith(_setupDisposables);
 
             // Set up presenter and view.
-            _view = new LayoutRuleEditorView(_addressTreeViewState, _labelTreeViewState, _versionTreeViewState,
-                _splitViewState, Repaint);
+            _view = new LayoutRuleEditorView(_addressTreeViewState,
+                _labelTreeViewState,
+                _versionTreeViewState,
+                _splitViewState,
+                Repaint);
             _presenter = new LayoutRuleEditorPresenter(_view, _history, assetSaveService);
             _presenter.SetupView(new LayoutRuleDataRepository());
         }

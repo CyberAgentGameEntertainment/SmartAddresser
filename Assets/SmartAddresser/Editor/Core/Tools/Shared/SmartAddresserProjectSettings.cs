@@ -1,6 +1,7 @@
 using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Models.Layouts;
+using SmartAddresser.Editor.Core.Models.Shared;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
         [SerializeField] private LayoutRuleData primaryData;
         [SerializeField] private MonoScript versionExpressionParser;
         [SerializeField] private Validation validation = new Validation();
+        [SerializeField] private LayoutRuleCorruption layoutRuleCorruption = new LayoutRuleCorruption();
 
         public LayoutRuleData PrimaryData
         {
@@ -52,6 +54,19 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
             }
         }
 
+        public LayoutRuleCorruption LayoutRuleCorruptionSettings
+        {
+            get => layoutRuleCorruption;
+            set
+            {
+                if (value == layoutRuleCorruption)
+                    return;
+
+                layoutRuleCorruption = value;
+                Save(true);
+            }
+        }
+
         [Serializable]
         public sealed class Validation
         {
@@ -63,8 +78,11 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
             {
             }
 
-            public Validation(EntryErrorType duplicateAddresses, EntryErrorType duplicateAssetPaths,
-                EntryErrorType entryHasMultipleVersions)
+            public Validation(
+                EntryErrorType duplicateAddresses,
+                EntryErrorType duplicateAssetPaths,
+                EntryErrorType entryHasMultipleVersions
+            )
             {
                 this.duplicateAddresses = duplicateAddresses;
                 this.duplicateAssetPaths = duplicateAssetPaths;
@@ -74,6 +92,32 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
             public EntryErrorType DuplicateAddresses => duplicateAddresses;
             public EntryErrorType DuplicateAssetPaths => duplicateAssetPaths;
             public EntryErrorType EntryHasMultipleVersions => entryHasMultipleVersions;
+        }
+
+        [Serializable]
+        public sealed class LayoutRuleCorruption
+        {
+            [SerializeField] private LayoutRuleCorruptionNotificationType notificationTypeOnApplyAll =
+                LayoutRuleCorruptionNotificationType.ThrowException;
+
+            [SerializeField] private LayoutRuleCorruptionNotificationType notificationTypeOnImport =
+                LayoutRuleCorruptionNotificationType.Ignore;
+
+            public LayoutRuleCorruption()
+            {
+            }
+
+            public LayoutRuleCorruption(
+                LayoutRuleCorruptionNotificationType notificationTypeOnApplyAll,
+                LayoutRuleCorruptionNotificationType notificationTypeOnImport
+            )
+            {
+                this.notificationTypeOnApplyAll = notificationTypeOnApplyAll;
+                this.notificationTypeOnImport = notificationTypeOnImport;
+            }
+
+            public LayoutRuleCorruptionNotificationType NotificationTypeOnApplyAll => notificationTypeOnApplyAll;
+            public LayoutRuleCorruptionNotificationType NotificationTypeOnImport => notificationTypeOnImport;
         }
     }
 }

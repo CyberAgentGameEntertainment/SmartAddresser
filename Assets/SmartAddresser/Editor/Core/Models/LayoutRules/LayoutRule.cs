@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.Settings;
@@ -35,11 +36,8 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         {
             var isDirty = false;
             if (addressableGroups.Count != _addressRules.Count)
-            {
                 isDirty = true;
-            }
             else
-            {
                 for (var i = 0; i < addressableGroups.Count; i++)
                 {
                     var addressableGroup = addressableGroups[i];
@@ -50,11 +48,10 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                         break;
                     }
                 }
-            }
 
             if (!isDirty)
                 return false;
-            
+
             var newList = new List<AddressRule>();
             foreach (var addressableGroup in addressableGroups)
             {
@@ -76,8 +73,29 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                 addressRule.Setup();
         }
 
-        public bool TryProvideAddressAndAddressableGroup(string assetPath, Type assetType, bool isFolder, bool doSetup,
-            out string address, out AddressableAssetGroup addressableGroup)
+        public bool ValidateForAddress(out string errorMessage)
+        {
+            var result = true;
+            var sb = new StringBuilder();
+            foreach (var addressRule in _addressRules)
+            {
+                result &= addressRule.Validate(out var message);
+                if (!string.IsNullOrEmpty(message))
+                    sb.Append(message);
+            }
+
+            errorMessage = sb.ToString();
+            return result;
+        }
+
+        public bool TryProvideAddressAndAddressableGroup(
+            string assetPath,
+            Type assetType,
+            bool isFolder,
+            bool doSetup,
+            out string address,
+            out AddressableAssetGroup addressableGroup
+        )
         {
             foreach (var addressRule in _addressRules)
             {
@@ -103,6 +121,21 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                 labelRule.Setup();
         }
 
+        public bool ValidateForLabels(out string errorMessage)
+        {
+            var result = true;
+            var sb = new StringBuilder();
+            foreach (var labelRule in _labelRules)
+            {
+                result &= labelRule.Validate(out var message);
+                if (!string.IsNullOrEmpty(message))
+                    sb.Append(message);
+            }
+
+            errorMessage = sb.ToString();
+            return result;
+        }
+
         /// <summary>
         ///     Provide the labels.
         /// </summary>
@@ -115,8 +148,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         ///     You can pass false if it is guaranteed to be valid.
         /// </param>
         /// <returns></returns>
-        public IReadOnlyCollection<string> ProvideLabels(string assetPath, Type assetType, bool isFolder, bool doSetup,
-            bool checkIsPathValidForEntry = true)
+        public IReadOnlyCollection<string> ProvideLabels(
+            string assetPath,
+            Type assetType,
+            bool isFolder,
+            bool doSetup,
+            bool checkIsPathValidForEntry = true
+        )
         {
             var labels = new HashSet<string>();
             for (int i = 0, count = _labelRules.Count; i < count; i++)
@@ -137,6 +175,21 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         {
             foreach (var versionRule in _versionRules)
                 versionRule.Setup();
+        }
+
+        public bool ValidateForVersion(out string errorMessage)
+        {
+            var result = true;
+            var sb = new StringBuilder();
+            foreach (var versionRule in _versionRules)
+            {
+                result &= versionRule.Validate(out var message);
+                if (!string.IsNullOrEmpty(message))
+                    sb.Append(message);
+            }
+
+            errorMessage = sb.ToString();
+            return result;
         }
 
         public string ProvideVersion(string assetPath, Type assetType, bool isFolder, bool doSetup)

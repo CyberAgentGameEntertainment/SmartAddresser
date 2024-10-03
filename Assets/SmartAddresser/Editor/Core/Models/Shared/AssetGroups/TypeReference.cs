@@ -13,19 +13,19 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
         public string Name
         {
             get => _name;
-            set => _name = value;
+            internal set => _name = value;
         }
 
         public string FullName
         {
             get => _fullName;
-            set => _fullName = value;
+            internal set => _fullName = value;
         }
 
         public string AssemblyQualifiedName
         {
             get => _assemblyQualifiedName;
-            set => _assemblyQualifiedName = value;
+            internal set => _assemblyQualifiedName = value;
         }
 
         public static TypeReference Create(Type type)
@@ -38,7 +38,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
             };
             return instance;
         }
-        
+
         public bool IsValid()
         {
             return !string.IsNullOrEmpty(_assemblyQualifiedName);

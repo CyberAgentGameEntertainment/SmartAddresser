@@ -76,6 +76,16 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
             AddressProvider.Value.Setup();
         }
 
+        public bool Validate(out string errorMessage)
+        {
+            if (_assetGroups.Validate(out errorMessage))
+                return true;
+
+            var addressableGroupName = _addressableGroup != null ? _addressableGroup.Name : "(None)";
+            errorMessage = $"Address rule is corrupted: {addressableGroupName}{Environment.NewLine}{errorMessage}";
+            return false;
+        }
+
         /// <summary>
         ///     Provide an address from asset information.
         /// </summary>

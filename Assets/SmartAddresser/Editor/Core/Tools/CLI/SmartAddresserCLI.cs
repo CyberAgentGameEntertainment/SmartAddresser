@@ -61,7 +61,9 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                     // Build and validate the Layout.
                     var buildLayoutService = new BuildLayoutService(assetDatabaseAdapter);
                     var layout = buildLayoutService.Execute(layoutRule);
-                    layout.Validate(true, validationSettings.DuplicateAddresses, validationSettings.DuplicateAssetPaths,
+                    layout.Validate(true,
+                        validationSettings.DuplicateAddresses,
+                        validationSettings.DuplicateAssetPaths,
                         validationSettings.EntryHasMultipleVersions);
 
                     // Export the result of the validation.
@@ -70,7 +72,7 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
 
                     // Exit if error occurred.
                     if (layout.ErrorType == LayoutErrorType.Error
-                        || (options.FailWhenWarning && layout.ErrorType == LayoutErrorType.Warning))
+                        || options.FailWhenWarning && layout.ErrorType == LayoutErrorType.Warning)
                     {
                         EditorApplication.Exit(ErrorLevelValidateFailed);
                         return;
@@ -78,9 +80,12 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                 }
 
                 // Apply the layout rules to the addressable asset system.
-                var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
-                    addressableSettingsAdapter, assetDatabaseAdapter);
-                applyService.ApplyAll();
+                var applyService = new ApplyLayoutRuleService(layoutRule,
+                    versionExpressionParser,
+                    addressableSettingsAdapter,
+                    assetDatabaseAdapter);
+
+                applyService.ApplyAll(projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnApplyAll);
 
                 EditorApplication.Exit(ErrorLevelNone);
             }

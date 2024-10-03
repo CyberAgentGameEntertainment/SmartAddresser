@@ -14,6 +14,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     {
         [SerializeField] private TypeReferenceListableProperty _type = new TypeReferenceListableProperty();
         [SerializeField] private bool _matchWithDerivedTypes = true;
+        private List<string> _invalidAssemblyQualifiedNames = new List<string>();
 
         private Dictionary<Type, bool> _resultCache = new Dictionary<Type, bool>();
         private object _resultCacheLocker = new object();
@@ -33,6 +34,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public override void SetupForMatching()
         {
             _types.Clear();
+            _invalidAssemblyQualifiedNames.Clear();
             foreach (var typeRef in _type)
             {
                 if (typeRef == null)
@@ -41,11 +43,38 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 if (!typeRef.IsValid())
                     continue;
 
-                var type = System.Type.GetType(typeRef.AssemblyQualifiedName);
-                _types.Add(type);
+                var assemblyQualifiedName = typeRef.AssemblyQualifiedName;
+                var type = System.Type.GetType(assemblyQualifiedName);
+                if (type == null)
+                    _invalidAssemblyQualifiedNames.Add(assemblyQualifiedName);
+                else
+                    _types.Add(type);
             }
 
             _resultCache.Clear();
+        }
+
+        public override bool Validate(out string errorMessage)
+        {
+            if (_invalidAssemblyQualifiedNames.Count >= 1)
+            {
+                var sb = new StringBuilder();
+                sb.Append($"[{GetType().Name}] Unknown types: ");
+                foreach (var invalidAssemblyQualifiedNames in _invalidAssemblyQualifiedNames)
+                {
+                    sb.Append(invalidAssemblyQualifiedNames);
+                    sb.Append(" / ");
+                }
+
+                // Remove the last " / ".
+                sb.Remove(sb.Length - 3, 3);
+
+                errorMessage = sb.ToString();
+                return false;
+            }
+
+            errorMessage = null;
+            return true;
         }
 
         /// <inheritdoc />
@@ -57,13 +86,8 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             if (_resultCache.TryGetValue(assetType, out var result))
                 return result;
 
-            for (var i = 0; i < _types.Count; i++)
+            foreach (var type in _types)
             {
-                var type = _types[i];
-
-                if (type == null)
-                    continue;
-                
                 if (type == assetType)
                 {
                     result = true;
@@ -112,7 +136,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 result.Insert(0, "Type: ");
             }
 
-            if (MatchWithDerivedTypes) 
+            if (MatchWithDerivedTypes)
                 result.Append(" and derived types");
 
             return result.ToString();

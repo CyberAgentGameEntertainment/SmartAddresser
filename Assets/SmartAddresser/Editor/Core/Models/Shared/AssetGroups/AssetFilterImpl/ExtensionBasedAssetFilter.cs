@@ -20,6 +20,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     {
         [SerializeField] private StringListableProperty _extension = new StringListableProperty();
         private List<string> _extensions = new List<string>();
+        private bool _hasEmptyExtension;
 
         /// <summary>
         ///     Extensions for filtering.
@@ -29,10 +30,12 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public override void SetupForMatching()
         {
             _extensions.Clear();
+            _hasEmptyExtension = false;
             foreach (var extension in _extension)
             {
                 if (string.IsNullOrEmpty(extension))
                 {
+                    _hasEmptyExtension = true;
                     continue;
                 }
 
@@ -44,6 +47,18 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
 
                 _extensions.Add(ext);
             }
+        }
+
+        public override bool Validate(out string errorMessage)
+        {
+            if (_hasEmptyExtension)
+            {
+                errorMessage = "There are empty extensions.";
+                return false;
+            }
+
+            errorMessage = string.Empty;
+            return true;
         }
 
         /// <inheritdoc />

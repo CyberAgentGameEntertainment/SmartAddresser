@@ -10,8 +10,12 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
 {
     internal sealed class SmartAddresserAssetPostProcessor : AssetPostprocessor
     {
-        private static void OnPostprocessAllAssets(string[] importedAssetPaths, string[] deletedAssetPaths,
-            string[] movedAssetPaths, string[] movedFromAssetPaths)
+        private static void OnPostprocessAllAssets(
+            string[] importedAssetPaths,
+            string[] deletedAssetPaths,
+            string[] movedAssetPaths,
+            string[] movedFromAssetPaths
+        )
         {
             var layoutRuleDataRepository = new LayoutRuleDataRepository();
             var primaryData = layoutRuleDataRepository.PrimaryData;
@@ -25,9 +29,16 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
             var assetDatabaseAdapter = new AssetDatabaseAdapter();
             var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
             var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-            var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
-                addressableSettingsAdapter, assetDatabaseAdapter);
+            var applyService = new ApplyLayoutRuleService(layoutRule,
+                versionExpressionParser,
+                addressableSettingsAdapter,
+                assetDatabaseAdapter);
             applyService.Setup();
+
+            // Check Corruption
+            var projectSettings = SmartAddresserProjectSettings.instance;
+            var corruptionNotificationType = projectSettings.LayoutRuleCorruptionSettings.NotificationTypeOnImport;
+            applyService.ValidateLayoutRules(corruptionNotificationType);
 
             var versionExpression = layoutRule.Settings.VersionExpression.Value;
             if (string.IsNullOrEmpty(versionExpression))
@@ -44,7 +55,7 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
                 var guid = AssetDatabase.AssetPathToGUID(movedAssetPath);
                 applyService.Apply(guid, false, true, versionExpression);
             }
-            
+
             applyService.InvokeBatchModificationEvent();
         }
     }

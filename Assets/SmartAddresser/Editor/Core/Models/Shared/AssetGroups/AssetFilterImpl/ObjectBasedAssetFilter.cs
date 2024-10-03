@@ -23,6 +23,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         [SerializeField] private ObjectListableProperty _object = new ObjectListableProperty();
 
         private List<(string assetPath, bool isFolder)> _objectInfoList = new List<(string assetPath, bool isFolder)>();
+        private bool _hasNullObject;
 
         public FolderTargetingMode FolderTargetingMode
         {
@@ -38,15 +39,31 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public override void SetupForMatching()
         {
             _objectInfoList.Clear();
+            _hasNullObject = false;
             foreach (var obj in _object)
             {
                 if (obj == null)
+                {
+                    _hasNullObject = true;
                     continue;
+                }
 
                 var isFolder = obj is DefaultAsset;
                 var path = AssetDatabase.GetAssetPath(obj);
                 _objectInfoList.Add((path, isFolder));
             }
+        }
+        
+        public override bool Validate(out string errorMessage)
+        {
+            if (_hasNullObject)
+            {
+                errorMessage = $"[{GetType().Name}] There are null reference objects.";
+                return false;
+            }
+
+            errorMessage = null;
+            return true;
         }
 
         /// <inheritdoc />

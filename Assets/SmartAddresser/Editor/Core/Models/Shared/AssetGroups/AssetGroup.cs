@@ -16,11 +16,12 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
     [Serializable]
     public sealed class AssetGroup
     {
+        private const string Indent = "    ";
+
         [SerializeField] private string _id;
         [SerializeField] private ObservableProperty<string> _name = new ObservableProperty<string>("New Asset Group");
 
-        [SerializeField]
-        private SerializeReferenceObservableList<IAssetFilter> _filters =
+        [SerializeField] private SerializeReferenceObservableList<IAssetFilter> _filters =
             new SerializeReferenceObservableList<IAssetFilter>();
 
         public AssetGroup()
@@ -39,8 +40,30 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
 
         public void Setup()
         {
-            foreach (var filter in _filters) 
+            foreach (var filter in _filters)
                 filter?.SetupForMatching();
+        }
+
+        public bool Validate(out string errorMessage)
+        {
+            var result = true;
+            var sb = new StringBuilder();
+            foreach (var filter in _filters)
+            {
+                result &= filter.Validate(out var message);
+                if (!string.IsNullOrEmpty(message))
+                    sb.AppendLine($"{Indent}{Indent}{message}");
+            }
+
+            if (sb.Length == 0)
+            {
+                errorMessage = null;
+                return result;
+            }
+
+            errorMessage = sb.ToString();
+            errorMessage = $"{Indent}Group: {_name.Value}{Environment.NewLine}{errorMessage}";
+            return result;
         }
 
         /// <summary>
