@@ -399,7 +399,7 @@ You can set the version expression by calling the following method.
 The following is an example of how to set the version expression from the command line in Mac.
 
 ```
-/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod Assets/SmartAddresser/Editor/Core/Tools/CLI/SmartAddresserCLI.SetVersionExpression
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.SetVersionExpression
 ```
 
 Command line arguments are as follows.
@@ -422,7 +422,7 @@ You can use the `SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.Validate
 The following is an example of how to check for corrupted layout rules from the command line in Mac.
 
 ```
-/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod Assets/SmartAddresser/Editor/Core/Tools/CLI/SmartAddresserCLI.ValidateLayoutRules
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules
 ```
 
 Command line arguments are as follows.

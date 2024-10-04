@@ -407,7 +407,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 以下はMacでコマンドライン実行を行う例です。
 
 ```
-/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod Assets/SmartAddresser/Editor/Core/Tools/CLI/SmartAddresserCLI.SetVersionExpression
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.SetVersionExpression
 ```
 
 コマンドライン引数は以下の通りです。
@@ -429,7 +429,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 以下はMacでコマンドライン実行を行う例です。
 
 ```
-/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod Assets/SmartAddresser/Editor/Core/Tools/CLI/SmartAddresserCLI.ValidateLayoutRules
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules
 ```
 
 コマンドライン引数は以下の通りです。
