@@ -49,20 +49,10 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
             {
                 var options = ValidateLayoutRuleCLIOptions.CreateFromCommandLineArgs();
                 var layoutRule = LoadLayoutRuleData(options.LayoutRuleAssetPath).LayoutRule;
-                var versionExpressionParser = new VersionExpressionParserRepository().Load();
-                var assetDatabaseAdapter = new AssetDatabaseAdapter();
-                var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
-                var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-
-                var applyService = new ApplyLayoutRuleService(layoutRule,
-                    versionExpressionParser,
-                    addressableSettingsAdapter,
-                    assetDatabaseAdapter);
-
-                applyService.Setup();
+                var validateService = new ValidateAndExportLayoutRuleService(layoutRule, options.ErrorLogFilePath);
                 try
                 {
-                    applyService.ValidateLayoutRules(LayoutRuleCorruptionNotificationType.ThrowException);
+                    validateService.Execute(true, LayoutRuleErrorHandleType.ThrowException, out _);
                 }
                 catch (Exception e)
                 {
@@ -93,11 +83,28 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                 var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
                 var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
 
-                if (options.ShouldValidate)
+                layoutRule.Setup();
+
+                if (options.ShouldValidateLayoutRule)
+                {
+                    var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                    try
+                    {
+                        validateService.Execute(false, LayoutRuleErrorHandleType.ThrowException, out _);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                        EditorApplication.Exit(ErrorLevelValidateFailed);
+                        return;
+                    }
+                }
+
+                if (options.ShouldValidateLayout)
                 {
                     // Build and validate the Layout.
                     var buildLayoutService = new BuildLayoutService(assetDatabaseAdapter);
-                    var layout = buildLayoutService.Execute(layoutRule);
+                    var layout = buildLayoutService.Execute(false, layoutRule);
                     layout.Validate(true,
                         validationSettings.DuplicateAddresses,
                         validationSettings.DuplicateAssetPaths,
@@ -122,7 +129,7 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                     addressableSettingsAdapter,
                     assetDatabaseAdapter);
 
-                applyService.ApplyAll(projectSettings.LayoutRuleCorruptionSettings.NotificationType);
+                applyService.ApplyAll(false);
 
                 EditorApplication.Exit(ErrorLevelNone);
             }

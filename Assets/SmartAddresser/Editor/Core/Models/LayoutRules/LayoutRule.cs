@@ -25,6 +25,16 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         public IObservableList<LabelRule> LabelRules => _labelRules;
         public IObservableList<VersionRule> VersionRules => _versionRules;
 
+        public void Setup()
+        {
+            foreach (var addressRule in _addressRules)
+                addressRule.Setup();
+            foreach (var labelRule in _labelRules)
+                labelRule.Setup();
+            foreach (var versionRule in _versionRules)
+                versionRule.Setup();
+        }
+
         /// <summary>
         ///     <para>* If there is no address group that hold the addressable group, add it.</para>
         ///     <para>* Remove address rules that hold addressable groups that no longer exists.</para>
@@ -67,12 +77,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             return true;
         }
 
-        public void SetupForAddress()
-        {
-            foreach (var addressRule in _addressRules)
-                addressRule.Setup();
-        }
-
         public bool TryProvideAddressAndAddressableGroup(
             string assetPath,
             Type assetType,
@@ -98,12 +102,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             address = null;
             addressableGroup = null;
             return false;
-        }
-
-        public void SetupForLabels()
-        {
-            foreach (var labelRule in _labelRules)
-                labelRule.Setup();
         }
 
         /// <summary>
@@ -139,12 +137,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             }
 
             return labels;
-        }
-
-        public void SetupForVersion()
-        {
-            foreach (var versionRule in _versionRules)
-                versionRule.Setup();
         }
 
         public string ProvideVersion(string assetPath, Type assetType, bool isFolder, bool doSetup)

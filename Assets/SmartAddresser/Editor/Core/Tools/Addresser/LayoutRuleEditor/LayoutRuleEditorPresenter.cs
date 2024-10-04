@@ -278,8 +278,15 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
                         void Apply()
                         {
-                            // Apply the layout rules to the addressable asset system.
                             var layoutRule = _editingData.Value.LayoutRule;
+                            layoutRule.Setup();
+                            
+                            // Validate the layout rule.
+                            var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                            var ruleErrorHandleType = projectSettings.LayoutRuleErrorSettings.HandleType;
+                            validateService.Execute(false, ruleErrorHandleType, out _);
+                            
+                            // Apply the layout rules to the addressable asset system.
                             var versionExpressionParser = new VersionExpressionParserRepository().Load();
                             var assetDatabaseAdapter = new AssetDatabaseAdapter();
                             var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
@@ -289,10 +296,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                                 addressableSettingsAdapter,
                                 assetDatabaseAdapter);
 
-                            // Check Corruption
-                            var corruptionNotificationType =
-                                projectSettings.LayoutRuleCorruptionSettings.NotificationType;
-                            applyService.ApplyAll(corruptionNotificationType);
+                            applyService.ApplyAll(false);
                         }
                     });
 

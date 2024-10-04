@@ -12,7 +12,7 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
         [SerializeField] private LayoutRuleData primaryData;
         [SerializeField] private MonoScript versionExpressionParser;
         [SerializeField] private Validation validation = new Validation();
-        [SerializeField] private LayoutRuleCorruption layoutRuleCorruption = new LayoutRuleCorruption();
+        [SerializeField] private LayoutRuleError layoutRuleError = new LayoutRuleError();
 
         public LayoutRuleData PrimaryData
         {
@@ -53,15 +53,15 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
             }
         }
 
-        public LayoutRuleCorruption LayoutRuleCorruptionSettings
+        public LayoutRuleError LayoutRuleErrorSettings
         {
-            get => layoutRuleCorruption;
+            get => layoutRuleError;
             set
             {
-                if (value == layoutRuleCorruption)
+                if (value == layoutRuleError)
                     return;
 
-                layoutRuleCorruption = value;
+                layoutRuleError = value;
                 Save(true);
             }
         }
@@ -94,23 +94,23 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
         }
 
         [Serializable]
-        public sealed class LayoutRuleCorruption
+        public sealed class LayoutRuleError
         {
-            [SerializeField] private LayoutRuleCorruptionNotificationType notificationType =
-                LayoutRuleCorruptionNotificationType.LogError;
+            [SerializeField] private LayoutRuleErrorHandleType handleType =
+                LayoutRuleErrorHandleType.LogError;
 
-            public LayoutRuleCorruption()
+            public LayoutRuleError()
             {
             }
 
-            public LayoutRuleCorruption(
-                LayoutRuleCorruptionNotificationType notificationType
+            public LayoutRuleError(
+                LayoutRuleErrorHandleType handleType
             )
             {
-                this.notificationType = notificationType;
+                this.handleType = handleType;
             }
 
-            public LayoutRuleCorruptionNotificationType NotificationType => notificationType;
+            public LayoutRuleErrorHandleType HandleType => handleType;
         }
     }
 }

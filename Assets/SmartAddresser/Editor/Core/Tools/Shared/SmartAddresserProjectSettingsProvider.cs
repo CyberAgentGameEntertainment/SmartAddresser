@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Core.Models.Layouts;
-using SmartAddresser.Editor.Core.Models.Services;
-using SmartAddresser.Editor.Foundation.AddressableAdapter;
-using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using UnityEditor;
-using UnityEditor.AddressableAssets;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Shared
@@ -53,19 +49,12 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                             "Cancel"))
                         {
                             var layoutRule = projectSettings.PrimaryData.LayoutRule;
-                            var versionExpressionParser = new VersionExpressionParserRepository().Load();
-                            var assetDatabaseAdapter = new AssetDatabaseAdapter();
-                            var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
-                            var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-                            var applyService = new ApplyLayoutRuleService(layoutRule,
-                                versionExpressionParser,
-                                addressableSettingsAdapter,
-                                assetDatabaseAdapter);
+                            var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
 
                             // Check Corruption
                             var corruptionNotificationType =
-                                projectSettings.LayoutRuleCorruptionSettings.NotificationType;
-                            applyService.ApplyAll(corruptionNotificationType);
+                                projectSettings.LayoutRuleErrorSettings.HandleType;
+                            validateService.Execute(true, corruptionNotificationType, out _);
                         }
                         else
                         {
@@ -101,12 +90,12 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                 using (var ccs = new EditorGUI.ChangeCheckScope())
                 {
                     var notificationTypeOnApplyAll =
-                        (LayoutRuleCorruptionNotificationType)EditorGUILayout.EnumPopup(
-                            "Layout Rule Corruption",
-                            projectSettings.LayoutRuleCorruptionSettings.NotificationType);
+                        (LayoutRuleErrorHandleType)EditorGUILayout.EnumPopup(
+                            "Layout Rule Error",
+                            projectSettings.LayoutRuleErrorSettings.HandleType);
                     if (ccs.changed)
-                        projectSettings.LayoutRuleCorruptionSettings =
-                            new SmartAddresserProjectSettings.LayoutRuleCorruption(notificationTypeOnApplyAll);
+                        projectSettings.LayoutRuleErrorSettings =
+                            new SmartAddresserProjectSettings.LayoutRuleError(notificationTypeOnApplyAll);
                 }
             }
         }

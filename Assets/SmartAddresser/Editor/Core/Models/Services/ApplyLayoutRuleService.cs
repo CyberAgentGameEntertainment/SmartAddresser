@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
@@ -6,7 +5,6 @@ using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using SmartAddresser.Editor.Foundation.SemanticVersioning;
 using UnityEditor.AddressableAssets.Settings;
-using UnityEngine;
 using Version = SmartAddresser.Editor.Foundation.SemanticVersioning.Version;
 
 namespace SmartAddresser.Editor.Core.Models.Services
@@ -32,48 +30,12 @@ namespace SmartAddresser.Editor.Core.Models.Services
         }
 
         /// <summary>
-        ///     If you want to process multiple asset by this instance, you should call this method before you call
-        ///     <see cref="TryAddEntry" /> and set <c>false</c> to the <c>doSetup</c> argument of the <see cref="TryAddEntry" />.
-        ///     If you want to process single asset by this instance, you should not call this method and set <c>true</c> to the
-        ///     <c>doSetup</c> argument of the <see cref="TryAddEntry" />.
-        /// </summary>
-        public void Setup()
-        {
-            _layoutRule.SetupForAddress();
-            _layoutRule.SetupForLabels();
-            _layoutRule.SetupForVersion();
-        }
-
-        public void ValidateLayoutRules(LayoutRuleCorruptionNotificationType corruptionNotificationType)
-        {
-            if (corruptionNotificationType == LayoutRuleCorruptionNotificationType.Ignore)
-                return;
-
-            if (_layoutRule.Validate(out var errorMessage))
-                return;
-
-            if (corruptionNotificationType == LayoutRuleCorruptionNotificationType.LogError)
-            {
-                Debug.LogError(errorMessage.ToJson(true));
-                return;
-            }
-
-            if (corruptionNotificationType == LayoutRuleCorruptionNotificationType.ThrowException)
-                throw new Exception(errorMessage.ToJson(true));
-        }
-
-        /// <summary>
         ///     Apply the layout rule to the addressable settings for all assets.
         /// </summary>
-        public void ApplyAll(
-            LayoutRuleCorruptionNotificationType layoutRuleCorruptionNotificationType =
-                LayoutRuleCorruptionNotificationType.Ignore
-        )
+        public void ApplyAll(bool doSetup)
         {
-            Setup();
-
-            // Check Corruption
-            ValidateLayoutRules(layoutRuleCorruptionNotificationType);
+            if (doSetup)
+                _layoutRule.Setup();
 
             // Add all entries to the addressable asset system.
             var removeTargetAssetGuids = new List<string>();

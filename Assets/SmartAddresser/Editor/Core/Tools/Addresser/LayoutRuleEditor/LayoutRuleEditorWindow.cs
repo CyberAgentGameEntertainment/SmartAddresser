@@ -75,6 +75,14 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 if (primaryData != null)
                 {
                     var layoutRule = primaryData.LayoutRule;
+                    layoutRule.Setup();
+
+                    // Validate the layout rule.
+                    var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                    var ruleErrorHandleType = projectSettings.LayoutRuleErrorSettings.HandleType;
+                    validateService.Execute(false, ruleErrorHandleType, out _);
+
+                    // Apply the layout rule to the addressable asset system.
                     var versionExpressionParser = new VersionExpressionParserRepository().Load();
                     var assetDatabaseAdapter = new AssetDatabaseAdapter();
                     var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
@@ -83,11 +91,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                         versionExpressionParser,
                         addressableSettingsAdapter,
                         assetDatabaseAdapter);
-
-                    // Check Corruption
-                    var corruptionNotificationType =
-                        projectSettings.LayoutRuleCorruptionSettings.NotificationType;
-                    applyService.ApplyAll(corruptionNotificationType);
+                    applyService.ApplyAll(false);
                 }
 
                 _hasAnyDataChanged = false;
