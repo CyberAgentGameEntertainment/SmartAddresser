@@ -1,6 +1,7 @@
 using System;
 using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEngine;
@@ -65,12 +66,15 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
             LabelProvider.Value.Setup();
         }
 
-        public bool Validate(out string errorMessage)
+        public bool Validate(out LabelRuleValidationError error)
         {
-            if (_assetGroups.Validate(out errorMessage))
+            if (_assetGroups.Validate(out var groupErrors))
+            {
+                error = null;
                 return true;
+            }
 
-            errorMessage = $"Label rule is corrupted: {_name.Value}{Environment.NewLine}{errorMessage}";
+            error = new LabelRuleValidationError(this, groupErrors);
             return false;
         }
 

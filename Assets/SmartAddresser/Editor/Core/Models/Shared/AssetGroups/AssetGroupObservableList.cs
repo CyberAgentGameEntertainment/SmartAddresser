@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
@@ -20,19 +21,21 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
                 group.Setup();
         }
 
-        public bool Validate(out string errorMessage)
+        public bool Validate(out AssetGroupValidationError[] errors)
         {
-            var result = true;
-            var sb = new StringBuilder();
+            var groupErrors = new List<AssetGroupValidationError>();
             foreach (var group in this)
+                if (!group.Validate(out var groupError))
+                    groupErrors.Add(groupError);
+
+            if (groupErrors.Count > 0)
             {
-                result &= group.Validate(out var message);
-                if (!string.IsNullOrEmpty(message))
-                    sb.Append(message);
+                errors = groupErrors.ToArray();
+                return false;
             }
 
-            errorMessage = sb.ToString();
-            return result;
+            errors = null;
+            return true;
         }
 
         /// <summary>

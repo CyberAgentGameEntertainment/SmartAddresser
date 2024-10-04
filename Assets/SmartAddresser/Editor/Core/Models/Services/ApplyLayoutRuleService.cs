@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SmartAddresser.Editor.Core.Models.LayoutRules;
 using SmartAddresser.Editor.Foundation.AddressableAdapter;
 using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
@@ -50,40 +49,17 @@ namespace SmartAddresser.Editor.Core.Models.Services
             if (corruptionNotificationType == LayoutRuleCorruptionNotificationType.Ignore)
                 return;
 
-            if (ValidateLayoutRulesInternal(out var errorMessage))
+            if (_layoutRule.Validate(out var errorMessage))
                 return;
 
-            errorMessage = $"SmartAddresser detected corruption of the layout rule{Environment.NewLine}{errorMessage}";
-            
             if (corruptionNotificationType == LayoutRuleCorruptionNotificationType.LogError)
             {
-                Debug.LogError(errorMessage);
+                Debug.LogError(errorMessage.ToJson(true));
                 return;
             }
 
             if (corruptionNotificationType == LayoutRuleCorruptionNotificationType.ThrowException)
-                throw new Exception(errorMessage);
-        }
-
-        private bool ValidateLayoutRulesInternal(out string errorMessage)
-        {
-            var result = true;
-            var sb = new StringBuilder();
-
-            result &= _layoutRule.ValidateForAddress(out var message);
-            if (!string.IsNullOrEmpty(message))
-                sb.Append(message);
-
-            result &= _layoutRule.ValidateForLabels(out message);
-            if (!string.IsNullOrEmpty(message))
-                sb.Append(message);
-
-            result &= _layoutRule.ValidateForVersion(out message);
-            if (!string.IsNullOrEmpty(message))
-                sb.Append(message);
-
-            errorMessage = sb.ToString();
-            return result;
+                throw new Exception(errorMessage.ToJson(true));
         }
 
         /// <summary>

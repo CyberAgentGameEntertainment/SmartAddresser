@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEngine;
 
@@ -21,8 +23,8 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         [SerializeField] private bool _matchWithFolders;
         [SerializeField] private AssetFilterCondition _condition = AssetFilterCondition.ContainsMatched;
         [SerializeField] private StringListableProperty _assetPathRegex = new StringListableProperty();
-        private List<Regex> _regexes = new List<Regex>();
         private List<string> _errorRegexStrings = new List<string>();
+        private List<Regex> _regexes = new List<Regex>();
 
         public bool MatchWithFolders
         {
@@ -63,26 +65,19 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             }
         }
 
-        public override bool Validate(out string errorMessage)
+        public override bool Validate(out AssetFilterValidationError error)
         {
             if (_errorRegexStrings.Count >= 1)
             {
-                var sb = new StringBuilder();
-                sb.Append("Invalid regexes: ");
-                foreach (var errorRegexString in _errorRegexStrings)
-                {
-                    sb.Append(errorRegexString);
-                    sb.Append(", ");
-                }
-
-                // Remove the last ", ".
-                sb.Remove(sb.Length - 2, 2);
-
-                errorMessage = sb.ToString();
+                error = new AssetFilterValidationError(
+                    this,
+                    _errorRegexStrings
+                        .Select(errorRegexString => $"Invalid regex string: {errorRegexString}")
+                        .ToArray());
                 return false;
             }
 
-            errorMessage = null;
+            error = null;
             return true;
         }
 

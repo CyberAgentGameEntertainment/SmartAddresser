@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEditor;
 using UnityEngine;
@@ -56,15 +57,15 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             _dependentAssetPaths = _dependentAssetPaths.Distinct().ToList();
         }
 
-        public override bool Validate(out string errorMessage)
+        public override bool Validate(out AssetFilterValidationError error)
         {
             if (_hasNullObject)
             {
-                errorMessage = "There are null reference objects.";
+                error = new AssetFilterValidationError(this, new[] { "There are null reference objects." });
                 return false;
             }
 
-            errorMessage = null;
+            error = null;
             return true;
         }
 

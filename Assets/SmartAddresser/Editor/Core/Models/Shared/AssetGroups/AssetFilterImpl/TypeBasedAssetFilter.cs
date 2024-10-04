@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
@@ -54,26 +56,19 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             _resultCache.Clear();
         }
 
-        public override bool Validate(out string errorMessage)
+        public override bool Validate(out AssetFilterValidationError error)
         {
             if (_invalidAssemblyQualifiedNames.Count >= 1)
             {
-                var sb = new StringBuilder();
-                sb.Append($"[{GetType().Name}] Unknown types: ");
-                foreach (var invalidAssemblyQualifiedNames in _invalidAssemblyQualifiedNames)
-                {
-                    sb.Append(invalidAssemblyQualifiedNames);
-                    sb.Append(" / ");
-                }
-
-                // Remove the last " / ".
-                sb.Remove(sb.Length - 3, 3);
-
-                errorMessage = sb.ToString();
+                error = new AssetFilterValidationError(
+                    this,
+                    _invalidAssemblyQualifiedNames
+                        .Select(qualifiedName => $"Invalid type reference: {qualifiedName}")
+                        .ToArray());
                 return false;
             }
 
-            errorMessage = null;
+            error = null;
             return true;
         }
 

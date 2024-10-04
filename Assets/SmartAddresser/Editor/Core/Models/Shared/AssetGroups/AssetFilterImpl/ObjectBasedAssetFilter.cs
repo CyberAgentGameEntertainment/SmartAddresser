@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEditor;
 using UnityEngine;
@@ -21,9 +22,9 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     {
         [SerializeField] private FolderTargetingMode _folderTargetingMode = FolderTargetingMode.IncludedNonFolderAssets;
         [SerializeField] private ObjectListableProperty _object = new ObjectListableProperty();
+        private bool _hasNullObject;
 
         private List<(string assetPath, bool isFolder)> _objectInfoList = new List<(string assetPath, bool isFolder)>();
-        private bool _hasNullObject;
 
         public FolderTargetingMode FolderTargetingMode
         {
@@ -53,16 +54,16 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 _objectInfoList.Add((path, isFolder));
             }
         }
-        
-        public override bool Validate(out string errorMessage)
+
+        public override bool Validate(out AssetFilterValidationError error)
         {
             if (_hasNullObject)
             {
-                errorMessage = $"[{GetType().Name}] There are null reference objects.";
+                error = new AssetFilterValidationError(this, new[] { "There are null reference objects." });
                 return false;
             }
 
-            errorMessage = null;
+            error = null;
             return true;
         }
 
@@ -93,7 +94,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                                 return true;
                             break;
                         case FolderTargetingMode.Both:
-                            if (isInclusion || (isSelf && isFolder))
+                            if (isInclusion || isSelf && isFolder)
                                 return true;
                             break;
                         default:

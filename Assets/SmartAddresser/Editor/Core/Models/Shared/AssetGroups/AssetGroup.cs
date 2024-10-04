@@ -3,7 +3,9 @@
 // --------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEngine;
@@ -16,8 +18,6 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
     [Serializable]
     public sealed class AssetGroup
     {
-        private const string Indent = "    ";
-
         [SerializeField] private string _id;
         [SerializeField] private ObservableProperty<string> _name = new ObservableProperty<string>("New Asset Group");
 
@@ -44,26 +44,21 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
                 filter?.SetupForMatching();
         }
 
-        public bool Validate(out string errorMessage)
+        public bool Validate(out AssetGroupValidationError error)
         {
-            var result = true;
-            var sb = new StringBuilder();
+            var filterErrors = new List<AssetFilterValidationError>();
             foreach (var filter in _filters)
+                if (!filter.Validate(out var filterError))
+                    filterErrors.Add(filterError);
+
+            if (filterErrors.Count > 0)
             {
-                result &= filter.Validate(out var message);
-                if (!string.IsNullOrEmpty(message))
-                    sb.AppendLine($"{Indent}{Indent}{message}");
+                error = new AssetGroupValidationError(this, filterErrors.ToArray());
+                return false;
             }
 
-            if (sb.Length == 0)
-            {
-                errorMessage = null;
-                return result;
-            }
-
-            errorMessage = sb.ToString();
-            errorMessage = $"{Indent}Group: {_name.Value}{Environment.NewLine}{errorMessage}";
-            return result;
+            error = null;
+            return true;
         }
 
         /// <summary>

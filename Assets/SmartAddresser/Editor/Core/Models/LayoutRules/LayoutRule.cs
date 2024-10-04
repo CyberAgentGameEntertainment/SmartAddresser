@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.Settings;
 using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
@@ -73,21 +73,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                 addressRule.Setup();
         }
 
-        public bool ValidateForAddress(out string errorMessage)
-        {
-            var result = true;
-            var sb = new StringBuilder();
-            foreach (var addressRule in _addressRules)
-            {
-                result &= addressRule.Validate(out var message);
-                if (!string.IsNullOrEmpty(message))
-                    sb.Append(message);
-            }
-
-            errorMessage = sb.ToString();
-            return result;
-        }
-
         public bool TryProvideAddressAndAddressableGroup(
             string assetPath,
             Type assetType,
@@ -119,21 +104,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         {
             foreach (var labelRule in _labelRules)
                 labelRule.Setup();
-        }
-
-        public bool ValidateForLabels(out string errorMessage)
-        {
-            var result = true;
-            var sb = new StringBuilder();
-            foreach (var labelRule in _labelRules)
-            {
-                result &= labelRule.Validate(out var message);
-                if (!string.IsNullOrEmpty(message))
-                    sb.Append(message);
-            }
-
-            errorMessage = sb.ToString();
-            return result;
         }
 
         /// <summary>
@@ -177,21 +147,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                 versionRule.Setup();
         }
 
-        public bool ValidateForVersion(out string errorMessage)
-        {
-            var result = true;
-            var sb = new StringBuilder();
-            foreach (var versionRule in _versionRules)
-            {
-                result &= versionRule.Validate(out var message);
-                if (!string.IsNullOrEmpty(message))
-                    sb.Append(message);
-            }
-
-            errorMessage = sb.ToString();
-            return result;
-        }
-
         public string ProvideVersion(string assetPath, Type assetType, bool isFolder, bool doSetup)
         {
             foreach (var versionRule in _versionRules)
@@ -205,6 +160,36 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             }
 
             return null;
+        }
+
+        public bool Validate(out LayoutRuleValidationError error)
+        {
+            var versionRuleErrors = new List<VersionRuleValidationError>();
+            foreach (var versionRule in _versionRules)
+                if (!versionRule.Validate(out var versionRuleError))
+                    versionRuleErrors.Add(versionRuleError);
+
+            var labelRuleErrors = new List<LabelRuleValidationError>();
+            foreach (var labelRule in _labelRules)
+                if (!labelRule.Validate(out var labelRuleError))
+                    labelRuleErrors.Add(labelRuleError);
+
+            var addressRuleErrors = new List<AddressRuleValidationError>();
+            foreach (var addressRule in _addressRules)
+                if (!addressRule.Validate(out var addressRuleError))
+                    addressRuleErrors.Add(addressRuleError);
+
+            if (versionRuleErrors.Count == 0 && labelRuleErrors.Count == 0 && addressRuleErrors.Count == 0)
+            {
+                error = null;
+                return true;
+            }
+
+            error = new LayoutRuleValidationError(
+                addressRuleErrors.ToArray(),
+                labelRuleErrors.ToArray(),
+                versionRuleErrors.ToArray());
+            return false;
         }
     }
 }

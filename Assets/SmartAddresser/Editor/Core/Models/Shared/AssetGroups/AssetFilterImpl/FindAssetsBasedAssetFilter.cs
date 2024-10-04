@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEditor;
 using UnityEngine;
@@ -48,9 +49,9 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             _foundAssetPaths.AddRange(assetPaths);
         }
 
-        public override bool Validate(out string errorMessage)
+        public override bool Validate(out AssetFilterValidationError error)
         {
-            errorMessage = null;
+            error = null;
             return true;
         }
 

@@ -3,6 +3,8 @@
 // --------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
 {
@@ -26,7 +28,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
         ///     This method will be called after <see cref="SetupForMatching"/>.
         /// </summary>
         /// <returns></returns>
-        bool Validate(out string errorMessage);
+        bool Validate(out AssetFilterValidationError error);
 
         /// <summary>
         ///     Return true if the asset passes this filter.

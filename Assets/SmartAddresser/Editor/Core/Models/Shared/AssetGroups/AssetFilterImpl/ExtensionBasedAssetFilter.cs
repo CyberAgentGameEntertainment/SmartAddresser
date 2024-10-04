@@ -4,8 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEngine;
 
@@ -40,43 +40,33 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 }
 
                 var ext = extension;
-                if (!ext.StartsWith("."))
-                {
-                    ext = $".{extension}";
-                }
+                if (!ext.StartsWith(".")) ext = $".{extension}";
 
                 _extensions.Add(ext);
             }
         }
 
-        public override bool Validate(out string errorMessage)
+        public override bool Validate(out AssetFilterValidationError error)
         {
             if (_hasEmptyExtension)
             {
-                errorMessage = "There are empty extensions.";
+                error = new AssetFilterValidationError(this, new[] { "There are empty extensions." });
                 return false;
             }
 
-            errorMessage = string.Empty;
+            error = null;
             return true;
         }
 
         /// <inheritdoc />
         public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
         {
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                return false;
-            }
+            if (string.IsNullOrEmpty(assetPath)) return false;
 
             foreach (var extension in _extensions)
-            {
                 // Return true if any of the extensions match.
                 if (assetPath.EndsWith(extension, StringComparison.Ordinal))
-                {
                     return true;
-                }
-            }
 
             return false;
         }
@@ -87,15 +77,9 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             var elementCount = 0;
             foreach (var extension in _extension)
             {
-                if (string.IsNullOrEmpty(extension))
-                {
-                    continue;
-                }
+                if (string.IsNullOrEmpty(extension)) continue;
 
-                if (elementCount >= 1)
-                {
-                    result.Append(" || ");
-                }
+                if (elementCount >= 1) result.Append(" || ");
 
                 result.Append(extension);
                 elementCount++;

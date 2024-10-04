@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
@@ -19,7 +20,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public abstract void SetupForMatching();
 
         /// <inheritdoc />
-        public abstract bool Validate(out string errorMessage);
+        public abstract bool Validate(out AssetFilterValidationError error);
 
         /// <inheritdoc />
         public abstract bool IsMatch(string assetPath, Type assetType, bool isFolder);
