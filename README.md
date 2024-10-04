@@ -430,6 +430,7 @@ Command line arguments are as follows.
 | Argument Name                            | Description                                                                                     |
 |------------------------------------------|-------------------------------------------------------------------------------------------------|
 | -layoutRuleAssetPath \<assetPath\>       | Asset Path of the Layout Rule Data to be applied.<br>If not specified, use the first one found. |
+| -errorLogFilePath \<filePath\>     | Output file path for validation result.<br>Default is Logs/SmartAddresser_LayoutRuleError.json. |
 
 When completed, Unity is automatically closed and returns the following value.
 
@@ -451,12 +452,13 @@ The following is an example of how to apply the layout rules from the command li
 
 Command line arguments are as follows.
 
-| Argument Name                            | Description                                                                                                                             |
-|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Argument Name                     | Description                                                                                                                             |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | -layoutRuleAssetPath \<assetPath\> | Asset Path of the Layout Rule Data to be applied.<br>If not specified, use the first one found.                                         |
-| -validate                       | If enabled, validation will be executed before applying.<br>The validation is a time-consuming process so can be skipped if not needed. |
+| -validateLayoutRule               | If enabled, check for corrupted layout rules before applying.                                                                           |
+| -validateLayout                   | If enabled, validation will be executed before applying.<br>The validation is a time-consuming process so can be skipped if not needed. |
 | -resultFilePath \<filePath\>      | Output file path for validation result.<br>Default is SmartAddresser/validate_result.json.                                              |
-| -failWhenWarning                | If enabled, any warning in the validation is considered an execution error.                                                             |
+| -failWhenWarning                  | If enabled, any warning in the validation is considered an execution error.                                                             |
 
 When completed, Unity is automatically closed and returns the following value.
 
