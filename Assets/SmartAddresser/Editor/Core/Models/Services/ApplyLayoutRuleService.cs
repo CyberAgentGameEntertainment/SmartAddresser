@@ -147,23 +147,23 @@ namespace SmartAddresser.Editor.Core.Models.Services
             // Set group and address.
             var entryAdapter =
                 _addressableSettingsAdapter.CreateOrMoveEntry(addressableGroupName, assetGuid, invokeModificationEvent);
-            entryAdapter.SetAddress(address);
+            entryAdapter.SetAddress(address, invokeModificationEvent);
 
             // Add labels to addressable settings if not exists.
             var labels = _layoutRule.ProvideLabels(assetPath, assetType, isFolder, doSetup);
             var addressableLabels = _addressableSettingsAdapter.GetLabels();
             foreach (var label in labels)
                 if (!addressableLabels.Contains(label))
-                    _addressableSettingsAdapter.AddLabel(label);
+                    _addressableSettingsAdapter.AddLabel(label, invokeModificationEvent);
 
             // Remove old labels.
             var oldLabels = entryAdapter.Labels.ToArray();
             foreach (var label in oldLabels)
-                entryAdapter.SetLabel(label, false);
+                entryAdapter.SetLabel(label, false, invokeModificationEvent);
 
             // Add new labels.
             foreach (var label in labels)
-                entryAdapter.SetLabel(label, true);
+                entryAdapter.SetLabel(label, true, invokeModificationEvent);
 
             return true;
         }
