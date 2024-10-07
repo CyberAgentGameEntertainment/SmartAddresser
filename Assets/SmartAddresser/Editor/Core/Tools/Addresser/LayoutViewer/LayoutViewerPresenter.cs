@@ -80,7 +80,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
 
             var projectSettings = SmartAddresserProjectSettings.instance;
             var validationSettings = projectSettings.ValidationSettings;
-            var layout = _buildLayoutService.Execute(_editingData.Value.LayoutRule);
+            var layout = _buildLayoutService.Execute(true, _editingData.Value.LayoutRule);
             layout.Validate(false, validationSettings.DuplicateAddresses, validationSettings.DuplicateAssetPaths,
                 validationSettings.EntryHasMultipleVersions);
             _layout = layout;
@@ -180,7 +180,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             {
                 var projectSettings = SmartAddresserProjectSettings.instance;
                 var validationSettings = projectSettings.ValidationSettings;
-                var layout = _buildLayoutService.Execute(_editingData.Value.LayoutRule);
+                var layout = _buildLayoutService.Execute(true, _editingData.Value.LayoutRule);
                 layout.Validate(false, validationSettings.DuplicateAddresses, validationSettings.DuplicateAssetPaths,
                     validationSettings.EntryHasMultipleVersions);
                 _layout = layout;

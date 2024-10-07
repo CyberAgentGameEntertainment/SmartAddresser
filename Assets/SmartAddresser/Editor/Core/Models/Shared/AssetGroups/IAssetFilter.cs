@@ -3,6 +3,8 @@
 // --------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
 {
@@ -14,11 +16,19 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
         ///     Preprocessing of <see cref="IsMatch" />.
         /// </summary>
         /// <remarks>
-        ///     This will be called before and less often than <see cref="IsMatch"/>.
+        ///     This will be called before and less often than <see cref="IsMatch" />.
         ///     And will be executed in the main thread, in contrast to <see cref="IsMatch" />.
         ///     So you should write heavy processes or processes that use Unity's API here.
         /// </remarks>
         void SetupForMatching();
+
+        /// <summary>
+        ///     Returns false if the AssetFilter is corrupted.
+        ///     Example: When an asset referenced by the filter is deleted.
+        ///     This method will be called after <see cref="SetupForMatching"/>.
+        /// </summary>
+        /// <returns></returns>
+        bool Validate(out AssetFilterValidationError error);
 
         /// <summary>
         ///     Return true if the asset passes this filter.

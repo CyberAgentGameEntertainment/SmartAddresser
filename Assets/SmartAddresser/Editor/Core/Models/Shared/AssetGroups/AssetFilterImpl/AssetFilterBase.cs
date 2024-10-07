@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
@@ -14,14 +15,17 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         }
 
         public string Id => _id;
-        
-        /// <inheritdoc/>
+
+        /// <inheritdoc />
         public abstract void SetupForMatching();
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
+        public abstract bool Validate(out AssetFilterValidationError error);
+
+        /// <inheritdoc />
         public abstract bool IsMatch(string assetPath, Type assetType, bool isFolder);
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public abstract string GetDescription();
 
         public void OverwriteValuesFromJson(string json)

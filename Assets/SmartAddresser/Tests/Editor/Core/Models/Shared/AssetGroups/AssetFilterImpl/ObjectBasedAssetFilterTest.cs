@@ -99,5 +99,24 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.SetupForMatching();
             Assert.That(filter.IsMatch(TestAssetPaths.Dummy1.PrefabDummy, typeof(GameObject), false), Is.False);
         }
+
+        [Test]
+        public void Validate_ObjectIsNotNull_ReturnTrue()
+        {
+            var filter = new ObjectBasedAssetFilter();
+            filter.Object.Value = AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Texture64);
+            filter.SetupForMatching();
+            
+            Assert.That(filter.Validate(out _), Is.True);
+        }
+        
+        [Test]
+        public void Validate_ObjectIsNull_ReturnFalse()
+        {
+            var filter = new ObjectBasedAssetFilter();
+            filter.SetupForMatching();
+            
+            Assert.That(filter.Validate(out _), Is.False);
+        }
     }
 }

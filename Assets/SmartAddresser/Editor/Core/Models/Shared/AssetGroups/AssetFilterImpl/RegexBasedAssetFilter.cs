@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEngine;
 
@@ -21,6 +23,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         [SerializeField] private bool _matchWithFolders;
         [SerializeField] private AssetFilterCondition _condition = AssetFilterCondition.ContainsMatched;
         [SerializeField] private StringListableProperty _assetPathRegex = new StringListableProperty();
+        private List<string> _errorRegexStrings = new List<string>();
         private List<Regex> _regexes = new List<Regex>();
 
         public bool MatchWithFolders
@@ -43,6 +46,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public override void SetupForMatching()
         {
             _regexes.Clear();
+            _errorRegexStrings.Clear();
             foreach (var assetPathRegex in _assetPathRegex)
             {
                 if (string.IsNullOrEmpty(assetPathRegex))
@@ -55,9 +59,26 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 }
                 catch
                 {
-                    // If the regex string is invalid and an exception is thrown, continue.
+                    // If the regex string is invalid and an exception is thrown, add to errorStrings and continue.
+                    _errorRegexStrings.Add(assetPathRegex);
                 }
             }
+        }
+
+        public override bool Validate(out AssetFilterValidationError error)
+        {
+            if (_errorRegexStrings.Count >= 1)
+            {
+                error = new AssetFilterValidationError(
+                    this,
+                    _errorRegexStrings
+                        .Select(errorRegexString => $"Invalid regex string: {errorRegexString}")
+                        .ToArray());
+                return false;
+            }
+
+            error = null;
+            return true;
         }
 
         /// <inheritdoc />

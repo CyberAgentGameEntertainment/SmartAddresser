@@ -40,8 +40,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         private ILayoutRuleDataRepository _dataRepository;
         private bool _didSetupView;
 
-        public LayoutRuleEditorPresenter(LayoutRuleEditorView view, AutoIncrementHistory history,
-            IAssetSaveService assetSaveService)
+        public LayoutRuleEditorPresenter(
+            LayoutRuleEditorView view,
+            AutoIncrementHistory history,
+            IAssetSaveService assetSaveService
+        )
         {
             _view = view;
             _addressRuleEditorPresenter =
@@ -122,8 +125,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             _didSetupView = true;
         }
 
-        private void OnAddressableAssetSettingsModified(AddressableAssetSettings settings,
-            AddressableAssetSettings.ModificationEvent e, object obj)
+        private void OnAddressableAssetSettingsModified(
+            AddressableAssetSettings settings,
+            AddressableAssetSettings.ModificationEvent e,
+            object obj
+        )
         {
             if (e == AddressableAssetSettings.ModificationEvent.GroupAdded
                 || e == AddressableAssetSettings.ModificationEvent.GroupMoved
@@ -221,12 +227,14 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                     var menuName = $"{sourceAssetNames[i]}";
                     var isActive = activeSourceAssetIndex == i;
                     var idx = i;
-                    menu.AddItem(new GUIContent(menuName), isActive, () =>
-                    {
-                        var asset = sourceAssets[idx];
-                        SetupActiveView(asset);
-                        _dataRepository.SetEditingData(asset);
-                    });
+                    menu.AddItem(new GUIContent(menuName),
+                        isActive,
+                        () =>
+                        {
+                            var asset = sourceAssets[idx];
+                            SetupActiveView(asset);
+                            _dataRepository.SetEditingData(asset);
+                        });
                 }
 
                 menu.ShowAsContext();
@@ -239,46 +247,58 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
 
                 var menu = new GenericMenu();
 
-                menu.AddItem(new GUIContent("Apply to Addressables"), false, () =>
-                {
-                    var projectSettings = SmartAddresserProjectSettings.instance;
-                    var primaryData = projectSettings.PrimaryData;
-
-                    if (primaryData == null)
+                menu.AddItem(new GUIContent("Apply to Addressables"),
+                    false,
+                    () =>
                     {
-                        Apply();
-                        return;
-                    }
+                        var projectSettings = SmartAddresserProjectSettings.instance;
+                        var primaryData = projectSettings.PrimaryData;
 
-                    if (primaryData == _editingData.Value)
-                    {
-                        Apply();
-                        return;
-                    }
+                        if (primaryData == null)
+                        {
+                            Apply();
+                            return;
+                        }
 
-                    // If the primary data is not the same as the editing data, ask the user to confirm.
-                    // If the user confirms, remove the primary data and apply the editing data.
-                    var dialogMessage =
-                        $"The {nameof(projectSettings.PrimaryData)} of the Project Settings is not the same as the data you are applying. Do you want to remove the {nameof(projectSettings.PrimaryData)} from Project Settings and apply the editing data?";
-                    if (EditorUtility.DisplayDialog("Confirm", dialogMessage, "Remove & Apply", "Cancel"))
-                    {
-                        projectSettings.PrimaryData = null;
-                        Apply();
-                    }
+                        if (primaryData == _editingData.Value)
+                        {
+                            Apply();
+                            return;
+                        }
 
-                    void Apply()
-                    {
-                        // Apply the layout rules to the addressable asset system.
-                        var layoutRule = _editingData.Value.LayoutRule;
-                        var versionExpressionParser = new VersionExpressionParserRepository().Load();
-                        var assetDatabaseAdapter = new AssetDatabaseAdapter();
-                        var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
-                        var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-                        var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
-                            addressableSettingsAdapter, assetDatabaseAdapter);
-                        applyService.ApplyAll();
-                    }
-                });
+                        // If the primary data is not the same as the editing data, ask the user to confirm.
+                        // If the user confirms, remove the primary data and apply the editing data.
+                        var dialogMessage =
+                            $"The {nameof(projectSettings.PrimaryData)} of the Project Settings is not the same as the data you are applying. Do you want to remove the {nameof(projectSettings.PrimaryData)} from Project Settings and apply the editing data?";
+                        if (EditorUtility.DisplayDialog("Confirm", dialogMessage, "Remove & Apply", "Cancel"))
+                        {
+                            projectSettings.PrimaryData = null;
+                            Apply();
+                        }
+
+                        void Apply()
+                        {
+                            var layoutRule = _editingData.Value.LayoutRule;
+                            layoutRule.Setup();
+                            
+                            // Validate the layout rule.
+                            var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                            var ruleErrorHandleType = projectSettings.LayoutRuleErrorSettings.HandleType;
+                            validateService.Execute(false, ruleErrorHandleType, out _);
+                            
+                            // Apply the layout rules to the addressable asset system.
+                            var versionExpressionParser = new VersionExpressionParserRepository().Load();
+                            var assetDatabaseAdapter = new AssetDatabaseAdapter();
+                            var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
+                            var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
+                            var applyService = new ApplyLayoutRuleService(layoutRule,
+                                versionExpressionParser,
+                                addressableSettingsAdapter,
+                                assetDatabaseAdapter);
+
+                            applyService.ApplyAll(false);
+                        }
+                    });
 
                 menu.AddItem(new GUIContent("Open Layout Viewer"), false, LayoutViewerWindow.Open);
 
@@ -288,7 +308,10 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             void OnCreateButtonClicked()
             {
                 var assetPath = EditorUtility.SaveFilePanelInProject($"Create {nameof(LayoutRuleData)}",
-                    $"{nameof(LayoutRuleData)}", "asset", "", "Assets");
+                    $"{nameof(LayoutRuleData)}",
+                    "asset",
+                    "",
+                    "Assets");
                 if (string.IsNullOrEmpty(assetPath))
                     return;
 

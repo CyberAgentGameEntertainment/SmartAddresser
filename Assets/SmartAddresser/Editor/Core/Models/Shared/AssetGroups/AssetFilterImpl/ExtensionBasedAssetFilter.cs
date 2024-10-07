@@ -4,8 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEngine;
 
@@ -20,6 +20,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     {
         [SerializeField] private StringListableProperty _extension = new StringListableProperty();
         private List<string> _extensions = new List<string>();
+        private bool _hasEmptyExtension;
 
         /// <summary>
         ///     Extensions for filtering.
@@ -29,39 +30,43 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public override void SetupForMatching()
         {
             _extensions.Clear();
+            _hasEmptyExtension = false;
             foreach (var extension in _extension)
             {
                 if (string.IsNullOrEmpty(extension))
                 {
+                    _hasEmptyExtension = true;
                     continue;
                 }
 
                 var ext = extension;
-                if (!ext.StartsWith("."))
-                {
-                    ext = $".{extension}";
-                }
+                if (!ext.StartsWith(".")) ext = $".{extension}";
 
                 _extensions.Add(ext);
             }
         }
 
-        /// <inheritdoc />
-        public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
+        public override bool Validate(out AssetFilterValidationError error)
         {
-            if (string.IsNullOrEmpty(assetPath))
+            if (_hasEmptyExtension)
             {
+                error = new AssetFilterValidationError(this, new[] { "There are empty extensions." });
                 return false;
             }
 
+            error = null;
+            return true;
+        }
+
+        /// <inheritdoc />
+        public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
+        {
+            if (string.IsNullOrEmpty(assetPath)) return false;
+
             foreach (var extension in _extensions)
-            {
                 // Return true if any of the extensions match.
                 if (assetPath.EndsWith(extension, StringComparison.Ordinal))
-                {
                     return true;
-                }
-            }
 
             return false;
         }
@@ -72,15 +77,9 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             var elementCount = 0;
             foreach (var extension in _extension)
             {
-                if (string.IsNullOrEmpty(extension))
-                {
-                    continue;
-                }
+                if (string.IsNullOrEmpty(extension)) continue;
 
-                if (elementCount >= 1)
-                {
-                    result.Append(" || ");
-                }
+                if (elementCount >= 1) result.Append(" || ");
 
                 result.Append(extension);
                 elementCount++;

@@ -25,7 +25,11 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
         [TestCase(TestAssetRelativePaths.Shared.Texture64, typeof(Texture2D), true, ExpectedResult = false)]
         [TestCase(TestAssetRelativePaths.Shared.MaterialTex64, typeof(Material), false, ExpectedResult = true)]
         [TestCase(TestAssetRelativePaths.Shared.MaterialTex64, typeof(Material), true, ExpectedResult = true)]
-        public bool IsMatch_OnlyDirectDependencies(string relativeAssetPath, Type assetType, bool onlyDirectDependencies)
+        public bool IsMatch_OnlyDirectDependencies(
+            string relativeAssetPath,
+            Type assetType,
+            bool onlyDirectDependencies
+        )
         {
             var filter = new DependentObjectBasedAssetFilter();
             filter.Object.Value = AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.PrefabTex64);
@@ -33,6 +37,25 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.SetupForMatching();
             var assetPath = TestAssetPaths.CreateAbsoluteAssetPath(relativeAssetPath);
             return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset));
+        }
+
+        [Test]
+        public void Validate_ObjectIsNotNull_ReturnTrue()
+        {
+            var filter = new DependentObjectBasedAssetFilter();
+            filter.Object.Value = AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Texture64);
+            filter.SetupForMatching();
+
+            Assert.That(filter.Validate(out _), Is.True);
+        }
+
+        [Test]
+        public void Validate_ObjectIsNull_ReturnFalse()
+        {
+            var filter = new DependentObjectBasedAssetFilter();
+            filter.SetupForMatching();
+
+            Assert.That(filter.Validate(out _), Is.False);
         }
     }
 }

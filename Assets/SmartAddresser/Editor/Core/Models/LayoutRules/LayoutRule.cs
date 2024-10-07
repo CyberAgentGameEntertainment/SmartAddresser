@@ -5,6 +5,7 @@ using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
 using SmartAddresser.Editor.Core.Models.LayoutRules.Settings;
 using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
@@ -24,6 +25,16 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         public IObservableList<LabelRule> LabelRules => _labelRules;
         public IObservableList<VersionRule> VersionRules => _versionRules;
 
+        public void Setup()
+        {
+            foreach (var addressRule in _addressRules)
+                addressRule.Setup();
+            foreach (var labelRule in _labelRules)
+                labelRule.Setup();
+            foreach (var versionRule in _versionRules)
+                versionRule.Setup();
+        }
+
         /// <summary>
         ///     <para>* If there is no address group that hold the addressable group, add it.</para>
         ///     <para>* Remove address rules that hold addressable groups that no longer exists.</para>
@@ -35,11 +46,8 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         {
             var isDirty = false;
             if (addressableGroups.Count != _addressRules.Count)
-            {
                 isDirty = true;
-            }
             else
-            {
                 for (var i = 0; i < addressableGroups.Count; i++)
                 {
                     var addressableGroup = addressableGroups[i];
@@ -50,11 +58,10 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                         break;
                     }
                 }
-            }
 
             if (!isDirty)
                 return false;
-            
+
             var newList = new List<AddressRule>();
             foreach (var addressableGroup in addressableGroups)
             {
@@ -70,14 +77,14 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             return true;
         }
 
-        public void SetupForAddress()
-        {
-            foreach (var addressRule in _addressRules)
-                addressRule.Setup();
-        }
-
-        public bool TryProvideAddressAndAddressableGroup(string assetPath, Type assetType, bool isFolder, bool doSetup,
-            out string address, out AddressableAssetGroup addressableGroup)
+        public bool TryProvideAddressAndAddressableGroup(
+            string assetPath,
+            Type assetType,
+            bool isFolder,
+            bool doSetup,
+            out string address,
+            out AddressableAssetGroup addressableGroup
+        )
         {
             foreach (var addressRule in _addressRules)
             {
@@ -97,12 +104,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             return false;
         }
 
-        public void SetupForLabels()
-        {
-            foreach (var labelRule in _labelRules)
-                labelRule.Setup();
-        }
-
         /// <summary>
         ///     Provide the labels.
         /// </summary>
@@ -115,8 +116,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         ///     You can pass false if it is guaranteed to be valid.
         /// </param>
         /// <returns></returns>
-        public IReadOnlyCollection<string> ProvideLabels(string assetPath, Type assetType, bool isFolder, bool doSetup,
-            bool checkIsPathValidForEntry = true)
+        public IReadOnlyCollection<string> ProvideLabels(
+            string assetPath,
+            Type assetType,
+            bool isFolder,
+            bool doSetup,
+            bool checkIsPathValidForEntry = true
+        )
         {
             var labels = new HashSet<string>();
             for (int i = 0, count = _labelRules.Count; i < count; i++)
@@ -133,12 +139,6 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             return labels;
         }
 
-        public void SetupForVersion()
-        {
-            foreach (var versionRule in _versionRules)
-                versionRule.Setup();
-        }
-
         public string ProvideVersion(string assetPath, Type assetType, bool isFolder, bool doSetup)
         {
             foreach (var versionRule in _versionRules)
@@ -152,6 +152,36 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             }
 
             return null;
+        }
+
+        public bool Validate(out LayoutRuleValidationError error)
+        {
+            var versionRuleErrors = new List<VersionRuleValidationError>();
+            foreach (var versionRule in _versionRules)
+                if (!versionRule.Validate(out var versionRuleError))
+                    versionRuleErrors.Add(versionRuleError);
+
+            var labelRuleErrors = new List<LabelRuleValidationError>();
+            foreach (var labelRule in _labelRules)
+                if (!labelRule.Validate(out var labelRuleError))
+                    labelRuleErrors.Add(labelRuleError);
+
+            var addressRuleErrors = new List<AddressRuleValidationError>();
+            foreach (var addressRule in _addressRules)
+                if (!addressRule.Validate(out var addressRuleError))
+                    addressRuleErrors.Add(addressRuleError);
+
+            if (versionRuleErrors.Count == 0 && labelRuleErrors.Count == 0 && addressRuleErrors.Count == 0)
+            {
+                error = null;
+                return true;
+            }
+
+            error = new LayoutRuleValidationError(
+                addressRuleErrors.ToArray(),
+                labelRuleErrors.ToArray(),
+                versionRuleErrors.ToArray());
+            return false;
         }
     }
 }

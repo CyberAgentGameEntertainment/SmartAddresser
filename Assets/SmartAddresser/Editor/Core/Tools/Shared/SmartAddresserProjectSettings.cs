@@ -12,6 +12,7 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
         [SerializeField] private LayoutRuleData primaryData;
         [SerializeField] private MonoScript versionExpressionParser;
         [SerializeField] private Validation validation = new Validation();
+        [SerializeField] private LayoutRuleError layoutRuleError = new LayoutRuleError();
 
         public LayoutRuleData PrimaryData
         {
@@ -52,6 +53,19 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
             }
         }
 
+        public LayoutRuleError LayoutRuleErrorSettings
+        {
+            get => layoutRuleError;
+            set
+            {
+                if (value == layoutRuleError)
+                    return;
+
+                layoutRuleError = value;
+                Save(true);
+            }
+        }
+
         [Serializable]
         public sealed class Validation
         {
@@ -63,8 +77,11 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
             {
             }
 
-            public Validation(EntryErrorType duplicateAddresses, EntryErrorType duplicateAssetPaths,
-                EntryErrorType entryHasMultipleVersions)
+            public Validation(
+                EntryErrorType duplicateAddresses,
+                EntryErrorType duplicateAssetPaths,
+                EntryErrorType entryHasMultipleVersions
+            )
             {
                 this.duplicateAddresses = duplicateAddresses;
                 this.duplicateAssetPaths = duplicateAssetPaths;
@@ -74,6 +91,26 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
             public EntryErrorType DuplicateAddresses => duplicateAddresses;
             public EntryErrorType DuplicateAssetPaths => duplicateAssetPaths;
             public EntryErrorType EntryHasMultipleVersions => entryHasMultipleVersions;
+        }
+
+        [Serializable]
+        public sealed class LayoutRuleError
+        {
+            [SerializeField] private LayoutRuleErrorHandleType handleType =
+                LayoutRuleErrorHandleType.LogError;
+
+            public LayoutRuleError()
+            {
+            }
+
+            public LayoutRuleError(
+                LayoutRuleErrorHandleType handleType
+            )
+            {
+                this.handleType = handleType;
+            }
+
+            public LayoutRuleErrorHandleType HandleType => handleType;
         }
     }
 }

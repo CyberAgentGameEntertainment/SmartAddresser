@@ -1,6 +1,7 @@
 using System;
 using SmartAddresser.Editor.Core.Models.Shared;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor.AddressableAssets.Settings;
@@ -19,9 +20,9 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
         [SerializeField] private ObservableProperty<bool> _control = new ObservableProperty<bool>();
         [SerializeField] private AssetGroupObservableList _assetGroups = new AssetGroupObservableList();
 
-        private ObservableProperty<string> _addressProviderDescription = new ObservableProperty<string>();
-
         [SerializeReference] private IAddressProvider _addressProviderInternal;
+
+        private ObservableProperty<string> _addressProviderDescription = new ObservableProperty<string>();
         private ObservableProperty<string> _assetGroupDescription = new ObservableProperty<string>();
 
         // Define the default constructor for serialization.
@@ -76,6 +77,24 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
             AddressProvider.Value.Setup();
         }
 
+        public bool Validate(out AddressRuleValidationError error)
+        {
+            if (!_control.Value)
+            {
+                error = null;
+                return true;
+            }
+
+            if (_assetGroups.Validate(out var groupErrors))
+            {
+                error = null;
+                return true;
+            }
+
+            error = new AddressRuleValidationError(this, groupErrors);
+            return false;
+        }
+
         /// <summary>
         ///     Provide an address from asset information.
         /// </summary>
@@ -88,8 +107,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
         ///     You can pass false if it is guaranteed to be valid.
         /// </param>
         /// <returns>Return true if successful.</returns>
-        public bool TryProvideAddress(string assetPath, Type assetType, bool isFolder, out string address,
-            bool checkIsPathValidForEntry = true)
+        public bool TryProvideAddress(
+            string assetPath,
+            Type assetType,
+            bool isFolder,
+            out string address,
+            bool checkIsPathValidForEntry = true
+        )
         {
             // If this addressable group is not the control target, do nothing.
             if (!Control.Value)

@@ -43,6 +43,33 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
             }
         }
 
+        public static void ValidateLayoutRules()
+        {
+            try
+            {
+                var options = ValidateLayoutRuleCLIOptions.CreateFromCommandLineArgs();
+                var layoutRule = LoadLayoutRuleData(options.LayoutRuleAssetPath).LayoutRule;
+                var validateService = new ValidateAndExportLayoutRuleService(layoutRule, options.ErrorLogFilePath);
+                try
+                {
+                    validateService.Execute(true, LayoutRuleErrorHandleType.ThrowException, out _);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                    EditorApplication.Exit(ErrorLevelValidateFailed);
+                    return;
+                }
+
+                EditorApplication.Exit(ErrorLevelNone);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                EditorApplication.Exit(ErrorLevelFailed);
+            }
+        }
+
         public static void ApplyRules()
         {
             try
@@ -56,12 +83,31 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                 var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
                 var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
 
-                if (options.ShouldValidate)
+                layoutRule.Setup();
+
+                if (options.ShouldValidateLayoutRule)
+                {
+                    var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                    try
+                    {
+                        validateService.Execute(false, LayoutRuleErrorHandleType.ThrowException, out _);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                        EditorApplication.Exit(ErrorLevelValidateFailed);
+                        return;
+                    }
+                }
+
+                if (options.ShouldValidateLayout)
                 {
                     // Build and validate the Layout.
                     var buildLayoutService = new BuildLayoutService(assetDatabaseAdapter);
-                    var layout = buildLayoutService.Execute(layoutRule);
-                    layout.Validate(true, validationSettings.DuplicateAddresses, validationSettings.DuplicateAssetPaths,
+                    var layout = buildLayoutService.Execute(false, layoutRule);
+                    layout.Validate(true,
+                        validationSettings.DuplicateAddresses,
+                        validationSettings.DuplicateAssetPaths,
                         validationSettings.EntryHasMultipleVersions);
 
                     // Export the result of the validation.
@@ -70,7 +116,7 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
 
                     // Exit if error occurred.
                     if (layout.ErrorType == LayoutErrorType.Error
-                        || (options.FailWhenWarning && layout.ErrorType == LayoutErrorType.Warning))
+                        || options.FailWhenWarning && layout.ErrorType == LayoutErrorType.Warning)
                     {
                         EditorApplication.Exit(ErrorLevelValidateFailed);
                         return;
@@ -78,9 +124,12 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                 }
 
                 // Apply the layout rules to the addressable asset system.
-                var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
-                    addressableSettingsAdapter, assetDatabaseAdapter);
-                applyService.ApplyAll();
+                var applyService = new ApplyLayoutRuleService(layoutRule,
+                    versionExpressionParser,
+                    addressableSettingsAdapter,
+                    assetDatabaseAdapter);
+
+                applyService.ApplyAll(false);
 
                 EditorApplication.Exit(ErrorLevelNone);
             }

@@ -75,13 +75,23 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 if (primaryData != null)
                 {
                     var layoutRule = primaryData.LayoutRule;
+                    layoutRule.Setup();
+
+                    // Validate the layout rule.
+                    var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                    var ruleErrorHandleType = projectSettings.LayoutRuleErrorSettings.HandleType;
+                    validateService.Execute(false, ruleErrorHandleType, out _);
+
+                    // Apply the layout rule to the addressable asset system.
                     var versionExpressionParser = new VersionExpressionParserRepository().Load();
                     var assetDatabaseAdapter = new AssetDatabaseAdapter();
                     var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
                     var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-                    var applyService = new ApplyLayoutRuleService(layoutRule, versionExpressionParser,
-                        addressableSettingsAdapter, assetDatabaseAdapter);
-                    applyService.ApplyAll();
+                    var applyService = new ApplyLayoutRuleService(layoutRule,
+                        versionExpressionParser,
+                        addressableSettingsAdapter,
+                        assetDatabaseAdapter);
+                    applyService.ApplyAll(false);
                 }
 
                 _hasAnyDataChanged = false;
@@ -119,8 +129,11 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 .DisposeWith(_setupDisposables);
 
             // Set up presenter and view.
-            _view = new LayoutRuleEditorView(_addressTreeViewState, _labelTreeViewState, _versionTreeViewState,
-                _splitViewState, Repaint);
+            _view = new LayoutRuleEditorView(_addressTreeViewState,
+                _labelTreeViewState,
+                _versionTreeViewState,
+                _splitViewState,
+                Repaint);
             _presenter = new LayoutRuleEditorPresenter(_view, _history, assetSaveService);
             _presenter.SetupView(new LayoutRuleDataRepository());
         }

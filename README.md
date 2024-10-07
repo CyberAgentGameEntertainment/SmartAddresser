@@ -39,6 +39,7 @@ And it also has the version management feature to exclude pre-release assets fro
   - [Apply from Layout Rule Editor](#apply-from-layout-rule-editor)
   - [Apply rules automatically](#apply-rules-automatically)
   - [Apply by CLI](#apply-by-cli)
+  - [Detecting corrupted layout rules](#detecting-corrupted-layout-rules)
 - [Version Management](#version-management)
   - [Versioning Specification](#versioning-specification)
   - [Create Version Rules](#create-version-rules)
@@ -47,6 +48,7 @@ And it also has the version management feature to exclude pre-release assets fro
   - [Use your own version range expression](#use-your-own-version-range-expression)
 - [Command Line Interface (CLI)](#command-line-interface-cli)
   - [Set Version Expression](#set-version-expression)
+  - [Detecting corrupted layout rules](#detecting-corrupted-layout-rules-1)
   - [Apply Layout Rules to Addressable Asset System](#apply-layout-rules-to-addressable-asset-system)
 - [Scripting](#scripting)
   - [Edit Layout Rule Data](#edit-layout-rule-data)
@@ -284,6 +286,28 @@ To do this, set the **Layout Rule Data** which you want to apply to the **Primar
 You can also apply rules by CLI.
 See details in [Command Line Interface](#command-line-interface--cli-).
 
+### Detecting corrupted layout rules
+
+There are cases where the layout rules are corrupted, such as when the object set in the Object Filter is deleted.
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/apply_03.png" alt="Corrupted Rule">
+</p>
+
+You can check for corrupted layout rules by setting **Project Settings > Smart Addresser > Layout Rule Corruption**.
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/apply_04.png" alt="Layout Rule Corruption">
+</p>
+
+The items are as follows.
+
+| Item Name        | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| Throws Exception | Throw an exception if the layout rule is corrupted. The application process is not performed. |
+| Log Error        | Output an error log if the layout rule is corrupted. The application process is performed. |
+| Ignore           | Ignore the corrupted layout rule and apply the process.                     |
+
 ## Version Management
 
 **Smart Addresser** can provide version to each asset.
@@ -375,7 +399,7 @@ You can set the version expression by calling the following method.
 The following is an example of how to set the version expression from the command line in Mac.
 
 ```
-/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod Assets/SmartAddresser/Editor/Core/Tools/CLI/SmartAddresserCLI.SetVersionExpression
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.SetVersionExpression
 ```
 
 Command line arguments are as follows.
@@ -391,6 +415,29 @@ When completed, Unity is automatically closed and returns the following value.
 - If successful: 0
 - If failed: 1
 
+### Detecting corrupted layout rules
+
+You can use the `SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules` method to check for corrupted layout rules from the command line.
+
+The following is an example of how to check for corrupted layout rules from the command line in Mac.
+
+```
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules
+```
+
+Command line arguments are as follows.
+
+| Argument Name                            | Description                                                                                     |
+|------------------------------------------|-------------------------------------------------------------------------------------------------|
+| -layoutRuleAssetPath \<assetPath\>       | Asset Path of the Layout Rule Data to be applied.<br>If not specified, use the first one found. |
+| -errorLogFilePath \<filePath\>     | Output file path for validation result.<br>Default is Logs/SmartAddresser_LayoutRuleError.json. |
+
+When completed, Unity is automatically closed and returns the following value.
+
+- If successful: 0
+- If the layout rule is corrupted: 1
+- If an error occurred during execution: 2
+
 ### Apply Layout Rules to Addressable Asset System
 
 You can apply the layout rules to the Addressable Asset System by calling the following method.
@@ -405,12 +452,13 @@ The following is an example of how to apply the layout rules from the command li
 
 Command line arguments are as follows.
 
-| Argument Name                            | Description                                                                                                                             |
-|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Argument Name                     | Description                                                                                                                             |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | -layoutRuleAssetPath \<assetPath\> | Asset Path of the Layout Rule Data to be applied.<br>If not specified, use the first one found.                                         |
-| -validate                       | If enabled, validation will be executed before applying.<br>The validation is a time-consuming process so can be skipped if not needed. |
+| -validateLayoutRule               | If enabled, check for corrupted layout rules before applying.                                                                           |
+| -validateLayout                   | If enabled, validation will be executed before applying.<br>The validation is a time-consuming process so can be skipped if not needed. |
 | -resultFilePath \<filePath\>      | Output file path for validation result.<br>Default is SmartAddresser/validate_result.json.                                              |
-| -failWhenWarning                | If enabled, any warning in the validation is considered an execution error.                                                             |
+| -failWhenWarning                  | If enabled, any warning in the validation is considered an execution error.                                                             |
 
 When completed, Unity is automatically closed and returns the following value.
 

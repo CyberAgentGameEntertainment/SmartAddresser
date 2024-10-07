@@ -25,13 +25,13 @@ namespace SmartAddresser.Editor.Core.Models.Services
         /// <summary>
         ///     Build the <see cref="Layout" /> from the <see cref="LayoutRule" />.
         /// </summary>
+        /// <param name="doSetup"></param>
         /// <param name="layoutRule"></param>
         /// <returns></returns>
-        public Layout Execute(LayoutRule layoutRule)
+        public Layout Execute(bool doSetup, LayoutRule layoutRule)
         {
-            layoutRule.SetupForAddress();
-            layoutRule.SetupForLabels();
-            layoutRule.SetupForVersion();
+            if (doSetup)
+                layoutRule.Setup();
 
             var assetPaths = _assetDatabaseAdapter
                 .GetAllAssetPaths()
@@ -61,9 +61,13 @@ namespace SmartAddresser.Editor.Core.Models.Services
             return layout;
         }
 
-        private static Task<Group> BuildGroupAsync(AddressRule addressRule, LayoutRule layoutRule,
+        private static Task<Group> BuildGroupAsync(
+            AddressRule addressRule,
+            LayoutRule layoutRule,
             IReadOnlyList<string> assetPaths,
-            IReadOnlyList<Type> assetTypes, IReadOnlyList<bool> isFolders)
+            IReadOnlyList<Type> assetTypes,
+            IReadOnlyList<bool> isFolders
+        )
         {
             if (!addressRule.Control.Value)
                 return Task.FromResult((Group)null);

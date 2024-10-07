@@ -42,6 +42,7 @@
   - [Layout Rule Editorから適用する](#layout-rule-editor%E3%81%8B%E3%82%89%E9%81%A9%E7%94%A8%E3%81%99%E3%82%8B)
   - [ルールを自動的に適用する](#%E3%83%AB%E3%83%BC%E3%83%AB%E3%82%92%E8%87%AA%E5%8B%95%E7%9A%84%E3%81%AB%E9%81%A9%E7%94%A8%E3%81%99%E3%82%8B)
   - [CLIで適用する](#cli%E3%81%A7%E9%81%A9%E7%94%A8%E3%81%99%E3%82%8B)
+  - [レイアウトルールの破損を検知する](#%E3%83%AC%E3%82%A4%E3%82%A2%E3%82%A6%E3%83%88%E3%83%AB%E3%83%BC%E3%83%AB%E3%81%AE%E7%A0%B4%E6%90%8D%E3%82%92%E6%A4%9C%E7%9F%A5%E3%81%99%E3%82%8B)
 - [バージョン管理機能](#%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E7%AE%A1%E7%90%86%E6%A9%9F%E8%83%BD)
   - [バージョニングの仕様](#%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%8B%E3%83%B3%E3%82%B0%E3%81%AE%E4%BB%95%E6%A7%98)
   - [バージョンを指定する](#%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%99%E3%82%8B)
@@ -50,6 +51,7 @@
   - [独自のバージョン範囲表現を使う](#%E7%8B%AC%E8%87%AA%E3%81%AE%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E7%AF%84%E5%9B%B2%E8%A1%A8%E7%8F%BE%E3%82%92%E4%BD%BF%E3%81%86)
 - [コマンドラインインターフェース (CLI)](#%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%BC%E3%83%95%E3%82%A7%E3%83%BC%E3%82%B9-cli)
   - [Version Expressionを設定する](#version-expression%E3%82%92%E8%A8%AD%E5%AE%9A%E3%81%99%E3%82%8B)
+  - [レイアウトルールの破損を検知する](#%E3%83%AC%E3%82%A4%E3%82%A2%E3%82%A6%E3%83%88%E3%83%AB%E3%83%BC%E3%83%AB%E3%81%AE%E7%A0%B4%E6%90%8D%E3%82%92%E6%A4%9C%E7%9F%A5%E3%81%99%E3%82%8B-1)
   - [レイアウトルールを Addressables に反映する](#%E3%83%AC%E3%82%A4%E3%82%A2%E3%82%A6%E3%83%88%E3%83%AB%E3%83%BC%E3%83%AB%E3%82%92-addressables-%E3%81%AB%E5%8F%8D%E6%98%A0%E3%81%99%E3%82%8B)
 - [スクリプティング](#%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0)
   - [レイアウトルールデータを編集する](#%E3%83%AC%E3%82%A4%E3%82%A2%E3%82%A6%E3%83%88%E3%83%AB%E3%83%BC%E3%83%AB%E3%83%87%E3%83%BC%E3%82%BF%E3%82%92%E7%B7%A8%E9%9B%86%E3%81%99%E3%82%8B)
@@ -294,6 +296,28 @@ Layout Rule Editor からは以下の手順で適用することができます�
 コマンドラインインターフェース（CLI）で適用することもできます。
 詳しくは  [コマンドラインインターフェース (CLI)](#コマンドラインインターフェース-cli)  を参照してください。
 
+### レイアウトルールの破損を検知する
+
+例えば Object Filter に設定していたオブジェクトが削除された場合など、設定していたレイアウトルールが破損するケースがあります。
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/apply_03.png" alt="Corrupted Rule">
+</p>
+
+**Project Settings > Smart Addresser > Layout Rule Corruption** を設定することでレイアウトルールの破損をチェックすることができます。
+
+<p align="center">
+  <img width="80%" src="Documentation/Images/apply_04.png" alt="Layout Rule Corruption">
+</p>
+
+項目の説明は以下の通りです。
+
+| 項目名              | 説明                                     |
+|------------------|----------------------------------------|
+| Throws Exception | レイアウトルールが破損している場合に例外をスローする。適用処理はされない。  |
+| Log Error        | レイアウトルールが破損している場合にエラーログを出力する。適用処理はされる。 |
+| Ignore           | レイアウトルールが破損していても無視して適用処理を行う。           |
+
 ## バージョン管理機能
 
 **Smart Addresser** では、各アセットに対してバージョンを付与することができます。  
@@ -383,7 +407,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 以下はMacでコマンドライン実行を行う例です。
 
 ```
-/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod Assets/SmartAddresser/Editor/Core/Tools/CLI/SmartAddresserCLI.SetVersionExpression
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.SetVersionExpression
 ```
 
 コマンドライン引数は以下の通りです。
@@ -398,6 +422,29 @@ Layout Rule Editor からは以下の手順で適用することができます�
 - 実行が成功した場合: 0
 - 実行中にエラーが発生した場合: 2
 
+### レイアウトルールの破損を検知する
+
+コマンドラインからレイアウトルールの破損を検知するには`SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules`を呼びます。
+
+以下はMacでコマンドライン実行を行う例です。
+
+```
+/Applications/Unity/Hub/Editor/2020.3.40f1/Unity.app/Contents/MacOS/Unity -projectPath [Your Project Path Here] -executeMethod SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules
+```
+
+コマンドライン引数は以下の通りです。
+
+| 引数名                                | 説明                                                      |
+|------------------------------------|---------------------------------------------------------|
+| -layoutRuleAssetPath \<assetPath\> | 適用するレイアウトルールデータのアセットパス。<br>指定されない場合は最初に見つかったものを使用します。   |
+| -errorLogFilePath \<filePath\>     | バリデーション結果の出力ファイルパス。<br>デフォルトはLogs/SmartAddresser_LayoutRuleError.json |
+
+実行が完了すると自動的にUnityを終了し、戻り値として以下の値を返します。
+
+- 実行が成功した場合: 0
+- レイアウトルールに破損があった場合: 1
+- 実行中にエラーが発生した場合: 2
+
 ### レイアウトルールを Addressables に反映する
 
 コマンドラインからレイアウトルールを反映するには `SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ApplyRules` を呼びます。
@@ -410,12 +457,13 @@ Layout Rule Editor からは以下の手順で適用することができます�
 
 コマンドライン引数は以下の通りです。
 
-| 引数名                             | 説明                                                                                                      |
-|---------------------------------|---------------------------------------------------------------------------------------------------------|
-| -layoutRuleAssetPath \<assetPath\> | 適用するレイアウトルールデータのアセットパス。<br>指定されない場合は最初に見つかったものを使用します。                                                   |
-| -validate                       | このオプションを有効にした場合、反映する前にバリデーションが実行されます。<br>バリデーションは処理時間のかかるプロセスであるため、レイアウトルールに問題がないことが保証されている場合にはスキップできます。 |
-| -resultFilePath \<filePath\>      | バリデーション結果の出力ファイルパス。<br>デフォルトはSmartAddresser/validate_result.json。                                       |
-| -failWhenWarning                | このオプションを有効にした場合、バリデーションで警告が発生した場合に実行エラーとみなします。                                                          |
+| 引数名                                | 説明                                                                                                         |
+|------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| -layoutRuleAssetPath \<assetPath\> | 適用するレイアウトルールデータのアセットパス。<br>指定されない場合は最初に見つかったものを使用します。                                                       |
+| -validateLayoutRule                | このオプションを有効にした場合、反映する前に破損しているレイアウトルールがないかチェックされます。                                                           |
+| -validateLayout                    | このオプションを有効にした場合、反映する前にレイアウトのバリデーションが実行されます。<br>バリデーションは処理時間のかかるプロセスであるため、レイアウトルールに問題がないことが保証されている場合にはスキップできます。 |
+| -resultFilePath \<filePath\>       | バリデーション結果の出力ファイルパス。<br>デフォルトはSmartAddresser/validate_result.json。                                           |
+| -failWhenWarning                   | このオプションを有効にした場合、バリデーションで警告が発生した場合に実行エラーとみなします。                                                              |
 
 実行が完了すると自動的にUnityを終了し、戻り値として以下の値を返します。
 

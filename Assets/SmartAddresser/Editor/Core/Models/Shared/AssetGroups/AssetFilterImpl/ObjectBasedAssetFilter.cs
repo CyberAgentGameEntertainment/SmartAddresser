@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEditor;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     {
         [SerializeField] private FolderTargetingMode _folderTargetingMode = FolderTargetingMode.IncludedNonFolderAssets;
         [SerializeField] private ObjectListableProperty _object = new ObjectListableProperty();
+        private bool _hasNullObject;
 
         private List<(string assetPath, bool isFolder)> _objectInfoList = new List<(string assetPath, bool isFolder)>();
 
@@ -38,15 +40,31 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public override void SetupForMatching()
         {
             _objectInfoList.Clear();
+            _hasNullObject = false;
             foreach (var obj in _object)
             {
                 if (obj == null)
+                {
+                    _hasNullObject = true;
                     continue;
+                }
 
                 var isFolder = obj is DefaultAsset;
                 var path = AssetDatabase.GetAssetPath(obj);
                 _objectInfoList.Add((path, isFolder));
             }
+        }
+
+        public override bool Validate(out AssetFilterValidationError error)
+        {
+            if (_hasNullObject)
+            {
+                error = new AssetFilterValidationError(this, new[] { "There are null reference objects." });
+                return false;
+            }
+
+            error = null;
+            return true;
         }
 
         /// <inheritdoc />
@@ -76,7 +94,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                                 return true;
                             break;
                         case FolderTargetingMode.Both:
-                            if (isInclusion || (isSelf && isFolder))
+                            if (isInclusion || isSelf && isFolder)
                                 return true;
                             break;
                         default:

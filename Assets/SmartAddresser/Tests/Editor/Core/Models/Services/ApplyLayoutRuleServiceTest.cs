@@ -63,8 +63,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
                 addressableSettingsAdapter,
                 assetDatabaseAdapter);
 
-            service.Setup();
-            service.Apply(assetGuid, false, false);
+            service.Apply(assetGuid, true, false);
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(assetEntry, Is.Not.Null);
             Assert.That(assetEntry.GroupName, Is.EqualTo(TestAddressableGroupName));
@@ -95,7 +94,6 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             foreach (var addressRule in layoutRule.AddressRules)
                 addressRule.AssetGroups.Clear();
             // Apply again
-            service.Setup();
             service.Apply(assetGuid, true, false);
             // The entry should be removed.
             assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
@@ -126,7 +124,6 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             foreach (var addressRule in layoutRule.AddressRules)
                 addressRule.Control.Value = false;
             // Apply again
-            service.Setup();
             service.Apply(assetGuid, true, false);
             // The entry should not be removed.
             assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);

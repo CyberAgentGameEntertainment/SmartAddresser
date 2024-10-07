@@ -29,7 +29,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var service = new BuildLayoutService(adapter);
             var layoutRule = CreateLayoutRule(addressableGroupName, assetPath, PartialAssetPathType.AssetPath, labels,
                 versions);
-            var layout = service.Execute(layoutRule);
+            var layout = service.Execute(true, layoutRule);
 
             Assert.That(layout.Groups.Count, Is.EqualTo(1));
             Assert.That(layout.Groups[0].AddressableGroup.Name, Is.EqualTo(addressableGroupName));
@@ -51,7 +51,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var adapter = CreateSingleEntryAssetDatabaseAdapter("", targetAssetPath, typeof(Object), false);
             var service = new BuildLayoutService(adapter);
             var layoutRule = CreateLayoutRule(addressableGroupName, ruleAssetPath, PartialAssetPathType.AssetPath);
-            var layout = service.Execute(layoutRule);
+            var layout = service.Execute(true, layoutRule);
 
             Assert.That(layout.Groups.Count, Is.EqualTo(0));
         }
@@ -65,7 +65,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var adapter = CreateSingleEntryAssetDatabaseAdapter("", assetPath, typeof(Object), false);
             var service = new BuildLayoutService(adapter);
             var layoutRule = CreateLayoutRule(addressableGroupName, assetPath, PartialAssetPathType.AssetPath);
-            var layout = service.Execute(layoutRule);
+            var layout = service.Execute(true, layoutRule);
 
             Assert.That(layout.Groups.Count, Is.EqualTo(0));
         }

@@ -43,7 +43,9 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
         [TestCase(AssetFilterCondition.MatchAll, "^Assets/Test/.+", ".+/Test/.+", ExpectedResult = true)]
         [TestCase(AssetFilterCondition.MatchAll, "^Assets/Test/.+", ".+/NotMatched/.+", ExpectedResult = false)]
         [TestCase(AssetFilterCondition.ContainsUnmatched, "^Assets/Test/.+", "^Assets/Test2/.+", ExpectedResult = true)]
-        [TestCase(AssetFilterCondition.ContainsUnmatched, "^Assets/Test/.+", "^Assets/Test/Test.+",
+        [TestCase(AssetFilterCondition.ContainsUnmatched,
+            "^Assets/Test/.+",
+            "^Assets/Test/Test.+",
             ExpectedResult = false)]
         [TestCase(AssetFilterCondition.NotMatchAll, "^Assets/Test2/.+", ".+/Test2/.+", ExpectedResult = true)]
         [TestCase(AssetFilterCondition.NotMatchAll, "^Assets/Test/.+", ".+/NotMatched/.+", ExpectedResult = false)]
@@ -70,6 +72,26 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.AssetPathRegex.Value = "Assets/Test";
             filter.SetupForMatching();
             return filter.IsMatch(targetAssetPath, typeof(DefaultAsset), true);
+        }
+
+        [Test]
+        public void Validate_ValidRegex_ReturnTrue()
+        {
+            var filter = new RegexBasedAssetFilter();
+            filter.AssetPathRegex.Value = "^Assets/Test/.+";
+            filter.SetupForMatching();
+
+            Assert.That(filter.Validate(out _), Is.True);
+        }
+
+        [Test]
+        public void Validate_InvalidRegex_ReturnFalse()
+        {
+            var filter = new RegexBasedAssetFilter();
+            filter.AssetPathRegex.Value = "^Assets/(Test/.+";
+            filter.SetupForMatching();
+
+            Assert.That(filter.Validate(out _), Is.False);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEditor;
 using UnityEngine;
@@ -46,6 +47,12 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 : AssetDatabase.FindAssets(_filter);
             var assetPaths = guids.Select(AssetDatabase.GUIDToAssetPath);
             _foundAssetPaths.AddRange(assetPaths);
+        }
+
+        public override bool Validate(out AssetFilterValidationError error)
+        {
+            error = null;
+            return true;
         }
 
         /// <inheritdoc />
