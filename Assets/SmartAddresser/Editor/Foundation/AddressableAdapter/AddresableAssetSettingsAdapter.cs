@@ -61,15 +61,15 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         }
 
         /// <inheritdoc />
-        public void AddLabel(string label)
+        public void AddLabel(string label, bool invokeModificationEvent)
         {
-            _settings.AddLabel(label);
+            _settings.AddLabel(label, invokeModificationEvent);
         }
 
         /// <inheritdoc />
-        public void RemoveLabel(string label)
+        public void RemoveLabel(string label, bool invokeModificationEvent)
         {
-            _settings.RemoveLabel(label);
+            _settings.RemoveLabel(label, invokeModificationEvent);
         }
     }
 }
