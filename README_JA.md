@@ -307,7 +307,7 @@ Layout Rule Editor からは以下の手順で適用することができます�
 **Project Settings > Smart Addresser > Layout Rule Corruption** を設定することでレイアウトルールの破損をチェックすることができます。
 
 <p align="center">
-  <img width="80%" src="Documentation/Images/apply_04.png" alt="Corrupted Rule">
+  <img width="80%" src="Documentation/Images/apply_04.png" alt="Layout Rule Corruption">
 </p>
 
 項目の説明は以下の通りです。
@@ -422,9 +422,9 @@ Layout Rule Editor からは以下の手順で適用することができます�
 - 実行が成功した場合: 0
 - 実行中にエラーが発生した場合: 2
 
-### レイアウトルールの破損をチェックする
+### レイアウトルールの破損を検知する
 
-コマンドラインから **Version Expression** を設定するには`SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules`を呼びます。
+コマンドラインからレイアウトルールの破損を検知するには`SmartAddresser.Editor.Core.Tools.CLI.SmartAddresserCLI.ValidateLayoutRules`を呼びます。
 
 以下はMacでコマンドライン実行を行う例です。
 

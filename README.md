@@ -297,7 +297,7 @@ There are cases where the layout rules are corrupted, such as when the object se
 You can check for corrupted layout rules by setting **Project Settings > Smart Addresser > Layout Rule Corruption**.
 
 <p align="center">
-  <img width="80%" src="Documentation/Images/apply_04.png" alt="Corrupted Rule">
+  <img width="80%" src="Documentation/Images/apply_04.png" alt="Layout Rule Corruption">
 </p>
 
 The items are as follows.
