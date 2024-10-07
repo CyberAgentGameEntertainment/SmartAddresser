@@ -30,7 +30,7 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         /// <inheritdoc />
         public bool SetLabel(string label, bool enable, bool invokeModificationEvent)
         {
-            return _entry.SetLabel(label, enable, invokeModificationEvent);
+            return _entry.SetLabel(label, enable, postEvent:invokeModificationEvent);
         }
     }
 }
