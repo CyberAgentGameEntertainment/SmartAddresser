@@ -19,13 +19,13 @@ namespace SmartAddresser.Tests.Editor.Foundation
         public string GroupName { get; private set; }
 
         /// <inheritdoc />
-        public void SetAddress(string address)
+        public void SetAddress(string address, bool _)
         {
             Address = address;
         }
 
         /// <inheritdoc />
-        public bool SetLabel(string label, bool enable)
+        public bool SetLabel(string label, bool enable, bool _)
         {
             if (enable)
                 return Labels.Add(label);

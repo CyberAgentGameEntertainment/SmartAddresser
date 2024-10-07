@@ -64,13 +64,13 @@ namespace SmartAddresser.Tests.Editor.Foundation
         }
 
         /// <inheritdoc />
-        public void AddLabel(string label)
+        public void AddLabel(string label, bool _)
         {
             _labels.Add(label);
         }
 
         /// <inheritdoc />
-        public void RemoveLabel(string label)
+        public void RemoveLabel(string label, bool _)
         {
             _labels.Remove(label);
         }
