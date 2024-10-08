@@ -63,12 +63,20 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         ///     Add a new label.
         /// </summary>
         /// <param name="label">The label name.</param>
-        void AddLabel(string label);
+        /// <param name="invokeModificationEvent">
+        ///     If true, call <see cref="AddressableAssetSettings.OnModification" /> after
+        ///     creating or moving.
+        /// </param>
+        void AddLabel(string label, bool invokeModificationEvent);
 
         /// <summary>
         ///     Remove a label by name.
         /// </summary>
         /// <param name="label">The label name.</param>
-        void RemoveLabel(string label);
+        /// <param name="invokeModificationEvent">
+        ///     If true, call <see cref="AddressableAssetSettings.OnModification" /> after
+        ///     creating or moving.
+        /// </param>
+        void RemoveLabel(string label, bool invokeModificationEvent);
     }
 }

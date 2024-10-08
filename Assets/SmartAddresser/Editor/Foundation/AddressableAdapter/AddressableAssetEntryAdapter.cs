@@ -22,15 +22,15 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         public string GroupName => _entry.parentGroup.Name;
 
         /// <inheritdoc />
-        public void SetAddress(string address)
+        public void SetAddress(string address, bool invokeModificationEvent)
         {
-            _entry.SetAddress(address);
+            _entry.SetAddress(address, invokeModificationEvent);
         }
         
         /// <inheritdoc />
-        public bool SetLabel(string label, bool enable)
+        public bool SetLabel(string label, bool enable, bool invokeModificationEvent)
         {
-            return _entry.SetLabel(label, enable);
+            return _entry.SetLabel(label, enable, postEvent:invokeModificationEvent);
         }
     }
 }
