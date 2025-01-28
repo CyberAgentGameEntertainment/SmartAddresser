@@ -1,3 +1,4 @@
+using System.Linq;
 using SmartAddresser.Editor.Core.Models.Services;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRuleEditor;
 using SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleEditor;
@@ -74,20 +75,19 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
                 var primaryData = projectSettings.PrimaryData;
                 if (primaryData != null)
                 {
-                    var layoutRule = primaryData.LayoutRule;
-                    layoutRule.Setup();
+                    var layoutRules = primaryData.LayoutRules.ToArray();
 
                     // Validate the layout rule.
-                    var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                    var validateService = new ValidateAndExportLayoutRuleService(layoutRules);
                     var ruleErrorHandleType = projectSettings.LayoutRuleErrorSettings.HandleType;
-                    validateService.Execute(false, ruleErrorHandleType, out _);
+                    validateService.Execute(true, ruleErrorHandleType, out _);
 
                     // Apply the layout rule to the addressable asset system.
                     var versionExpressionParser = new VersionExpressionParserRepository().Load();
                     var assetDatabaseAdapter = new AssetDatabaseAdapter();
                     var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
                     var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-                    var applyService = new ApplyLayoutRuleService(layoutRule,
+                    var applyService = new ApplyLayoutRuleService(layoutRules,
                         versionExpressionParser,
                         addressableSettingsAdapter,
                         assetDatabaseAdapter);

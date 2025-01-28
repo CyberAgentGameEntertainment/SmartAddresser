@@ -13,7 +13,7 @@ namespace SmartAddresser.Editor.Core.Models.Services
     {
         private readonly IAddressableAssetSettingsAdapter _addressableSettingsAdapter;
         private readonly IAssetDatabaseAdapter _assetDatabaseAdapter;
-        private readonly LayoutRule _layoutRule;
+        private readonly LayoutRule[] _layoutRules;
         private readonly IVersionExpressionParser _versionExpressionParser;
 
         public ApplyLayoutRuleService(
@@ -21,9 +21,18 @@ namespace SmartAddresser.Editor.Core.Models.Services
             IVersionExpressionParser versionExpressionParser,
             IAddressableAssetSettingsAdapter addressableSettingsAdapter,
             IAssetDatabaseAdapter assetDatabaseAdapter
+        ) : this(new[] { layoutRule }, versionExpressionParser, addressableSettingsAdapter, assetDatabaseAdapter)
+        {
+        }
+
+        public ApplyLayoutRuleService(
+            IEnumerable<LayoutRule> layoutRules,
+            IVersionExpressionParser versionExpressionParser,
+            IAddressableAssetSettingsAdapter addressableSettingsAdapter,
+            IAssetDatabaseAdapter assetDatabaseAdapter
         )
         {
-            _layoutRule = layoutRule;
+            _layoutRules = layoutRules.ToArray();
             _addressableSettingsAdapter = addressableSettingsAdapter;
             _versionExpressionParser = versionExpressionParser;
             _assetDatabaseAdapter = assetDatabaseAdapter;
@@ -34,34 +43,37 @@ namespace SmartAddresser.Editor.Core.Models.Services
         /// </summary>
         public void ApplyAll(bool doSetup)
         {
-            if (doSetup)
-                _layoutRule.Setup();
-
-            // Add all entries to the addressable asset system.
-            var removeTargetAssetGuids = new List<string>();
-            var versionExpression = _layoutRule.Settings.VersionExpression;
-            foreach (var assetPath in _assetDatabaseAdapter.GetAllAssetPaths())
+            foreach (var layoutRule in _layoutRules)
             {
-                var guid = _assetDatabaseAdapter.AssetPathToGUID(assetPath);
-                var result = TryAddEntry(guid, false, false, versionExpression.Value);
-                if (!result)
-                    removeTargetAssetGuids.Add(guid);
-            }
+                if (doSetup)
+                    layoutRule.Setup();
 
-            // If the address is not assigned by the LayoutRule and the entry belongs to the AddressableGroup under Control, remove the entry.
-            var controlGroupNames = _layoutRule
-                .AddressRules
-                .Where(x => x.Control.Value)
-                .Select(x => x.AddressableGroup.Name)
-                .ToArray();
-            foreach (var guid in removeTargetAssetGuids)
-            {
-                var entryAdapter = _addressableSettingsAdapter.FindAssetEntry(guid);
-                if (entryAdapter == null)
-                    continue;
+                // Add all entries to the addressable asset system.
+                var removeTargetAssetGuids = new List<string>();
+                var versionExpression = layoutRule.Settings.VersionExpression;
+                foreach (var assetPath in _assetDatabaseAdapter.GetAllAssetPaths())
+                {
+                    var guid = _assetDatabaseAdapter.AssetPathToGUID(assetPath);
+                    var result = TryAddEntry(layoutRule, guid, false, false, versionExpression.Value);
+                    if (!result)
+                        removeTargetAssetGuids.Add(guid);
+                }
 
-                if (controlGroupNames.Contains(entryAdapter.GroupName))
-                    _addressableSettingsAdapter.RemoveEntry(guid, false);
+                // If the address is not assigned by the LayoutRule and the entry belongs to the AddressableGroup under Control, remove the entry.
+                var controlGroupNames = layoutRule
+                                        .AddressRules
+                                        .Where(x => x.Control.Value)
+                                        .Select(x => x.AddressableGroup.Name)
+                                        .ToArray();
+                foreach (var guid in removeTargetAssetGuids)
+                {
+                    var entryAdapter = _addressableSettingsAdapter.FindAssetEntry(guid);
+                    if (entryAdapter == null)
+                        continue;
+
+                    if (controlGroupNames.Contains(entryAdapter.GroupName))
+                        _addressableSettingsAdapter.RemoveEntry(guid, false);
+                }
             }
 
             _addressableSettingsAdapter.InvokeBatchModificationEvent();
@@ -69,19 +81,25 @@ namespace SmartAddresser.Editor.Core.Models.Services
 
         public void Apply(string assetGuid, bool doSetup, bool invokeModificationEvent, string versionExpression = null)
         {
-            var result = TryAddEntry(assetGuid, doSetup, invokeModificationEvent, versionExpression);
-
-            // If the address is not assigned by the LayoutRule and the entry belongs to the AddressableGroup under Control, remove the entry.
-            var controlGroupNames = _layoutRule
-                .AddressRules
-                .Where(x => x.Control.Value)
-                .Select(x => x.AddressableGroup.Name);
-            if (!result)
+            foreach (var layoutRule in _layoutRules)
             {
-                var entryAdapter = _addressableSettingsAdapter.FindAssetEntry(assetGuid);
-                if (entryAdapter != null && controlGroupNames.Contains(entryAdapter.GroupName))
-                    _addressableSettingsAdapter.RemoveEntry(assetGuid, invokeModificationEvent);
+                var result = TryAddEntry(layoutRule, assetGuid, doSetup, false, versionExpression);
+
+                // If the address is not assigned by the LayoutRule and the entry belongs to the AddressableGroup under Control, remove the entry.
+                var controlGroupNames = layoutRule
+                                        .AddressRules
+                                        .Where(x => x.Control.Value)
+                                        .Select(x => x.AddressableGroup.Name);
+                if (!result)
+                {
+                    var entryAdapter = _addressableSettingsAdapter.FindAssetEntry(assetGuid);
+                    if (entryAdapter != null && controlGroupNames.Contains(entryAdapter.GroupName))
+                        _addressableSettingsAdapter.RemoveEntry(assetGuid, false);
+                }
             }
+
+            if (invokeModificationEvent)
+                _addressableSettingsAdapter.InvokeBatchModificationEvent();
         }
 
         /// <summary>
@@ -103,6 +121,7 @@ namespace SmartAddresser.Editor.Core.Models.Services
         ///     Returns false if no suitable layout rule was found.
         /// </returns>
         private bool TryAddEntry(
+            LayoutRule layoutRule,
             string assetGuid,
             bool doSetup,
             bool invokeModificationEvent,
@@ -114,12 +133,12 @@ namespace SmartAddresser.Editor.Core.Models.Services
             var isFolder = _assetDatabaseAdapter.IsValidFolder(assetPath);
 
             // If the layout rule was not found, return false.
-            if (!_layoutRule.TryProvideAddressAndAddressableGroup(assetPath,
-                assetType,
-                isFolder,
-                doSetup,
-                out var address,
-                out var addressableGroup))
+            if (!layoutRule.TryProvideAddressAndAddressableGroup(assetPath,
+                                                                 assetType,
+                                                                 isFolder,
+                                                                 doSetup,
+                                                                 out var address,
+                                                                 out var addressableGroup))
                 return false;
 
             // If the layout rule is found but the addressable asset group has already been destroyed, return false.
@@ -132,9 +151,9 @@ namespace SmartAddresser.Editor.Core.Models.Services
             if (!string.IsNullOrEmpty(versionExpression))
             {
                 var comparator = _versionExpressionParser.CreateComparator(versionExpression);
-                var versionText = _layoutRule.ProvideVersion(assetPath, assetType, isFolder, doSetup);
+                var versionText = layoutRule.ProvideVersion(assetPath, assetType, isFolder, doSetup);
 
-                if (string.IsNullOrEmpty(versionText) && _layoutRule.Settings.ExcludeUnversioned.Value)
+                if (string.IsNullOrEmpty(versionText) && layoutRule.Settings.ExcludeUnversioned.Value)
                     return false;
 
                 // If the version is not satisfied, return false.
@@ -150,7 +169,7 @@ namespace SmartAddresser.Editor.Core.Models.Services
             entryAdapter.SetAddress(address, invokeModificationEvent);
 
             // Add labels to addressable settings if not exists.
-            var labels = _layoutRule.ProvideLabels(assetPath, assetType, isFolder, doSetup);
+            var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, doSetup);
             var addressableLabels = _addressableSettingsAdapter.GetLabels();
             foreach (var label in labels)
                 if (!addressableLabels.Contains(label))

@@ -48,8 +48,8 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                             "OK",
                             "Cancel"))
                         {
-                            var layoutRule = projectSettings.PrimaryData.LayoutRule;
-                            var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                            var layoutRules = projectSettings.PrimaryData.LayoutRules;
+                            var validateService = new ValidateAndExportLayoutRuleService(layoutRules);
 
                             // Check Corruption
                             var corruptionNotificationType =
