@@ -14,9 +14,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             if (GUILayout.Button("Apply"))
                 MenuActions.ApplyAction(data);
 
-            GUI.enabled = false;
             base.OnInspectorGUI();
-            GUI.enabled = true;
         }
     }
 }
