@@ -185,7 +185,8 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var layoutRule = CreateLayoutRule(TestAddressableGroupName,
                 TestAssetPath,
                 PartialAssetPathType.FileName,
-                version: "1.2.3");
+                version: "1.2.3",
+                versionExpression: "[1.2.3,1.2.4)");
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
@@ -194,7 +195,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
                 addressableSettingsAdapter,
                 assetDatabaseAdapter);
 
-            service.Apply(assetGuid, true, false, "[1.2.3,1.2.4)");
+            service.Apply(assetGuid, true, false);
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(assetEntry, Is.Not.Null);
             Assert.That(assetEntry.GroupName, Is.EqualTo(TestAddressableGroupName));
@@ -211,7 +212,8 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var layoutRule = CreateLayoutRule(TestAddressableGroupName,
                 TestAssetPath,
                 PartialAssetPathType.FileName,
-                version: "1.2.3");
+                version: "1.2.3",
+                versionExpression: "(1.2.3,1.3)");
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
@@ -220,7 +222,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
                 addressableSettingsAdapter,
                 assetDatabaseAdapter);
 
-            service.Apply(assetGuid, true, false, "(1.2.3,1.3)");
+            service.Apply(assetGuid, true, false);
             var assetEntry = addressableSettingsAdapter.FindAssetEntry(assetGuid);
             Assert.That(assetEntry, Is.Null);
         }
@@ -235,7 +237,8 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             var layoutRule = CreateLayoutRule(TestAddressableGroupName,
                 TestAssetPath,
                 PartialAssetPathType.FileName,
-                version: "1.2.3");
+                version: "1.2.3",
+                versionExpression:"(1.2.3, 1.3)");
             var assetDatabaseAdapter =
                 CreateSingleEntryAssetDatabaseAdapter(assetGuid, TestAssetPath, assetType, isFolder);
             var addressableSettingsAdapter = new FakeAddressableAssetSettingsAdapter();
@@ -244,7 +247,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
                 addressableSettingsAdapter,
                 assetDatabaseAdapter);
 
-            Assert.That(() => service.Apply(assetGuid, true, false, "(1.2.3, 1.3)"), Throws.InstanceOf<Exception>());
+            Assert.That(() => service.Apply(assetGuid, true, false), Throws.InstanceOf<Exception>());
         }
 
         [Test]
@@ -292,12 +295,14 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             string regexAssetPathFilter,
             PartialAssetPathType addressProvideMode,
             string label = null,
-            string version = null
+            string version = null,
+            string versionExpression = null
         )
         {
             var addressableGroup = ScriptableObject.CreateInstance<AddressableAssetGroup>();
             addressableGroup.Name = addressableGroupName;
-            return CreateLayoutRule(addressableGroup, regexAssetPathFilter, addressProvideMode, label, version);
+            return CreateLayoutRule(addressableGroup, regexAssetPathFilter, addressProvideMode, label, version,
+                                    versionExpression);
         }
 
         private static LayoutRule CreateLayoutRule(
@@ -305,7 +310,8 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
             string regexAssetPathFilter,
             PartialAssetPathType addressProvideMode,
             string label = null,
-            string version = null
+            string version = null,
+            string versionExpression = null
         )
         {
             var assetFilter = new RegexBasedAssetFilter
@@ -356,6 +362,8 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Services
                 versionRule.AssetGroups.Add(assetGroup);
                 layoutRule.VersionRules.Add(versionRule);
             }
+
+            layoutRule.Settings.VersionExpression.Value = versionExpression;
 
             return layoutRule;
         }

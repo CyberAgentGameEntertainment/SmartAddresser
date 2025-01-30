@@ -78,9 +78,9 @@ namespace SmartAddresser.Editor.Core.Models.Services
             _addressableSettingsAdapter.InvokeBatchModificationEvent();
         }
 
-        public void Apply(string assetGuid, bool doSetup, bool invokeModificationEvent, string versionExpression = null)
+        public void Apply(string assetGuid, bool doSetup, bool invokeModificationEvent)
         {
-            var result = _layoutRules.Any(x => TryAddEntry(x, assetGuid, doSetup, false, versionExpression));
+            var result = _layoutRules.Any(x => TryAddEntry(x, assetGuid, doSetup, false, x.Settings.VersionExpression.Value));
 
             // If the address is not assigned by the LayoutRule and the entry belongs to the AddressableGroup under Control, remove the entry.
             var controlGroupNames = _layoutRules

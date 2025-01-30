@@ -54,23 +54,16 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
             validateLayoutRuleService.Execute(false, layoutRuleErrorHandleType, out _);
 
             // Apply
-            foreach (var layoutRule in layoutRules)
+            foreach (var importedAssetPath in importedAssetPaths)
             {
-                var versionExpression = layoutRule.Settings.VersionExpression.Value;
-                if (string.IsNullOrEmpty(versionExpression))
-                    versionExpression = null;
+                var guid = AssetDatabase.AssetPathToGUID(importedAssetPath);
+                applyService.Apply(guid, false, true);
+            }
 
-                foreach (var importedAssetPath in importedAssetPaths)
-                {
-                    var guid = AssetDatabase.AssetPathToGUID(importedAssetPath);
-                    applyService.Apply(guid, false, true, versionExpression);
-                }
-
-                foreach (var movedAssetPath in movedAssetPaths)
-                {
-                    var guid = AssetDatabase.AssetPathToGUID(movedAssetPath);
-                    applyService.Apply(guid, false, true, versionExpression);
-                }
+            foreach (var movedAssetPath in movedAssetPaths)
+            {
+                var guid = AssetDatabase.AssetPathToGUID(movedAssetPath);
+                applyService.Apply(guid, false, true);
             }
 
             applyService.InvokeBatchModificationEvent();
