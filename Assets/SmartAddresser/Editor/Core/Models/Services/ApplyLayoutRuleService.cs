@@ -44,36 +44,35 @@ namespace SmartAddresser.Editor.Core.Models.Services
         public void ApplyAll(bool doSetup)
         {
             foreach (var layoutRule in _layoutRules)
-            {
                 if (doSetup)
                     layoutRule.Setup();
 
-                // Add all entries to the addressable asset system.
-                var removeTargetAssetGuids = new List<string>();
-                var versionExpression = layoutRule.Settings.VersionExpression;
-                foreach (var assetPath in _assetDatabaseAdapter.GetAllAssetPaths())
-                {
-                    var guid = _assetDatabaseAdapter.AssetPathToGUID(assetPath);
-                    var result = TryAddEntry(layoutRule, guid, false, false, versionExpression.Value);
-                    if (!result)
-                        removeTargetAssetGuids.Add(guid);
-                }
+            // Add all entries to the addressable asset system.
+            var removeTargetAssetGuids = new List<string>();
+            foreach (var assetPath in _assetDatabaseAdapter.GetAllAssetPaths())
+            {
+                var guid = _assetDatabaseAdapter.AssetPathToGUID(assetPath);
+                var result =
+                    _layoutRules.Any(x => TryAddEntry(x, guid, false, false, x.Settings.VersionExpression.Value));
 
-                // If the address is not assigned by the LayoutRule and the entry belongs to the AddressableGroup under Control, remove the entry.
-                var controlGroupNames = layoutRule
-                                        .AddressRules
-                                        .Where(x => x.Control.Value)
-                                        .Select(x => x.AddressableGroup.Name)
-                                        .ToArray();
-                foreach (var guid in removeTargetAssetGuids)
-                {
-                    var entryAdapter = _addressableSettingsAdapter.FindAssetEntry(guid);
-                    if (entryAdapter == null)
-                        continue;
+                if (!result)
+                    removeTargetAssetGuids.Add(guid);
+            }
 
-                    if (controlGroupNames.Contains(entryAdapter.GroupName))
-                        _addressableSettingsAdapter.RemoveEntry(guid, false);
-                }
+            // If the address is not assigned by the LayoutRule and the entry belongs to the AddressableGroup under Control, remove the entry.
+            var controlGroupNames = _layoutRules
+                                    .SelectMany(x => x.AddressRules)
+                                    .Where(x => x.Control.Value)
+                                    .Select(x => x.AddressableGroup.Name)
+                                    .ToArray();
+            foreach (var guid in removeTargetAssetGuids)
+            {
+                var entryAdapter = _addressableSettingsAdapter.FindAssetEntry(guid);
+                if (entryAdapter == null)
+                    continue;
+
+                if (controlGroupNames.Contains(entryAdapter.GroupName))
+                    _addressableSettingsAdapter.RemoveEntry(guid, false);
             }
 
             _addressableSettingsAdapter.InvokeBatchModificationEvent();
@@ -81,21 +80,18 @@ namespace SmartAddresser.Editor.Core.Models.Services
 
         public void Apply(string assetGuid, bool doSetup, bool invokeModificationEvent, string versionExpression = null)
         {
-            foreach (var layoutRule in _layoutRules)
-            {
-                var result = TryAddEntry(layoutRule, assetGuid, doSetup, false, versionExpression);
+            var result = _layoutRules.Any(x => TryAddEntry(x, assetGuid, doSetup, false, versionExpression));
 
-                // If the address is not assigned by the LayoutRule and the entry belongs to the AddressableGroup under Control, remove the entry.
-                var controlGroupNames = layoutRule
-                                        .AddressRules
-                                        .Where(x => x.Control.Value)
-                                        .Select(x => x.AddressableGroup.Name);
-                if (!result)
-                {
-                    var entryAdapter = _addressableSettingsAdapter.FindAssetEntry(assetGuid);
-                    if (entryAdapter != null && controlGroupNames.Contains(entryAdapter.GroupName))
-                        _addressableSettingsAdapter.RemoveEntry(assetGuid, false);
-                }
+            // If the address is not assigned by the LayoutRule and the entry belongs to the AddressableGroup under Control, remove the entry.
+            var controlGroupNames = _layoutRules
+                                    .SelectMany(x => x.AddressRules)
+                                    .Where(x => x.Control.Value)
+                                    .Select(x => x.AddressableGroup.Name);
+            if (!result)
+            {
+                var entryAdapter = _addressableSettingsAdapter.FindAssetEntry(assetGuid);
+                if (entryAdapter != null && controlGroupNames.Contains(entryAdapter.GroupName))
+                    _addressableSettingsAdapter.RemoveEntry(assetGuid, false);
             }
 
             if (invokeModificationEvent)
