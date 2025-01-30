@@ -36,10 +36,10 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                 {
                     var oldData = projectSettings.PrimaryData;
                     projectSettings.PrimaryData =
-                        (LayoutRuleData)EditorGUILayout.ObjectField("Primary Data",
-                            projectSettings.PrimaryData,
-                            typeof(LayoutRuleData),
-                            false);
+                        (BaseLayoutRuleData)EditorGUILayout.ObjectField("Primary Data",
+                                                                        projectSettings.PrimaryData,
+                                                                        typeof(BaseLayoutRuleData),
+                                                                        false);
 
                     if (ccs.changed && projectSettings.PrimaryData != null)
                     {
