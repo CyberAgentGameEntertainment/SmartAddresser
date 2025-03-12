@@ -36,10 +36,10 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                 {
                     var oldData = projectSettings.PrimaryData;
                     projectSettings.PrimaryData =
-                        (LayoutRuleData)EditorGUILayout.ObjectField("Primary Data",
-                            projectSettings.PrimaryData,
-                            typeof(LayoutRuleData),
-                            false);
+                        (BaseLayoutRuleData)EditorGUILayout.ObjectField("Primary Data",
+                                                                        projectSettings.PrimaryData,
+                                                                        typeof(BaseLayoutRuleData),
+                                                                        false);
 
                     if (ccs.changed && projectSettings.PrimaryData != null)
                     {
@@ -48,8 +48,8 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
                             "OK",
                             "Cancel"))
                         {
-                            var layoutRule = projectSettings.PrimaryData.LayoutRule;
-                            var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                            var layoutRules = projectSettings.PrimaryData.LayoutRules;
+                            var validateService = new ValidateAndExportLayoutRuleService(layoutRules);
 
                             // Check Corruption
                             var corruptionNotificationType =

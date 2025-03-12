@@ -9,7 +9,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared
 {
     public sealed class LayoutRuleDataRepository : ILayoutRuleDataRepository
     {
-        public LayoutRuleData PrimaryData => SmartAddresserProjectSettings.instance.PrimaryData;
+        public BaseLayoutRuleData PrimaryData => SmartAddresserProjectSettings.instance.PrimaryData;
 
         public IReadOnlyObservableProperty<LayoutRuleData> EditingData =>
             SmartAddresserPreferences.instance.EditingData;

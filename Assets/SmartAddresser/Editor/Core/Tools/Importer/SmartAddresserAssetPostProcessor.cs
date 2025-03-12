@@ -35,17 +35,18 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
             if (primaryData == null)
                 return;
 
-            var layoutRule = layoutRuleDataRepository.PrimaryData.LayoutRule;
+            var layoutRules = layoutRuleDataRepository.PrimaryData.LayoutRules.ToArray();
             var versionExpressionParser = new VersionExpressionParserRepository().Load();
             var assetDatabaseAdapter = new AssetDatabaseAdapter();
             var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
-            var applyService = new ApplyLayoutRuleService(layoutRule,
-                versionExpressionParser,
-                addressableSettingsAdapter,
-                assetDatabaseAdapter);
-            var validateLayoutRuleService = new ValidateAndExportLayoutRuleService(layoutRule);
+            var applyService = new ApplyLayoutRuleService(layoutRules,
+                                                          versionExpressionParser,
+                                                          addressableSettingsAdapter,
+                                                          assetDatabaseAdapter);
+            var validateLayoutRuleService = new ValidateAndExportLayoutRuleService(layoutRules);
 
-            layoutRule.Setup();
+            foreach (var layoutRule in layoutRules)
+                layoutRule.Setup();
 
             // Check Layout Rule corruption
             var projectSettings = SmartAddresserProjectSettings.instance;
@@ -53,20 +54,16 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
             validateLayoutRuleService.Execute(false, layoutRuleErrorHandleType, out _);
 
             // Apply
-            var versionExpression = layoutRule.Settings.VersionExpression.Value;
-            if (string.IsNullOrEmpty(versionExpression))
-                versionExpression = null;
-
             foreach (var importedAssetPath in importedAssetPaths)
             {
                 var guid = AssetDatabase.AssetPathToGUID(importedAssetPath);
-                applyService.Apply(guid, false, true, versionExpression);
+                applyService.Apply(guid, false, true);
             }
 
             foreach (var movedAssetPath in movedAssetPaths)
             {
                 var guid = AssetDatabase.AssetPathToGUID(movedAssetPath);
-                applyService.Apply(guid, false, true, versionExpression);
+                applyService.Apply(guid, false, true);
             }
 
             applyService.InvokeBatchModificationEvent();

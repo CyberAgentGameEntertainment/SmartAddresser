@@ -9,12 +9,12 @@ namespace SmartAddresser.Editor.Core.Tools.Shared
     [FilePath("Smart Addresser/SmartAddresserSettings.asset", FilePathAttribute.Location.ProjectFolder)]
     public sealed class SmartAddresserProjectSettings : ScriptableSingleton<SmartAddresserProjectSettings>
     {
-        [SerializeField] private LayoutRuleData primaryData;
+        [SerializeField] private BaseLayoutRuleData primaryData;
         [SerializeField] private MonoScript versionExpressionParser;
         [SerializeField] private Validation validation = new Validation();
         [SerializeField] private LayoutRuleError layoutRuleError = new LayoutRuleError();
 
-        public LayoutRuleData PrimaryData
+        public BaseLayoutRuleData PrimaryData
         {
             get => primaryData;
             set

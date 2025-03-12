@@ -26,8 +26,9 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                 var options = SetVersionExpressionCLIOptions.CreateFromCommandLineArgs();
 
                 var layoutRuleData = LoadLayoutRuleData(options.LayoutRuleAssetPath);
-                var layoutRule = layoutRuleData.LayoutRule;
-                layoutRule.Settings.VersionExpression.Value = options.VersionExpression;
+                var layoutRules = layoutRuleData.LayoutRules;
+                foreach (var layoutRule in layoutRules)
+                    layoutRule.Settings.VersionExpression.Value = options.VersionExpression;
 
                 // Save the LayoutRuleData asset.
                 EditorUtility.SetDirty(layoutRuleData);
@@ -48,8 +49,8 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
             try
             {
                 var options = ValidateLayoutRuleCLIOptions.CreateFromCommandLineArgs();
-                var layoutRule = LoadLayoutRuleData(options.LayoutRuleAssetPath).LayoutRule;
-                var validateService = new ValidateAndExportLayoutRuleService(layoutRule, options.ErrorLogFilePath);
+                var layoutRules = LoadLayoutRuleData(options.LayoutRuleAssetPath).LayoutRules;
+                var validateService = new ValidateAndExportLayoutRuleService(layoutRules, options.ErrorLogFilePath);
                 try
                 {
                     validateService.Execute(true, LayoutRuleErrorHandleType.ThrowException, out _);
@@ -77,17 +78,18 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
                 var projectSettings = SmartAddresserProjectSettings.instance;
                 var validationSettings = projectSettings.ValidationSettings;
                 var options = ApplyRulesCLIOptions.CreateFromCommandLineArgs();
-                var layoutRule = LoadLayoutRuleData(options.LayoutRuleAssetPath).LayoutRule;
+                var layoutRules = LoadLayoutRuleData(options.LayoutRuleAssetPath).LayoutRules.ToArray();
                 var versionExpressionParser = new VersionExpressionParserRepository().Load();
                 var assetDatabaseAdapter = new AssetDatabaseAdapter();
                 var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
                 var addressableSettingsAdapter = new AddressableAssetSettingsAdapter(addressableSettings);
 
-                layoutRule.Setup();
+                foreach (var layoutRule in layoutRules)
+                    layoutRule.Setup();
 
                 if (options.ShouldValidateLayoutRule)
                 {
-                    var validateService = new ValidateAndExportLayoutRuleService(layoutRule);
+                    var validateService = new ValidateAndExportLayoutRuleService(layoutRules);
                     try
                     {
                         validateService.Execute(false, LayoutRuleErrorHandleType.ThrowException, out _);
@@ -102,29 +104,32 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
 
                 if (options.ShouldValidateLayout)
                 {
-                    // Build and validate the Layout.
-                    var buildLayoutService = new BuildLayoutService(assetDatabaseAdapter);
-                    var layout = buildLayoutService.Execute(false, layoutRule);
-                    layout.Validate(true,
-                        validationSettings.DuplicateAddresses,
-                        validationSettings.DuplicateAssetPaths,
-                        validationSettings.EntryHasMultipleVersions);
-
-                    // Export the result of the validation.
-                    var validateResultExportService = new ValidateResultExportService(layout);
-                    validateResultExportService.Run(options.ResultFilePath);
-
-                    // Exit if error occurred.
-                    if (layout.ErrorType == LayoutErrorType.Error
-                        || options.FailWhenWarning && layout.ErrorType == LayoutErrorType.Warning)
+                    foreach (var layoutRule in layoutRules)
                     {
-                        EditorApplication.Exit(ErrorLevelValidateFailed);
-                        return;
+                        // Build and validate the Layout.
+                        var buildLayoutService = new BuildLayoutService(assetDatabaseAdapter);
+                        var layout = buildLayoutService.Execute(false, layoutRule);
+                        layout.Validate(true,
+                                        validationSettings.DuplicateAddresses,
+                                        validationSettings.DuplicateAssetPaths,
+                                        validationSettings.EntryHasMultipleVersions);
+
+                        // Export the result of the validation.
+                        var validateResultExportService = new ValidateResultExportService(layout);
+                        validateResultExportService.Run(options.ResultFilePath);
+
+                        // Exit if error occurred.
+                        if (layout.ErrorType == LayoutErrorType.Error
+                            || options.FailWhenWarning && layout.ErrorType == LayoutErrorType.Warning)
+                        {
+                            EditorApplication.Exit(ErrorLevelValidateFailed);
+                            return;
+                        }
                     }
                 }
 
                 // Apply the layout rules to the addressable asset system.
-                var applyService = new ApplyLayoutRuleService(layoutRule,
+                var applyService = new ApplyLayoutRuleService(layoutRules,
                     versionExpressionParser,
                     addressableSettingsAdapter,
                     assetDatabaseAdapter);
@@ -140,17 +145,17 @@ namespace SmartAddresser.Editor.Core.Tools.CLI
             }
         }
 
-        private static LayoutRuleData LoadLayoutRuleData(string assetPath = null)
+        private static BaseLayoutRuleData LoadLayoutRuleData(string assetPath = null)
         {
             if (!string.IsNullOrEmpty(assetPath))
-                return AssetDatabase.LoadAssetAtPath<LayoutRuleData>(assetPath);
+                return AssetDatabase.LoadAssetAtPath<BaseLayoutRuleData>(assetPath);
 
-            var guid = AssetDatabase.FindAssets($"t: {nameof(LayoutRuleData)}").FirstOrDefault();
+            var guid = AssetDatabase.FindAssets($"t: {nameof(BaseLayoutRuleData)}").FirstOrDefault();
             if (string.IsNullOrEmpty(guid))
                 throw new InvalidOperationException("There is no LayoutRuleData in the project.");
 
             assetPath = AssetDatabase.GUIDToAssetPath(guid);
-            return AssetDatabase.LoadAssetAtPath<LayoutRuleData>(assetPath);
+            return AssetDatabase.LoadAssetAtPath<BaseLayoutRuleData>(assetPath);
         }
     }
 }
