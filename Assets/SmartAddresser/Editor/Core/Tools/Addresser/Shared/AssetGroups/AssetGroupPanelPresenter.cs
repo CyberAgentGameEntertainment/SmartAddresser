@@ -130,11 +130,15 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             _view.CanPasteGroup += CanPasteGroup;
             _view.CanPasteGroupValues += CanPasteGroupValues;
             _view.CanPasteFilter += CanPasteFilter;
+            _view.GetMoveUpByOptions += GetMoveUpByOptions;
+            _view.GetMoveDownByOptions += GetMoveDownByOptions;
             _view.NameChangedAsObservable.Subscribe(SetGroupName).DisposeWith(_viewEventDisposables);
             _view.AddFilterButtonClickedAsObservable.Subscribe(_ => AddFilter()).DisposeWith(_viewEventDisposables);
             _view.RemoveGroupMenuExecutedAsObservable.Subscribe(_ => RemoveGroup()).DisposeWith(_viewEventDisposables);
             _view.MoveUpMenuExecutedAsObservable.Subscribe(_ => MoveUpGroup()).DisposeWith(_viewEventDisposables);
+            _view.MoveUpByMenuExecutedAsObservable.Subscribe(MoveUpByGroup).DisposeWith(_viewEventDisposables);
             _view.MoveDownMenuExecutedAsObservable.Subscribe(_ => MoveDownGroup()).DisposeWith(_viewEventDisposables);
+            _view.MoveDownByMenuExecutedAsObservable.Subscribe(MoveDownByGroup).DisposeWith(_viewEventDisposables);
             _view.CopyGroupMenuExecutedAsObservable.Subscribe(_ => CopyGroup()).DisposeWith(_viewEventDisposables);
             _view.PasteGroupMenuExecutedSubject.Subscribe(_ => PasteGroup()).DisposeWith(_viewEventDisposables);
             _view.PasteGroupValuesMenuExecutedSubject.Subscribe(_ => PasteGroupValues())
@@ -179,21 +183,26 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
             void MoveUpGroup()
             {
+                MoveUpByGroup(1);
+            }
+
+            void MoveUpByGroup(int d)
+            {
                 if (!_didSetupView)
                     return;
 
                 var index = _groups.IndexOf(_group);
-                if (index == 0)
+                if (index - d < 0)
                     return;
 
-                _history.Register($"Move Up Group {_group.Id} {index}", () =>
+                _history.Register($"Move Up Group {_group.Id} {index} By {d}", () =>
                 {
                     _groups.RemoveAt(index);
-                    _groups.Insert(index - 1, _group);
+                    _groups.Insert(index - d, _group);
                     _saveService.Save();
                 }, () =>
                 {
-                    _groups.RemoveAt(index - 1);
+                    _groups.RemoveAt(index - d);
                     _groups.Insert(index, _group);
                     _saveService.Save();
                 });
@@ -201,21 +210,26 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
             void MoveDownGroup()
             {
+                MoveDownByGroup(1);
+            }
+
+            void MoveDownByGroup(int d)
+            {
                 if (!_didSetupView)
                     return;
 
                 var index = _groups.IndexOf(_group);
-                if (index == _groups.Count - 1)
+                if (index + d >= _groups.Count)
                     return;
 
-                _history.Register($"Move Down Filter {_group.Id} {index}", () =>
+                _history.Register($"Move Down Group {_group.Id} {index} By {d}", () =>
                 {
                     _groups.RemoveAt(index);
-                    _groups.Insert(index + 1, _group);
+                    _groups.Insert(index + d, _group);
                     _saveService.Save();
                 }, () =>
                 {
-                    _groups.RemoveAt(index + 1);
+                    _groups.RemoveAt(index + d);
                     _groups.Insert(index, _group);
                     _saveService.Save();
                 });
@@ -337,6 +351,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             _view.CanPasteGroup -= CanPasteGroup;
             _view.CanPasteGroupValues -= CanPasteGroupValues;
             _view.CanPasteFilter -= CanPasteFilter;
+            _view.GetMoveUpByOptions -= GetMoveUpByOptions;
+            _view.GetMoveDownByOptions -= GetMoveDownByOptions;
         }
 
         private bool CanPasteGroup()
@@ -361,6 +377,24 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
                 return false;
 
             return typeof(IAssetFilter).IsAssignableFrom(ObjectCopyBuffer.Type);
+        }
+
+        private ICollection<int> GetMoveUpByOptions()
+        {
+            if (!_didSetupView)
+                return Array.Empty<int>();
+
+            var index = _groups.IndexOf(_group);
+            return index == 0 ? Array.Empty<int>() : Enumerable.Range(1, index).ToArray();
+        }
+
+        private ICollection<int> GetMoveDownByOptions()
+        {
+            if (!_didSetupView)
+                return Array.Empty<int>();
+
+            var index = _groups.IndexOf(_group);
+            return index == _groups.Count - 1 ? Array.Empty<int>() : Enumerable.Range(1, _groups.Count - index - 1).ToArray();
         }
     }
 }
