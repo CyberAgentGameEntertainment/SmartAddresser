@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Foundation.CustomDrawers;
@@ -15,16 +16,20 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
     {
         private const string RemoveMenuName = "Remove Filter";
         private const string MoveUpMenuName = "Move Up Filter";
+        private const string MoveUpByMenuName = "Move Up Filter By";
         private const string PasteMenuName = "Paste Filter As New";
         private const string PasteValuesMenuName = "Paste Filter Values";
         private const string MoveDownMenuName = "Move Down Filter";
+        private const string MoveDownByMenuName = "Move Down Filter By";
         private const string CopyMenuName = "Copy Filter";
 
         private readonly Subject<Empty> _copyMenuExecutedSubject = new Subject<Empty>();
         private readonly ICustomDrawer _drawer;
         private readonly Subject<Empty> _mouseButtonClickedSubject = new Subject<Empty>();
         private readonly Subject<Empty> _moveDownMenuExecutedSubject = new Subject<Empty>();
+        private readonly Subject<int>  _moveDownByMenuExecutedSubject = new Subject<int>();
         private readonly Subject<Empty> _moveUpMenuExecutedSubject = new Subject<Empty>();
+        private readonly Subject<int>  _moveUpByMenuExecutedSubject = new Subject<int>();
         private readonly Subject<Empty> _pasteMenuExecutedSubject = new Subject<Empty>();
         private readonly Subject<Empty> _pasteValuesMenuExecutedSubject = new Subject<Empty>();
         private readonly Subject<Empty> _removeMenuExecutedSubject = new Subject<Empty>();
@@ -49,7 +54,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
         public IObservable<Empty> RemoveMenuExecutedAsObservable => _removeMenuExecutedSubject;
         public IObservable<Empty> MoveUpMenuExecutedAsObservable => _moveUpMenuExecutedSubject;
+        public IObservable<int> MoveUpByMenuExecutedAsObservable => _moveUpByMenuExecutedSubject;
         public IObservable<Empty> MoveDownMenuExecutedAsObservable => _moveDownMenuExecutedSubject;
+        public IObservable<int> MoveDownByMenuExecutedAsObservable => _moveDownByMenuExecutedSubject;
         public IObservable<Empty> ValueChangedAsObservable => _valueChangedSubject;
         public IObservable<Empty> CopyMenuExecutedAsObservable => _copyMenuExecutedSubject;
         public IObservable<Empty> PasteMenuExecutedSubject => _pasteMenuExecutedSubject;
@@ -70,6 +77,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
         public event Func<bool> CanPaste;
         public event Func<bool> CanPasteValues;
+
+        public event Func<ICollection<int>> GetMoveUpByOptions;
+        public event Func<ICollection<int>> GetMoveDownByOptions;       
 
         public void DoLayout()
         {
@@ -115,8 +125,26 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
                     () => _removeMenuExecutedSubject.OnNext(Empty.Default));
                 menu.AddItem(new GUIContent(MoveUpMenuName), false,
                     () => _moveUpMenuExecutedSubject.OnNext(Empty.Default));
+
+                var moveUpByList = GetMoveUpByOptions?.Invoke();
+                if (moveUpByList == null || moveUpByList.Count == 0)
+                    menu.AddDisabledItem(new GUIContent(MoveUpByMenuName), false);
+                else
+                    foreach (var count in moveUpByList)
+                        menu.AddItem(new GUIContent($"{MoveUpByMenuName}/{count}"), false,
+                                     () => _moveUpByMenuExecutedSubject.OnNext(count));
+
                 menu.AddItem(new GUIContent(MoveDownMenuName), false,
                     () => _moveDownMenuExecutedSubject.OnNext(Empty.Default));
+
+                var moveDownByList = GetMoveDownByOptions?.Invoke();
+                if (moveDownByList == null || moveDownByList.Count == 0)
+                    menu.AddDisabledItem(new GUIContent(MoveDownByMenuName), false);
+                else
+                    foreach (var count in moveDownByList)
+                        menu.AddItem(new GUIContent($"{MoveDownByMenuName}/{count}"), false,
+                                     () => _moveDownByMenuExecutedSubject.OnNext(count));
+
                 menu.AddItem(new GUIContent(CopyMenuName), false,
                     () => _copyMenuExecutedSubject.OnNext(Empty.Default));
 

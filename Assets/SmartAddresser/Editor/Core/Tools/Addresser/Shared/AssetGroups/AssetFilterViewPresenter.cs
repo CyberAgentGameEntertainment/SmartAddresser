@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
 using SmartAddresser.Editor.Foundation.TinyRx;
@@ -37,9 +38,13 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
             view.CanPaste += CanPaste;
             view.CanPasteValues += CanPasteValues;
+            view.GetMoveUpByOptions += GetMoveUpByOptions;
+            view.GetMoveDownByOptions += GetMoveDownByOptions;
             view.RemoveMenuExecutedAsObservable.Subscribe(_ => Remove()).DisposeWith(_disposable);
             view.MoveUpMenuExecutedAsObservable.Subscribe(_ => MoveUp()).DisposeWith(_disposable);
+            view.MoveUpByMenuExecutedAsObservable.Subscribe(MoveUpBy).DisposeWith(_disposable);
             view.MoveDownMenuExecutedAsObservable.Subscribe(_ => MoveDown()).DisposeWith(_disposable);
+            view.MoveDownByMenuExecutedAsObservable.Subscribe(MoveDownBy).DisposeWith(_disposable);
             view.CopyMenuExecutedAsObservable.Subscribe(_ => Copy()).DisposeWith(_disposable);
             view.PasteMenuExecutedSubject.Subscribe(_ => Paste()).DisposeWith(_disposable);
             view.PasteValuesMenuExecutedSubject.Subscribe(_ => PasteValues()).DisposeWith(_disposable);
@@ -51,6 +56,8 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
         {
             _view.CanPaste -= CanPaste;
             _view.CanPasteValues -= CanPasteValues;
+            _view.GetMoveUpByOptions -= GetMoveUpByOptions;
+            _view.GetMoveDownByOptions -= GetMoveDownByOptions;
             _disposable.Dispose();
         }
 
@@ -93,18 +100,23 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
         private void MoveUp()
         {
+            MoveUpBy(1);
+        }
+
+        private void MoveUpBy(int d)
+        {
             var index = _filterCollection.IndexOf(_filter);
-            if (index == 0)
+            if (index - d < 0)
                 return;
 
-            _history.Register($"Move Up Filter {_filter.Id} {index}", () =>
+            _history.Register($"Move Up Filter {_filter.Id} {index} By {d}", () =>
             {
                 _filterCollection.RemoveAt(index);
-                _filterCollection.Insert(index - 1, _filter);
+                _filterCollection.Insert(index - d, _filter);
                 _saveService.Save();
             }, () =>
             {
-                _filterCollection.RemoveAt(index - 1);
+                _filterCollection.RemoveAt(index - d);
                 _filterCollection.Insert(index, _filter);
                 _saveService.Save();
             });
@@ -112,18 +124,23 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
 
         private void MoveDown()
         {
+            MoveDownBy(1);
+        }
+
+        private void MoveDownBy(int d)
+        {
             var index = _filterCollection.IndexOf(_filter);
-            if (index == _filterCollection.Count - 1)
+            if (index + d >= _filterCollection.Count)
                 return;
 
-            _history.Register($"Move Down Filter {_filter.Id} {index}", () =>
+            _history.Register($"Move Down Filter {_filter.Id} {index} By {d}", () =>
             {
                 _filterCollection.RemoveAt(index);
-                _filterCollection.Insert(index + 1, _filter);
+                _filterCollection.Insert(index + d, _filter);
                 _saveService.Save();
             }, () =>
             {
-                _filterCollection.RemoveAt(index + 1);
+                _filterCollection.RemoveAt(index + d);
                 _filterCollection.Insert(index, _filter);
                 _saveService.Save();
             });
@@ -178,6 +195,18 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
                     _filter.OverwriteValuesFromJson(oldJson);
                     _saveService.Save();
                 });
+        }
+
+        private ICollection<int> GetMoveUpByOptions()
+        {
+            var index = _filterCollection.IndexOf(_filter);
+            return index == 0 ? Array.Empty<int>() : Enumerable.Range(1, index).ToArray();
+        }
+
+        private ICollection<int> GetMoveDownByOptions()
+        {
+            var index = _filterCollection.IndexOf(_filter);
+            return index == _filterCollection.Count - 1 ? Array.Empty<int>() : Enumerable.Range(1, _filterCollection.Count - index - 1).ToArray();
         }
     }
 }
