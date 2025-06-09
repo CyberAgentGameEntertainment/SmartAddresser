@@ -769,6 +769,24 @@ Finally, press the **Change Provider** button of each **Provider** in **Layout R
   <img width="80%" src="Documentation/Images/custom_filter_provider_02.png" alt="Custom Provider">
 </p>
 
+## Seamlessly Managing Multiple LayoutRuleData Assets
+
+**CompositeLayoutRuleData** provides a way to transparently manage multiple `LayoutRuleData` assets, integrating and applying their layout rules as a single unit. When you apply a `CompositeLayoutRuleData` asset, all the layout rules from its configured `LayoutRuleData` assets are combined and applied together.
+
+### How to Use
+
+To create a `CompositeLayoutRuleData` asset, go to the Unity Editor menu and select **Assets > Create > Smart Addresser > Composite Layout Rule Data**.
+
+Once created, open the `CompositeLayoutRuleData` asset in the Inspector view. Here, you can configure the `Layout Rules` list by adding the `LayoutRuleData` assets you wish to integrate.
+
+To apply all the configured layout rules, simply click the **Apply** button at the top of the Inspector view. You can also set a `CompositeLayoutRuleData` asset as the `PrimaryData`, just like a regular `LayoutRuleData` asset.
+
+### Validation
+
+Validation can only be performed on individual `LayoutRuleData` assets. The `CompositeLayoutRuleData` itself does not detect conflicts or contradictions between multiple `LayoutRuleData` assets configured within it.
+
+Validation result files will be suffixed based on the index of the `LayoutRuleData` within the `CompositeLayoutRuleData`, for example: `[filename]_0.json`, `[filename]_1.json`, and so on.
+
 ## License
 This software is released under the MIT license.
 You are free to use it within the scope of the license, but the following copyright and license notices are required.
