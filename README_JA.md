@@ -777,12 +777,12 @@ public sealed class ExampleAddressProvider : AddressProviderAsset
 </p>
 
 ## 複数のLayoutRuleDataを透過的に扱う
-CompositeLayoutRuleData は、複数の LayoutRuleData を透過的に管理し、それらのレイアウトルールを統合して適用するための機能です。  
-CompositeLayoutRuleData を適用すると、それに設定されている全ての LayoutRuleData のレイアウトルールが結合され、一括で適用されます。
+CompositeLayoutRuleData は、複数の LayoutRuleData を透過的に管理し、それらのレイアウトルールをまとめて適用するための機能です。  
+CompositeLayoutRuleData を適用すると、それに設定されている全ての LayoutRuleData のレイアウトルールが一括で適用されます。
 
 ### 使い方
 Unityエディタのメニューから **Assets > Create > Smart Addresser > Composite Layout Rule Data** を選択し、アセットを作成します。  
-作成した CompositeLayoutRuleData アセットの Inspector ビューで、Layout Rules リストに統合したい LayoutRuleData アセットを設定します。
+作成した CompositeLayoutRuleData アセットの Inspector ビューで、Layout Rules リストにまとめて適用したい LayoutRuleData アセットを設定します。
 
 Inspector ビュー上部にある Apply ボタンをクリックすると、設定した全てのレイアウトルールを適用します。  
 PrimaryData については、通常の LayoutRuleData と同様に CompositeLayoutRuleData を設定することが可能です。
