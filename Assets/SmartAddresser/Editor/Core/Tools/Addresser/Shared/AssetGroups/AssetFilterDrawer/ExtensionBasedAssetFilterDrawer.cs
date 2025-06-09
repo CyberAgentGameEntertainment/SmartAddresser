@@ -20,6 +20,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups.AssetFil
 
         protected override void GUILayout(ExtensionBasedAssetFilter target)
         {
+            target.InvertMatch =
+                EditorGUILayout.Toggle(ObjectNames.NicifyVariableName(nameof(Target.InvertMatch)),
+                    Target.InvertMatch);
             _listablePropertyGUI.DoLayout();
         }
     }

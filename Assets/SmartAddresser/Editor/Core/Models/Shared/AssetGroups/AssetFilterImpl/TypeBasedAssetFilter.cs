@@ -16,6 +16,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     {
         [SerializeField] private TypeReferenceListableProperty _type = new TypeReferenceListableProperty();
         [SerializeField] private bool _matchWithDerivedTypes = true;
+        [SerializeField] private bool _invertMatch;
         private List<string> _invalidAssemblyQualifiedNames = new List<string>();
 
         private Dictionary<Type, bool> _resultCache = new Dictionary<Type, bool>();
@@ -31,6 +32,15 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         {
             get => _matchWithDerivedTypes;
             set => _matchWithDerivedTypes = value;
+        }
+
+        /// <summary>
+        ///     If true, the result of the match will be inverted.
+        /// </summary>
+        public bool InvertMatch
+        {
+            get => _invertMatch;
+            set => _invertMatch = value;
         }
 
         public override void SetupForMatching()
@@ -79,8 +89,9 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 return false;
 
             if (_resultCache.TryGetValue(assetType, out var result))
-                return result;
+                return result ^ _invertMatch;
 
+            result = false;
             foreach (var type in _types)
             {
                 if (type == assetType)
@@ -101,7 +112,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 _resultCache.Add(assetType, result);
             }
 
-            return result;
+            return result ^ _invertMatch;
         }
 
         public override string GetDescription()
@@ -133,6 +144,14 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
 
             if (MatchWithDerivedTypes)
                 result.Append(" and derived types");
+
+            if (_invertMatch)
+            {
+                if (result.Length == 0)
+                    return "Not ( Nothing )";
+
+                result.Insert(0, "Not ");
+            }
 
             return result.ToString();
         }

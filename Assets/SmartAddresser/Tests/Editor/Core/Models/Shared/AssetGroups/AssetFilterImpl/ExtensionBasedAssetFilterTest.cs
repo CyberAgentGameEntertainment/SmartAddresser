@@ -60,6 +60,26 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
         }
 
         [Test]
+        public void IsMatch_InvertMatchAndRegisterMatchedExtension_ReturnFalse()
+        {
+            var filter = new ExtensionBasedAssetFilter();
+            filter.Extension.Value = "png";
+            filter.InvertMatch = true;
+            filter.SetupForMatching();
+            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false), Is.False);
+        }
+
+        [Test]
+        public void IsMatch_InvertMatchAndRegisterNotMatchedExtension_ReturnTrue()
+        {
+            var filter = new ExtensionBasedAssetFilter();
+            filter.Extension.Value = "jpg";
+            filter.InvertMatch = true;
+            filter.SetupForMatching();
+            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false), Is.True);
+        }
+
+        [Test]
         public void Validate_ValidExtension_ReturnTrue()
         {
             var filter = new ExtensionBasedAssetFilter();
