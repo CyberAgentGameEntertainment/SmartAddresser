@@ -20,7 +20,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         [SerializeField] private bool _onlyDirectDependencies;
         [SerializeField] private ObjectListableProperty _object = new ObjectListableProperty();
 
-        private List<string> _dependentAssetPaths = new List<string>();
+        private HashSet<string> _dependentAssetPaths = new HashSet<string>();
         private bool _hasNullObject;
 
         /// <summary>
@@ -50,11 +50,19 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 }
 
                 var path = AssetDatabase.GetAssetPath(obj);
-                var dependencies = AssetDatabase.GetDependencies(path, !_onlyDirectDependencies);
-                _dependentAssetPaths.AddRange(dependencies);
-            }
 
-            _dependentAssetPaths = _dependentAssetPaths.Distinct().ToList();
+                // If we already have all the dependencies of 'path', we can skip
+                if (!_onlyDirectDependencies && _dependentAssetPaths.Contains(path) == true)
+                {
+                    continue;
+                }
+
+                var dependencies = AssetDatabase.GetDependencies(path, !_onlyDirectDependencies);
+                foreach (var dependency in dependencies)
+                {
+                    _dependentAssetPaths.Add(dependency);
+                }
+            }
         }
 
         public override bool Validate(out AssetFilterValidationError error)
