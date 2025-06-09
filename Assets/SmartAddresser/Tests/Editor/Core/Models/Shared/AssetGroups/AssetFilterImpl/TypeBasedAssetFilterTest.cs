@@ -57,6 +57,26 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
         }
 
         [Test]
+        public void IsMatch_InvertMatchAndSetMatchedType_ReturnFalse()
+        {
+            var filter = new TypeBasedAssetFilter();
+            filter.Type.Value = TypeReference.Create(typeof(Texture2D));
+            filter.InvertMatch = true;
+            filter.SetupForMatching();
+            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.False);
+        }
+
+        [Test]
+        public void IsMatch_InvertMatchAndSetNotMatchedType_ReturnTrue()
+        {
+            var filter = new TypeBasedAssetFilter();
+            filter.Type.Value = TypeReference.Create(typeof(Texture3D));
+            filter.InvertMatch = true;
+            filter.SetupForMatching();
+            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.True);
+        }
+
+        [Test]
         public void Validate_Valid_ReturnTrue()
         {
             var filter = new TypeBasedAssetFilter();

@@ -17,6 +17,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups.AssetFil
 
         protected override void GUILayout(TypeBasedAssetFilter target)
         {
+            target.InvertMatch =
+                EditorGUILayout.Toggle(ObjectNames.NicifyVariableName(nameof(Target.InvertMatch)),
+                    Target.InvertMatch);
             target.MatchWithDerivedTypes = EditorGUILayout.Toggle(
                 ObjectNames.NicifyVariableName(nameof(Target.MatchWithDerivedTypes)), Target.MatchWithDerivedTypes);
             _listablePropertyGUI.DoLayout();

@@ -19,6 +19,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     public sealed class ExtensionBasedAssetFilter : AssetFilterBase
     {
         [SerializeField] private StringListableProperty _extension = new StringListableProperty();
+        [SerializeField] private bool _invertMatch;
         private List<string> _extensions = new List<string>();
         private bool _hasEmptyExtension;
 
@@ -26,6 +27,15 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         ///     Extensions for filtering.
         /// </summary>
         public StringListableProperty Extension => _extension;
+
+        /// <summary>
+        ///     If true, the result of the match will be inverted.
+        /// </summary>
+        public bool InvertMatch
+        {
+            get => _invertMatch;
+            set => _invertMatch = value;
+        }
 
         public override void SetupForMatching()
         {
@@ -63,12 +73,16 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         {
             if (string.IsNullOrEmpty(assetPath)) return false;
 
+            var matchFound = false;
             foreach (var extension in _extensions)
                 // Return true if any of the extensions match.
                 if (assetPath.EndsWith(extension, StringComparison.Ordinal))
-                    return true;
+                {
+                    matchFound = true;
+                    break;
+                }
 
-            return false;
+            return matchFound ^ _invertMatch;
         }
 
         public override string GetDescription()
@@ -94,6 +108,14 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
                 }
 
                 result.Insert(0, "Extension: ");
+            }
+
+            if (_invertMatch)
+            {
+                if (result.Length == 0)
+                    return "Not ( Nothing )";
+                
+                result.Insert(0, "Not ");
             }
 
             return result.ToString();
