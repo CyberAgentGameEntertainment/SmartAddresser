@@ -43,7 +43,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         public bool IsMatch(string assetPath, Type assetType, bool isFolder)
         {
             if (assetFilter == null)
-                return true;
+                return false;
             
             return assetFilter.IsMatch(assetPath, assetType, isFolder);
         }
