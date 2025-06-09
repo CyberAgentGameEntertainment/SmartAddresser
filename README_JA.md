@@ -778,20 +778,18 @@ public sealed class ExampleAddressProvider : AddressProviderAsset
 
 ## 複数のLayoutRuleDataを透過的に扱う
 CompositeLayoutRuleData は、複数の LayoutRuleData を透過的に管理し、それらのレイアウトルールを統合して適用するための機能です。  
-これにより、複数のルールセットをまとめて扱うことができ、プロジェクトの規模や複雑さに応じた柔軟なアセット管理が可能になります。
-
-CompositeLayoutRuleData を適用すると、それに設定されている全ての LayoutRuleData のレイアウトルールが結合され、一括で適用されます。  
-また、PrimaryData に対しても、通常の LayoutRuleData と同様に CompositeLayoutRuleData を設定することが可能です。
+CompositeLayoutRuleData を適用すると、それに設定されている全ての LayoutRuleData のレイアウトルールが結合され、一括で適用されます。
 
 ### 使い方
 Unityエディタのメニューから **Assets > Create > Smart Addresser > Composite Layout Rule Data** を選択し、アセットを作成します。  
-作成した CompositeLayoutRuleData アセットの Inspector ビューで、Layout Rules リストに統合したい LayoutRuleData アセットを設定します。  
-Inspector ビュー上部にある Apply ボタンをクリックして、設定した全てのレイアウトルールを適用します。  
+作成した CompositeLayoutRuleData アセットの Inspector ビューで、Layout Rules リストに統合したい LayoutRuleData アセットを設定します。
+
+Inspector ビュー上部にある Apply ボタンをクリックすると、設定した全てのレイアウトルールを適用します。  
+PrimaryData については、通常の LayoutRuleData と同様に CompositeLayoutRuleData を設定することが可能です。
 
 ### バリデーション
 バリデーションは、個々の LayoutRuleData 単位でのみ実行可能です。  
-CompositeLayoutRuleData に設定された複数の LayoutRuleData 間で、互いに矛盾するレイアウトルールが存在する場合、CompositeLayoutRuleData 自体ではその矛盾は検知されません。  
-各 LayoutRuleData のバリデーション結果を確認し、手動で矛盾がないことを確認してください。
+CompositeLayoutRuleData に設定された複数の LayoutRuleData 間で、互いに矛盾するレイアウトルールが存在する場合、CompositeLayoutRuleData 自体ではその矛盾は検知されません。
 
 バリデーション結果ファイルは、CompositeLayoutRuleData が持つ LayoutRuleData のインデックスに基づき、`[ファイル名]_0.json`、`[ファイル名]_1.json`のようにサフィックスが付与されます。
 
