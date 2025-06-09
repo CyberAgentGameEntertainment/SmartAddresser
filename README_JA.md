@@ -64,6 +64,9 @@
 - [独自のアセットフィルタ、プロバイダを作成する](#%E7%8B%AC%E8%87%AA%E3%81%AE%E3%82%A2%E3%82%BB%E3%83%83%E3%83%88%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF%E3%83%97%E3%83%AD%E3%83%90%E3%82%A4%E3%83%80%E3%82%92%E4%BD%9C%E6%88%90%E3%81%99%E3%82%8B)
   - [独自のアセットフィルタを作成する](#%E7%8B%AC%E8%87%AA%E3%81%AE%E3%82%A2%E3%82%BB%E3%83%83%E3%83%88%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF%E3%82%92%E4%BD%9C%E6%88%90%E3%81%99%E3%82%8B)
   - [独自のプロバイダを作成する](#%E7%8B%AC%E8%87%AA%E3%81%AE%E3%83%97%E3%83%AD%E3%83%90%E3%82%A4%E3%83%80%E3%82%92%E4%BD%9C%E6%88%90%E3%81%99%E3%82%8B)
+- [複数のLayoutRuleDataを透過的に扱う](#%E8%A4%87%E6%95%B0%E3%81%AElayoutruledata%E3%82%92%E9%80%8F%E9%81%8E%E7%9A%84%E3%81%AB%E6%89%B1%E3%81%86)
+  - [使い方](#%E4%BD%BF%E3%81%84%E6%96%B9)
+  - [バリデーション](#%E3%83%90%E3%83%AA%E3%83%87%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3)
 - [ライセンス](#%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9)
 
 </details>
@@ -772,6 +775,23 @@ public sealed class ExampleAddressProvider : AddressProviderAsset
 <p align="center">
   <img width="80%" src="Documentation/Images/custom_filter_provider_02.png" alt="Custom Provider">
 </p>
+
+## 複数のLayoutRuleDataを透過的に扱う
+CompositeLayoutRuleData は、複数の LayoutRuleData を透過的に管理し、それらのレイアウトルールをまとめて適用するための機能です。  
+CompositeLayoutRuleData を適用すると、それに設定されている全ての LayoutRuleData のレイアウトルールが一括で適用されます。
+
+### 使い方
+Unityエディタのメニューから **Assets > Create > Smart Addresser > Composite Layout Rule Data** を選択し、アセットを作成します。  
+作成した CompositeLayoutRuleData アセットの Inspector ビューで、Layout Rules リストにまとめて適用したい LayoutRuleData アセットを設定します。
+
+Inspector ビュー上部にある Apply ボタンをクリックすると、設定した全てのレイアウトルールを適用します。  
+PrimaryData については、通常の LayoutRuleData と同様に CompositeLayoutRuleData を設定することが可能です。
+
+### バリデーション
+バリデーションは、個々の LayoutRuleData 単位でのみ実行可能です。  
+CompositeLayoutRuleData に設定された複数の LayoutRuleData 間で、互いに矛盾するレイアウトルールが存在する場合、CompositeLayoutRuleData 自体ではその矛盾は検知されません。
+
+バリデーション結果ファイルは、CompositeLayoutRuleData が持つ LayoutRuleData のインデックスに基づき、`[ファイル名]_0.json`、`[ファイル名]_1.json`のようにサフィックスが付与されます。
 
 ## ライセンス
 本ソフトウェアはMITライセンスで公開しています。  
