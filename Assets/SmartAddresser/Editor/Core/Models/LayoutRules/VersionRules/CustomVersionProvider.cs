@@ -15,12 +15,12 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
             versionProvider.Setup();
         }
 
-        public string Provide(string assetPath, Type assetType, bool isFolder)
+        public string Provide(string assetPath, Type assetType, bool isFolder, string address, string addressableAssetGroupName)
         {
             if (versionProvider == null)
                 return null;
             
-            return versionProvider.Provide(assetPath, assetType, isFolder);
+            return versionProvider.Provide(assetPath, assetType, isFolder, address, addressableAssetGroupName);
         }
 
         public string GetDescription()

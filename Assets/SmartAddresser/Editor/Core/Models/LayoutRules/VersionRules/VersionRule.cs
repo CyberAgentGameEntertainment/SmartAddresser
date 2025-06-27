@@ -78,12 +78,14 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
         }
 
         /// <summary>
-        ///     Create a version from asset information.
+        ///     Create a version from asset information with addressable context.
         /// </summary>
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
-        /// <param name="version">If successful, assign the address. If not, null.</param>
+        /// <param name="address">The address assigned to the addressable entry.</param>
+        /// <param name="addressableAssetGroupName">The name of the addressable asset group.</param>
+        /// <param name="version">If successful, assign the version. If not, null.</param>
         /// <param name="checkIsPathValidForEntry">
         ///     If true, check if the asset path is valid for entry.
         ///     You can pass false if it is guaranteed to be valid.
@@ -93,6 +95,8 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
             string assetPath,
             Type assetType,
             bool isFolder,
+            string address,
+            string addressableAssetGroupName,
             out string version,
             bool checkIsPathValidForEntry = true
         )
@@ -109,7 +113,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
                 return false;
             }
 
-            version = VersionProvider.Value.Provide(assetPath, assetType, isFolder);
+            version = VersionProvider.Value.Provide(assetPath, assetType, isFolder, address, addressableAssetGroupName);
 
             if (string.IsNullOrEmpty(version))
             {

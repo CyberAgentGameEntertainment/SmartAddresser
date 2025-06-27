@@ -147,7 +147,7 @@ namespace SmartAddresser.Editor.Core.Models.Services
             if (!string.IsNullOrEmpty(versionExpression))
             {
                 var comparator = _versionExpressionParser.CreateComparator(versionExpression);
-                var versionText = layoutRule.ProvideVersion(assetPath, assetType, isFolder, doSetup);
+                var versionText = layoutRule.ProvideVersion(assetPath, assetType, isFolder, address, addressableGroupName, doSetup);
 
                 if (string.IsNullOrEmpty(versionText) && layoutRule.Settings.ExcludeUnversioned.Value)
                     return false;

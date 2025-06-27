@@ -81,20 +81,20 @@ namespace SmartAddresser.Editor.Core.Models.Services
                     var assetPath = assetPaths[i];
                     var assetType = assetTypes[i];
                     var isFolder = isFolders[i];
-                    var groupName = addressRule.AddressableGroup.Name;
 
                     // Address
                     if (!addressRule.TryProvideAddress(assetPath, assetType, isFolder, out var address, false))
                         continue;
 
                     // Labels
+                    var groupName = addressRule.AddressableGroup?.Name ?? string.Empty;
                     var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, address, groupName, false, false).ToArray();
 
                     // Versions
                     var versions = new List<string>();
                     foreach (var versionRule in layoutRule.VersionRules)
                     {
-                        if (!versionRule.TryProvideVersion(assetPath, assetType, isFolder, out var version, false))
+                        if (!versionRule.TryProvideVersion(assetPath, assetType, isFolder, address, groupName, out var version, false))
                             continue;
 
                         versions.Add(version);

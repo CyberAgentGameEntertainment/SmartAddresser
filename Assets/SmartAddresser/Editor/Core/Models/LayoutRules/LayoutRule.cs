@@ -143,7 +143,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             return labels;
         }
 
-        public string ProvideVersion(string assetPath, Type assetType, bool isFolder, bool doSetup)
+        public string ProvideVersion(string assetPath, Type assetType, bool isFolder, string address, string addressableAssetGroupName, bool doSetup)
         {
             foreach (var versionRule in _versionRules)
             {
@@ -151,7 +151,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                     versionRule.Setup();
 
                 // Adopt the first matching version.
-                if (versionRule.TryProvideVersion(assetPath, assetType, isFolder, out var version))
+                if (versionRule.TryProvideVersion(assetPath, assetType, isFolder, address, addressableAssetGroupName, out var version))
                     return version;
             }
 

@@ -1,5 +1,4 @@
 using System;
-using SmartAddresser.Editor.Core.Models.Shared;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
@@ -18,11 +17,11 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
             set => _version = value;
         }
 
-        void IProvider<string>.Setup()
+        public void Setup()
         {
         }
 
-        string IProvider<string>.Provide(string assetPath, Type assetType, bool isFolder)
+        public string Provide(string assetPath, Type assetType, bool isFolder, string address, string addressableAssetGroupName)
         {
             if (string.IsNullOrEmpty(_version))
                 return null;
