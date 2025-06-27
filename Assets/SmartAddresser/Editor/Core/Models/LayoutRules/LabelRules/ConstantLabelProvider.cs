@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
@@ -21,7 +22,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         {
         }
 
-        public string Provide(string assetPath, Type assetType, bool isFolder, string address, string addressableAssetGroupName)
+        public string Provide(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup)
         {
             if (string.IsNullOrEmpty(_label))
                 return null;

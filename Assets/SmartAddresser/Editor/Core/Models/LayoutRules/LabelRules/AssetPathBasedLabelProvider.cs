@@ -1,5 +1,6 @@
 using System;
 using SmartAddresser.Editor.Core.Models.Shared;
+using UnityEditor.AddressableAssets.Settings;
 
 namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
 {
@@ -15,7 +16,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         }
 
         public string Provide(string assetPath, Type assetType, bool isFolder, string address,
-            string addressableAssetGroupName)
+            AddressableAssetGroup addressableAssetGroup)
         {
             return ((IProvider<string>)this).Provide(assetPath, assetType, isFolder);
         }

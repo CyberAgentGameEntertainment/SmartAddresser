@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.AddressableAssets.Settings;
 
 namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
 {
@@ -15,12 +16,12 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
             versionProvider.Setup();
         }
 
-        public string Provide(string assetPath, Type assetType, bool isFolder, string address, string addressableAssetGroupName)
+        public string Provide(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup)
         {
             if (versionProvider == null)
                 return null;
             
-            return versionProvider.Provide(assetPath, assetType, isFolder, address, addressableAssetGroupName);
+            return versionProvider.Provide(assetPath, assetType, isFolder, address, addressableAssetGroup);
         }
 
         public string GetDescription()

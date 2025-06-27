@@ -111,7 +111,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
         /// <param name="address">The address assigned to the addressable entry.</param>
-        /// <param name="addressableAssetGroupName">The name of the addressable asset group.</param>
+        /// <param name="addressableAssetGroup">The addressable asset group.</param>
         /// <param name="doSetup"></param>
         /// <param name="checkIsPathValidForEntry">
         ///     If true, check if the asset path is valid for entry.
@@ -123,7 +123,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
             Type assetType,
             bool isFolder,
             string address,
-            string addressableAssetGroupName,
+            AddressableAssetGroup addressableAssetGroup,
             bool doSetup,
             bool checkIsPathValidForEntry = true
         )
@@ -136,14 +136,14 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                 if (doSetup)
                     labelRule.Setup();
 
-                if (labelRule.TryProvideLabel(assetPath, assetType, isFolder, address, addressableAssetGroupName, out var label, checkIsPathValidForEntry))
+                if (labelRule.TryProvideLabel(assetPath, assetType, isFolder, address, addressableAssetGroup, out var label, checkIsPathValidForEntry))
                     labels.Add(label);
             }
 
             return labels;
         }
 
-        public string ProvideVersion(string assetPath, Type assetType, bool isFolder, string address, string addressableAssetGroupName, bool doSetup)
+        public string ProvideVersion(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup, bool doSetup)
         {
             foreach (var versionRule in _versionRules)
             {
@@ -151,7 +151,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules
                     versionRule.Setup();
 
                 // Adopt the first matching version.
-                if (versionRule.TryProvideVersion(assetPath, assetType, isFolder, address, addressableAssetGroupName, out var version))
+                if (versionRule.TryProvideVersion(assetPath, assetType, isFolder, address, addressableAssetGroup, out var version))
                     return version;
             }
 

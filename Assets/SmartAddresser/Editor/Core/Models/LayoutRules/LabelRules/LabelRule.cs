@@ -4,6 +4,7 @@ using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
@@ -85,7 +86,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
         /// <param name="address">The address assigned to the addressable entry.</param>
-        /// <param name="addressableAssetGroupName">The name of the addressable asset group.</param>
+        /// <param name="addressableAssetGroup">The addressable asset group.</param>
         /// <param name="label">If successful, assign the label. If not, null.</param>
         /// <param name="checkIsPathValidForEntry">
         ///     If true, check if the asset path is valid for entry.
@@ -97,7 +98,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
             Type assetType,
             bool isFolder,
             string address,
-            string addressableAssetGroupName,
+            AddressableAssetGroup addressableAssetGroup,
             out string label,
             bool checkIsPathValidForEntry = true
         )
@@ -114,7 +115,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
                 return false;
             }
 
-            label = LabelProvider.Value.Provide(assetPath, assetType, isFolder, address, addressableAssetGroupName);
+            label = LabelProvider.Value.Provide(assetPath, assetType, isFolder, address, addressableAssetGroup);
 
             if (string.IsNullOrEmpty(label))
             {

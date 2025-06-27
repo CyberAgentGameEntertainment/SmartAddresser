@@ -141,13 +141,11 @@ namespace SmartAddresser.Editor.Core.Models.Services
             if (addressableGroup == null)
                 return false;
 
-            var addressableGroupName = addressableGroup.Name;
-
             // Check the version if it is specified.
             if (!string.IsNullOrEmpty(versionExpression))
             {
                 var comparator = _versionExpressionParser.CreateComparator(versionExpression);
-                var versionText = layoutRule.ProvideVersion(assetPath, assetType, isFolder, address, addressableGroupName, doSetup);
+                var versionText = layoutRule.ProvideVersion(assetPath, assetType, isFolder, address, addressableGroup, doSetup);
 
                 if (string.IsNullOrEmpty(versionText) && layoutRule.Settings.ExcludeUnversioned.Value)
                     return false;
@@ -161,11 +159,11 @@ namespace SmartAddresser.Editor.Core.Models.Services
 
             // Set group and address.
             var entryAdapter =
-                _addressableSettingsAdapter.CreateOrMoveEntry(addressableGroupName, assetGuid, invokeModificationEvent);
+                _addressableSettingsAdapter.CreateOrMoveEntry(addressableGroup.Name, assetGuid, invokeModificationEvent);
             entryAdapter.SetAddress(address, invokeModificationEvent);
 
-            // Provide labels with addressable context (address and group name).
-            var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, address, addressableGroupName, doSetup);
+            // Provide labels with addressable context (address and group).
+            var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, address, addressableGroup, doSetup);
             
             // Add labels to addressable settings if not exists.
             var addressableLabels = _addressableSettingsAdapter.GetLabels();
