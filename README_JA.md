@@ -714,13 +714,14 @@ public sealed class ExampleAssetFilter : AssetFilterAsset
     public override void SetupForMatching()
     {
         // IsMatchの前に呼ばれる処理
-        // IsMatchがアセットごとに呼ばれるのに対して、この処理は一度だけ呼ばれる
-        // したがって重い処理はここで行う
+        // IsMatchがアセットごとに呼ばれるのに対して、この処理は一度だけ呼ばれるので、重い処理はここで行う
+        // メインスレッドで実行されるため、UnityのAPIを使用する処理はIsMatchではなくここで行う
     }
 
     public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
     {
         // 引数に与えられたアセットがこのフィルタにマッチしていたらtrueを返す
+        // 注意: このメソッドはメインスレッド外で実行される可能性があるためUnityのAPIを使用してはいけない
     }
 
     public override string GetDescription()
@@ -751,14 +752,15 @@ public sealed class ExampleAddressProvider : AddressProviderAsset
     public override void Setup()
     {
         // Provideの前に呼ばれる処理
-        // Provideがアセットごとに呼ばれるのに対して、この処理は一度だけ呼ばれる
-        // したがって重い処理はここで行う
+        // Provideがアセットごとに呼ばれるのに対して、この処理は一度だけ呼ばれるので、重い処理はここで行う
+        // メインスレッドで実行されるため、UnityのAPIを使用する処理はProvideではなくここで行う
     }
 
     public override string Provide(string assetPath, Type assetType, bool isFolder)
     {
         // 引数に与えられたアセットに対応するアドレスを返す
         // 該当するアドレスが無い場合にはnullを返す
+        // 注意: このメソッドはメインスレッド外で実行される可能性があるためUnityのAPIを使用してはいけない
     }
 
     public override string GetDescription()

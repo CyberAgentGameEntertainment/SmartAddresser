@@ -710,13 +710,14 @@ public sealed class ExampleAssetFilter : AssetFilterAsset
     public override void SetupForMatching()
     {
         // This method will be called before IsMatch
-        // This method will be called only once, while IsMatch will be called for each asset
-        // Therefore, heavy processing should be done here
+        // This method will be called only once, while IsMatch will be called for each asset, so heavy processing should be done here
+        // This method is executed on the main thread, so Unity API calls should be made here instead of in IsMatch
     }
 
     public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
     {
         // Return true if the asset matches this filter
+        // WARNING: This method may be executed outside the main thread, so Unity API calls are not allowed
     }
 
     public override string GetDescription()
@@ -747,14 +748,15 @@ public sealed class ExampleAddressProvider : AddressProviderAsset
     public override void Setup()
     {
         // This method will be called before Provide
-        // This method will be called only once, while Provide will be called for each asset
-        // Therefore, heavy processing should be done here
+        // This method will be called only once, while Provide will be called for each asset, so heavy processing should be done here
+        // This method is executed on the main thread, so Unity API calls should be made here instead of in Provide
     }
 
     public override string Provide(string assetPath, Type assetType, bool isFolder)
     {
         // Return the address corresponding to the asset given as an argument
         // If there is no corresponding address, return null
+        // WARNING: This method may be executed outside the main thread, so Unity API calls are not allowed
     }
 
     public override string GetDescription()
