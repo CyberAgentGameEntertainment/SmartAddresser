@@ -79,12 +79,14 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         }
 
         /// <summary>
-        ///     Create a label from asset information.
+        ///     Create a label from asset information with addressable context.
         /// </summary>
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
-        /// <param name="label">If successful, assign the address. If not, null.</param>
+        /// <param name="address">The address assigned to the addressable entry.</param>
+        /// <param name="addressableAssetGroupName">The name of the addressable asset group.</param>
+        /// <param name="label">If successful, assign the label. If not, null.</param>
         /// <param name="checkIsPathValidForEntry">
         ///     If true, check if the asset path is valid for entry.
         ///     You can pass false if it is guaranteed to be valid.
@@ -94,6 +96,8 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
             string assetPath,
             Type assetType,
             bool isFolder,
+            string address,
+            string addressableAssetGroupName,
             out string label,
             bool checkIsPathValidForEntry = true
         )
@@ -110,7 +114,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
                 return false;
             }
 
-            label = LabelProvider.Value.Provide(assetPath, assetType, isFolder);
+            label = LabelProvider.Value.Provide(assetPath, assetType, isFolder, address, addressableAssetGroupName);
 
             if (string.IsNullOrEmpty(label))
             {

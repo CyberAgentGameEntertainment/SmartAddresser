@@ -164,8 +164,10 @@ namespace SmartAddresser.Editor.Core.Models.Services
                 _addressableSettingsAdapter.CreateOrMoveEntry(addressableGroupName, assetGuid, invokeModificationEvent);
             entryAdapter.SetAddress(address, invokeModificationEvent);
 
+            // Provide labels with addressable context (address and group name).
+            var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, address, addressableGroupName, doSetup);
+            
             // Add labels to addressable settings if not exists.
-            var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, doSetup);
             var addressableLabels = _addressableSettingsAdapter.GetLabels();
             foreach (var label in labels)
                 if (!addressableLabels.Contains(label))
