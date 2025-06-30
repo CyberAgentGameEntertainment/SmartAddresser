@@ -10,20 +10,20 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
     [Serializable]
     public sealed class AssetPathBasedLabelProvider : AssetPathBasedProvider, ILabelProvider
     {
-        public void Setup()
+        void ILabelProvider.Setup()
         {
-            ((IProvider<string>)this).Setup();
+            base.Setup();
         }
 
-        public string Provide(string assetPath, Type assetType, bool isFolder, string address,
+        string ILabelProvider.Provide(string assetPath, Type assetType, bool isFolder, string address,
             AddressableAssetGroup addressableAssetGroup)
         {
-            return ((IProvider<string>)this).Provide(assetPath, assetType, isFolder);
+            return base.Provide(assetPath, assetType, isFolder);
         }
 
-        public string GetDescription()
+        string ILabelProvider.GetDescription()
         {
-            return ((IProvider<string>)this).GetDescription();
+            return base.GetDescription();
         }
     }
 }

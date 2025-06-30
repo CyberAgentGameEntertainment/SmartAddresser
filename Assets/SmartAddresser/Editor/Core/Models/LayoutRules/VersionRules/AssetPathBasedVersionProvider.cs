@@ -10,20 +10,20 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
     [Serializable]
     public sealed class AssetPathBasedVersionProvider : AssetPathBasedProvider, IVersionProvider
     {
-        public void Setup()
+        void IVersionProvider.Setup()
         {
-            ((IProvider<string>)this).Setup();
+            base.Setup();
         }
 
-        public string Provide(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup)
+        string IVersionProvider.Provide(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup)
         {
             // Asset path based provider doesn't use address or addressableAssetGroupName
-            return ((IProvider<string>)this).Provide(assetPath, assetType, isFolder);
+            return base.Provide(assetPath, assetType, isFolder);
         }
 
-        public string GetDescription()
+        string IVersionProvider.GetDescription()
         {
-            return ((IProvider<string>)this).GetDescription();
+            return base.GetDescription();
         }
     }
 }

@@ -11,10 +11,9 @@ namespace SmartAddresser.Tests.Editor.Core.Models.LayoutRules.Shared
         [TestCase(PartialAssetPathType.AssetPath, ExpectedResult = "Assets/Dummy.asset")]
         public string SourceType(PartialAssetPathType sourceType)
         {
-            var providerImpl = new FakeAssetPathBasedProvider();
-            var provider = (IProvider<string>)providerImpl;
-            providerImpl.Source = sourceType;
-            providerImpl.ReplaceWithRegex = false;
+            var provider = new FakeAssetPathBasedProvider();
+            provider.Source = sourceType;
+            provider.ReplaceWithRegex = false;
             provider.Setup();
             var address = provider.Provide("Assets/Dummy.asset", typeof(ScriptableObject), false);
             return address;
@@ -23,12 +22,11 @@ namespace SmartAddresser.Tests.Editor.Core.Models.LayoutRules.Shared
         [Test]
         public void ReplaceWithRegex()
         {
-            var providerImpl = new FakeAssetPathBasedProvider();
-            var provider = (IProvider<string>)providerImpl;
-            providerImpl.Source = PartialAssetPathType.AssetPath;
-            providerImpl.ReplaceWithRegex = true;
-            providerImpl.Pattern = "^Assets/(?<key>[a-zA-Z]{5}).asset$";
-            providerImpl.Replacement = "${key}";
+            var provider = new FakeAssetPathBasedProvider();
+            provider.Source = PartialAssetPathType.AssetPath;
+            provider.ReplaceWithRegex = true;
+            provider.Pattern = "^Assets/(?<key>[a-zA-Z]{5}).asset$";
+            provider.Replacement = "${key}";
             provider.Setup();
             var address = provider.Provide("Assets/Dummy.asset", typeof(ScriptableObject), false);
             Assert.That(address, Is.EqualTo("Dummy"));
