@@ -13,6 +13,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     /// </summary>
     [Serializable]
     [AssetFilter("Addressable Group Filter", "Addressable Group Filter")]
+    [RestrictedToRules(RuleType.Label, RuleType.Version)]
     public sealed class AddressableAssetGroupBasedAssetFilter : AssetFilterBase
     {
         [SerializeField]

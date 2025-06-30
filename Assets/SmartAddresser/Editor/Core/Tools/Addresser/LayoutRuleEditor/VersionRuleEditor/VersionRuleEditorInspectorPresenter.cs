@@ -1,5 +1,6 @@
 using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
@@ -20,7 +21,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
         {
             _view = view;
             _assetGroupCollectionPanelPresenter =
-                new AssetGroupCollectionPanelPresenter(view.GroupCollectionView, history, saveService);
+                new AssetGroupCollectionPanelPresenter(view.GroupCollectionView, history, saveService, RuleType.Version);
             _versionProviderPanelPresenter =
                 new VersionProviderPanelViewPresenter(view.VersionProviderPanelView, history, saveService);
         }

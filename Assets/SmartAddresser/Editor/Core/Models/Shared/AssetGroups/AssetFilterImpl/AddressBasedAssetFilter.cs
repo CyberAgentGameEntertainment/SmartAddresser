@@ -15,6 +15,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
     /// </summary>
     [Serializable]
     [AssetFilter("Address Filter", "Address Filter")]
+    [RestrictedToRules(RuleType.Label, RuleType.Version)]
     public sealed class AddressBasedAssetFilter : AssetFilterBase
     {
         [SerializeField] private bool _matchWithFolders;
