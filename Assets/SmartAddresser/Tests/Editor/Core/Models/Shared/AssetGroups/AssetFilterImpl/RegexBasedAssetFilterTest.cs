@@ -5,6 +5,7 @@
 using NUnit.Framework;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
 using UnityEditor;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
@@ -17,7 +18,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new RegexBasedAssetFilter();
             filter.AssetPathRegex.Value = "^Assets/Test/.+";
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test/Test.png", typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch("Assets/Test/Test.png", typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]
@@ -26,7 +27,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new RegexBasedAssetFilter();
             filter.AssetPathRegex.Value = "^Assets/Test2/.+";
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test/Test.png", typeof(Texture2D), false), Is.False);
+            Assert.That(filter.IsMatch("Assets/Test/Test.png", typeof(Texture2D), false, null, null), Is.False);
         }
 
         [Test]
@@ -35,7 +36,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new RegexBasedAssetFilter();
             filter.AssetPathRegex.Value = "^Assets/(Test/.+";
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test/Test.png", typeof(Texture2D), false), Is.False);
+            Assert.That(filter.IsMatch("Assets/Test/Test.png", typeof(Texture2D), false, null, null), Is.False);
         }
 
         [TestCase(AssetFilterCondition.ContainsMatched, "^Assets/Test/.+", "^Assets/Test2/.+", ExpectedResult = true)]
@@ -57,7 +58,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.AssetPathRegex.AddValue(assetPath1);
             filter.AssetPathRegex.AddValue(assetPath2);
             filter.SetupForMatching();
-            return filter.IsMatch("Assets/Test/Test.png", typeof(Texture2D), false);
+            return filter.IsMatch("Assets/Test/Test.png", typeof(Texture2D), false, null, null);
         }
 
         [TestCase(true, "^Assets/Test", ExpectedResult = true)]
@@ -71,7 +72,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.MatchWithFolders = matchWithFolder;
             filter.AssetPathRegex.Value = "Assets/Test";
             filter.SetupForMatching();
-            return filter.IsMatch(targetAssetPath, typeof(DefaultAsset), true);
+            return filter.IsMatch(targetAssetPath, typeof(DefaultAsset), true, null, null);
         }
 
         [Test]

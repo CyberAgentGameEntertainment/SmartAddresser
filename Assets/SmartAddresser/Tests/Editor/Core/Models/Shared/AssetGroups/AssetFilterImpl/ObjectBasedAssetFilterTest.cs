@@ -6,6 +6,7 @@ using System;
 using NUnit.Framework;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
 using UnityEditor;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -19,7 +20,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new ObjectBasedAssetFilter();
             filter.Object.Value = AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Texture64);
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture64, typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture64, typeof(Texture2D), false, null, null), Is.True);
         }
 
         [TestCase(FolderTargetingMode.IncludedNonFolderAssets, TestAssetRelativePaths.Shared.Texture64, typeof(Texture2D),
@@ -37,7 +38,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Object.Value = AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Folder);
             filter.SetupForMatching();
             var assetPath = TestAssetPaths.CreateAbsoluteAssetPath(relativeAssetPath);
-            return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset));
+            return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset), null, null);
         }
 
         [TestCase(FolderTargetingMode.IncludedNonFolderAssets, TestAssetRelativePaths.Dummy1.Folder, typeof(DefaultAsset), ExpectedResult = false)]
@@ -56,7 +57,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Object.Value = AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Dummy.Folder);
             filter.SetupForMatching();
             var assetPath = TestAssetPaths.CreateAbsoluteAssetPath(relativeAssetPath);
-            return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset));
+            return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset), null, null);
         }
 
         [Test]
@@ -65,7 +66,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new ObjectBasedAssetFilter();
             filter.Object.Value = AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Texture64);
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture128, typeof(Texture2D), false), Is.False);
+            Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture128, typeof(Texture2D), false, null, null), Is.False);
         }
 
         [Test]
@@ -76,7 +77,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Object.AddValue(AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Texture64));
             filter.Object.AddValue(AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Texture128));
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture64, typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture64, typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]
@@ -87,7 +88,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Object.AddValue(AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Texture128));
             filter.Object.AddValue(AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.Texture256));
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture64, typeof(Texture2D), false), Is.False);
+            Assert.That(filter.IsMatch(TestAssetPaths.Shared.Texture64, typeof(Texture2D), false, null, null), Is.False);
         }
         
         [Test]
@@ -97,7 +98,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Object.IsListMode = true;
             filter.Object.AddValue(AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Dummy.Folder));
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch(TestAssetPaths.Dummy1.PrefabDummy, typeof(GameObject), false), Is.False);
+            Assert.That(filter.IsMatch(TestAssetPaths.Dummy1.PrefabDummy, typeof(GameObject), false, null, null), Is.False);
         }
 
         [Test]
