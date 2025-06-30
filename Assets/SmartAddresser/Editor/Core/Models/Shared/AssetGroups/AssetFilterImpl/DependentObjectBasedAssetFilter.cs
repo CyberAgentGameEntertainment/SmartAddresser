@@ -6,6 +6,7 @@ using System.Text;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.ListableProperty;
 using UnityEditor;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
@@ -78,7 +79,8 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
         }
 
         /// <inheritdoc />
-        public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
+        public override bool IsMatch(string assetPath, Type assetType, bool isFolder, string address,
+            AddressableAssetGroup addressableAssetGroup)
         {
             if (string.IsNullOrEmpty(assetPath))
                 return false;
