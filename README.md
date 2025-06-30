@@ -674,6 +674,8 @@ public static class Example
 | Extension Filter | Filters by extension.<br>Use case: Target assets that have png or jpg extension.<br><br>**Extension**<br>Target extension. Multiple items can be specified by using the right toggle.<br><br>**Invert Match**<br>If checked, assets that do not match the conditions are targeted.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Dependent Object Filter | Filters the assets that are referenced by the specified asset.<br>Use case: Targets the textures that are referenced by the prefab.<br><br>**Only Direct Dependencies**<br>Targets the assets that are referenced directly.<br><br>**Object**<br>Referer Assets.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Find Assets Filter      | Filters by using AssetDatabase.FindAssets().<br/><br/>**Filter**<br>Filter string to be passed to AssetDatabase.Find()<br><br>**Target Folders**<br>The folder to be searched.<br>If not specified, all folders will be searched.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Address Filter | Filters based on addresses.<br>Use case: Target only assets that match specific address patterns.<br><br>**Address (Regex)**<br>Target address pattern.<br>You can use regular expressions.<br>Multiple items can be specified by using the right toggle.<br><br>**Condition**<br>Specify how to handle multiple Addresses.<br>* Contains Matched: Target if any address matches.<br>* Match All: Target if all addresses match.<br>* Contains Unmatched: Target if any one address does not match.<br>* Not Match All: Target if all addresses do not match.<br><br>**Note**: This filter cannot be used with AddressRule. |
+| Addressable Group Filter | Filters based on the Addressable Asset Group to which the asset belongs.<br>Use case: Target only assets that belong to specific groups.<br><br>**Addressable Asset Group**<br>Target Addressable Asset Groups.<br>Multiple items can be specified by using the right toggle.<br><br>**Invert Match**<br>If checked, assets that do not match the conditions are targeted.<br><br>**Note**: This filter cannot be used with AddressRule. |
 
 ### Address Provider
 
@@ -687,6 +689,8 @@ public static class Example
 |---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Constant Label Provider         | Provides an constant label.<br><br>Label<br>Label name.                                                                                                                                                                                                             |
 | Asset Path Based Label Provider | Provides an label based on the asset path of the target asset.<br><br>**Source**<br>How to specify the label.<br>* File Name<br>* File Name Without Extensions<br>* Asset Path<br><br>**Replace With Regex**<br>If checked, the Source will be replaced with regex. |
+| Address Based Label Provider | Provides a label based on the address of the target asset.<br><br>**Use Full Address**<br>If checked, uses the full address. If unchecked, uses only the part after the last '/' (file name).<br><br>**Replace With Regex**<br>If checked, the address will be replaced with regex using Pattern and Replacement. |
+| Addressable Asset Group Name Based Label Provider | Provides a label based on the name of the Addressable Asset Group to which the target asset belongs.<br><br>**Replace With Regex**<br>If checked, the group name will be replaced with regex using Pattern and Replacement. |
 
 ### Version Provider
 
@@ -694,6 +698,8 @@ public static class Example
 |-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Constant Version Provider         | Provides an constant version.<br><br>Version<br>version name.                                                                                                                                                                                                           |
 | Asset Path Based Version Provider | Provides an version based on the asset path of the target asset.<br><br>**Source**<br>How to specify the version.<br>* File Name<br>* File Name Without Extensions<br>* Asset Path<br><br>**Replace With Regex**<br>If checked, the Source will be replaced with regex. |
+| Address Based Version Provider | Provides a version based on the address of the target asset.<br><br>**Use Full Address**<br>If checked, uses the full address. If unchecked, uses only the part after the last '/' (file name).<br><br>**Replace With Regex**<br>If checked, the address will be replaced with regex using Pattern and Replacement. |
+| Addressable Asset Group Name Based Version Provider | Provides a version based on the name of the Addressable Asset Group to which the target asset belongs.<br><br>**Replace With Regex**<br>If checked, the group name will be replaced with regex using Pattern and Replacement. |
 
 ## Create your own Asset Filters / Providers
 
@@ -704,6 +710,7 @@ You can create your own Asset Filter by inheriting the `AssetFilterAsset` class.
 ```cs
 using System;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
+using UnityEditor.AddressableAssets.Settings;
 
 public sealed class ExampleAssetFilter : AssetFilterAsset
 {
@@ -714,9 +721,11 @@ public sealed class ExampleAssetFilter : AssetFilterAsset
         // This method is executed on the main thread, so Unity API calls should be made here instead of in IsMatch
     }
 
-    public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
+    public override bool IsMatch(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup)
     {
         // Return true if the asset matches this filter
+        // address: The address assigned to the asset (will be null when called from AddressRule)
+        // addressableAssetGroup: The Addressable Asset Group the asset belongs to (will be null when called from AddressRule)
         // WARNING: This method may be executed outside the main thread, so Unity API calls are not allowed
     }
 
@@ -741,6 +750,7 @@ You can create your own Provider by inheriting the `AddressProviderAsset` / `Lab
 ```cs
 using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 public sealed class ExampleAddressProvider : AddressProviderAsset
@@ -752,9 +762,11 @@ public sealed class ExampleAddressProvider : AddressProviderAsset
         // This method is executed on the main thread, so Unity API calls should be made here instead of in Provide
     }
 
-    public override string Provide(string assetPath, Type assetType, bool isFolder)
+    public override string Provide(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup)
     {
         // Return the address corresponding to the asset given as an argument
+        // address: The address assigned to the asset
+        // addressableAssetGroup: The Addressable Asset Group the asset belongs to
         // If there is no corresponding address, return null
         // WARNING: This method may be executed outside the main thread, so Unity API calls are not allowed
     }
