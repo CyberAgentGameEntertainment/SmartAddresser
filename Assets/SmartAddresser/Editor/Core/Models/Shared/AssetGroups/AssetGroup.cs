@@ -8,6 +8,7 @@ using System.Text;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
@@ -67,8 +68,11 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
+        /// <param name="address">The address assigned to the addressable entry. May be null when called from AddressRule.</param>
+        /// <param name="addressableAssetGroup">The addressable asset group. May be null when called from AddressRule.</param>
         /// <returns></returns>
-        public bool Contains(string assetPath, Type assetType, bool isFolder)
+        public bool Contains(string assetPath, Type assetType, bool isFolder, string address,
+            AddressableAssetGroup addressableAssetGroup)
         {
             if (_filters.Count == 0)
                 return false;
@@ -79,7 +83,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
                 if (filter == null)
                     continue;
 
-                if (!filter.IsMatch(assetPath, assetType, isFolder))
+                if (!filter.IsMatch(assetPath, assetType, isFolder, address, addressableAssetGroup))
                     return false;
             }
 

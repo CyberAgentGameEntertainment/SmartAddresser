@@ -102,7 +102,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
             bool checkIsPathValidForEntry = true
         )
         {
-            if (!_assetGroups.Contains(assetPath, assetType, isFolder))
+            if (!_assetGroups.Contains(assetPath, assetType, isFolder, address, addressableAssetGroup))
             {
                 version = null;
                 return false;

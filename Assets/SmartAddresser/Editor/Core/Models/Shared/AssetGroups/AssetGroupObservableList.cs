@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
+using UnityEditor.AddressableAssets.Settings;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
 {
@@ -44,11 +45,14 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
+        /// <param name="address">The address assigned to the addressable entry. May be null when called from AddressRule.</param>
+        /// <param name="addressableAssetGroup">The addressable asset group. May be null when called from AddressRule.</param>
         /// <returns></returns>
-        public bool Contains(string assetPath, Type assetType, bool isFolder)
+        public bool Contains(string assetPath, Type assetType, bool isFolder, string address,
+            AddressableAssetGroup addressableAssetGroup)
         {
             for (var i = 0; i < Count; i++)
-                if (this[i].Contains(assetPath, assetType, isFolder))
+                if (this[i].Contains(assetPath, assetType, isFolder, address, addressableAssetGroup))
                     return true;
 
             return false;

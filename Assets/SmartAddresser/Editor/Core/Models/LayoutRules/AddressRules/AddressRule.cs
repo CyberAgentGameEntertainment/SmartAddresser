@@ -122,7 +122,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
                 return false;
             }
 
-            if (!_assetGroups.Contains(assetPath, assetType, isFolder))
+            if (!_assetGroups.Contains(assetPath, assetType, isFolder, null, null))
             {
                 address = null;
                 return false;

@@ -103,7 +103,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
             bool checkIsPathValidForEntry = true
         )
         {
-            if (!_assetGroups.Contains(assetPath, assetType, isFolder))
+            if (!_assetGroups.Contains(assetPath, assetType, isFolder, address, addressableAssetGroup))
             {
                 label = null;
                 return false;
