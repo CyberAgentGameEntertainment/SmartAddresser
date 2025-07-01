@@ -694,7 +694,7 @@ public static class Example
 |---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Constant Label Provider         | 固定値でラベルを付与します。<br><br>Label<br>付与するラベルの名前。                                                                                                                                                                                                                                  |
 | Asset Path Based Label Provider | 対象アセットのアセットパスを元にラベルを付与します。<br><br>**Source**<br>以下のパターンからラベルを指定します。<br>・File Name: 拡張子付きファイル名<br>・File Name Without Extensions: 拡張子なしアセット名<br>・Asset Path: アセットパス<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、Source を Replacement で Regex.Replace したものをラベルとします。 |
-| Address Based Label Provider | 対象アセットのアドレスを元にラベルを付与します。<br><br>**Use Full Address**<br>チェックをつけると、フルアドレスを使用します。チェックを外すと、最後の'/'以降の部分（ファイル名）のみを使用します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、アドレスを Replacement で Regex.Replace したものをラベルとします。 |
+| Address Based Label Provider | 対象アセットのアドレスを元にラベルを付与します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、アドレスを Replacement で Regex.Replace したものをラベルとします。 |
 | Addressable Asset Group Name Based Label Provider | 対象アセットが属するAddressableアセットグループ名を元にラベルを付与します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、グループ名を Replacement で Regex.Replace したものをラベルとします。 |
 
 ### Version Provider
@@ -703,7 +703,7 @@ public static class Example
 | --- | --- |
 | Constant Version Provider | 固定値でバージョンを付与します。<br><br>Label<br>付与するバージョンの名前。 |
 | Asset Path Based Version Provider | 対象アセットのアセットパスを元にバージョンを付与します。<br><br>**Source**<br>以下のパターンからバージョンを指定します。<br>・File Name: 拡張子付きファイル名<br>・File Name Without Extensions: 拡張子なしアセット名<br>・Asset Path: アセットパス<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、Source を Replacement で Regex.Replace したものをバージョンとします。 |
-| Address Based Version Provider | 対象アセットのアドレスを元にバージョンを付与します。<br><br>**Use Full Address**<br>チェックをつけると、フルアドレスを使用します。チェックを外すと、最後の'/'以降の部分（ファイル名）のみを使用します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、アドレスを Replacement で Regex.Replace したものをバージョンとします。 |
+| Address Based Version Provider | 対象アセットのアドレスを元にバージョンを付与します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、アドレスを Replacement で Regex.Replace したものをバージョンとします。 |
 | Addressable Asset Group Name Based Version Provider | 対象アセットが属するAddressableアセットグループ名を元にバージョンを付与します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、グループ名を Replacement で Regex.Replace したものをバージョンとします。 |
 
 ## 独自のアセットフィルタ、プロバイダを作成する
