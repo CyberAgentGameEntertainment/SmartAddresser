@@ -8,21 +8,11 @@ namespace SmartAddresser.Editor.Core.Models.Shared
     [Serializable]
     public abstract class AddressBasedProvider
     {
-        [SerializeField] private bool _useFullAddress = true;
         [SerializeField] private bool _replaceWithRegex;
         [SerializeField] private string _pattern;
         [SerializeField] private string _replacement;
 
         private Regex _regex;
-
-        /// <summary>
-        ///     If true, uses the full address. If false, uses only the last segment after the last '/'.
-        /// </summary>
-        public bool UseFullAddress
-        {
-            get => _useFullAddress;
-            set => _useFullAddress = value;
-        }
 
         /// <summary>
         ///     If true, replaces the address value through regular expressions.
@@ -76,7 +66,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared
 
             try
             {
-                var sourceValue = _useFullAddress ? address : Path.GetFileName(address);
+                var sourceValue = address;
                 return _replaceWithRegex ? _regex.Replace(sourceValue, _replacement) : sourceValue;
             }
             catch
@@ -87,7 +77,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared
 
         public string GetDescription()
         {
-            var result = _useFullAddress ? "Source: Full Address" : "Source: Address File Name";
+            var result = "Source: Address";
             if (_replaceWithRegex)
                 result += $", Regex: Replace \"{_pattern}\" with \"{_replacement}\"";
 

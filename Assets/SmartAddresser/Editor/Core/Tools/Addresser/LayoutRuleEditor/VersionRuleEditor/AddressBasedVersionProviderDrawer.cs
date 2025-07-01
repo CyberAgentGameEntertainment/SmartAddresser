@@ -14,9 +14,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.VersionRul
     {
         protected override void GUILayout(AddressBasedVersionProvider target)
         {
-            var useFullAddressLabel = ObjectNames.NicifyVariableName(nameof(target.UseFullAddress));
-            target.UseFullAddress = EditorGUILayout.Toggle(useFullAddressLabel, target.UseFullAddress);
-            
             var replaceWithRegexLabel = ObjectNames.NicifyVariableName(nameof(target.ReplaceWithRegex));
             target.ReplaceWithRegex = EditorGUILayout.Toggle(replaceWithRegexLabel, target.ReplaceWithRegex);
 
