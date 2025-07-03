@@ -20,7 +20,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             new Dictionary<string, AssetFilterViewPresenter>();
 
         private readonly AutoIncrementHistory _history;
-        private readonly RuleType? _ruleContext;
+        private readonly RuleType? _ruleType;
         private readonly IAssetSaveService _saveService;
         private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
         private readonly AssetGroupPanelView _view;
@@ -30,12 +30,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
         private IList<AssetGroup> _groups;
 
         public AssetGroupPanelPresenter(AssetGroupPanelView view, AutoIncrementHistory history,
-            IAssetSaveService saveService, RuleType? ruleContext = null)
+            IAssetSaveService saveService, RuleType? ruleType = null)
         {
             _view = view;
             _history = history;
             _saveService = saveService;
-            _ruleContext = ruleContext;
+            _ruleType = ruleType;
 
             SetupViewEventHandlers();
         }
@@ -249,7 +249,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
                     .Where(x => x.GetCustomAttribute<IgnoreAssetFilterAttribute>() == null);
 
                 // Filter by rule context if set
-                if (_ruleContext.HasValue)
+                if (_ruleType.HasValue)
                     types = types.Where(type =>
                     {
                         var restrictedAttribute = type.GetCustomAttribute<RestrictedToRulesAttribute>();
@@ -257,7 +257,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
                         if (restrictedAttribute == null)
                             return true;
                         // If restriction attribute exists, check if current rule type is allowed
-                        return restrictedAttribute.AllowedRuleTypes.Contains(_ruleContext.Value);
+                        return restrictedAttribute.AllowedRuleTypes.Contains(_ruleType.Value);
                     });
 
                 // Show filter selection menu.
