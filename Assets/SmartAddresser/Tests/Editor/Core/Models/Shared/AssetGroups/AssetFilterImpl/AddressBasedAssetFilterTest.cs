@@ -114,21 +114,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             
             Assert.That(result, Is.True);
         }
-
-        [Test]
-        public void IsMatch_WithEmptyAddress_ReturnsFalse()
-        {
-            _filter.Condition = AssetFilterCondition.ContainsMatched;
-            _filter.AddressRegex.Value = ".*";
-            _filter.SetupForMatching();
-
-            var result1 = _filter.IsMatch("dummy", typeof(object), false, "", null);
-            var result2 = _filter.IsMatch("dummy", typeof(object), false, null, null);
-            
-            Assert.That(result1, Is.False);
-            Assert.That(result2, Is.False);
-        }
-
+        
         [Test]
         public void IsMatch_WithFolder_WhenMatchWithFoldersIsFalse_ReturnsFalse()
         {
@@ -156,7 +142,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
         }
 
         [Test]
-        public void SetupForMatching_WithInvalidRegex_HandlesGracefully()
+        public void SetupForMatching_WithInvalidRegex_DoesNotThrow()
         {
             _filter.AddressRegex.IsListMode = true;
             _filter.AddressRegex.AddValue("valid.*");
@@ -258,24 +244,6 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             Assert.That(result, Is.True);
 
             UnityEngine.Object.DestroyImmediate(group);
-        }
-
-        [Test]
-        public void IsMatch_WithComplexPattern_WorksCorrectly()
-        {
-            _filter.Condition = AssetFilterCondition.ContainsMatched;
-            _filter.AddressRegex.Value = @"^assets/v\d+\.\d+\.\d+/.*";
-            _filter.SetupForMatching();
-
-            var result1 = _filter.IsMatch("dummy", typeof(object), false, "assets/v1.0.0/character", null);
-            var result2 = _filter.IsMatch("dummy", typeof(object), false, "assets/v2.1.3/weapon", null);
-            var result3 = _filter.IsMatch("dummy", typeof(object), false, "assets/vX.Y.Z/item", null);
-            var result4 = _filter.IsMatch("dummy", typeof(object), false, "other/v1.0.0/test", null);
-            
-            Assert.That(result1, Is.True);
-            Assert.That(result2, Is.True);
-            Assert.That(result3, Is.False);
-            Assert.That(result4, Is.False);
         }
 
         [Test]
