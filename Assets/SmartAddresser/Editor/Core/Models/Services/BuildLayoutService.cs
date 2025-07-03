@@ -87,13 +87,13 @@ namespace SmartAddresser.Editor.Core.Models.Services
                         continue;
 
                     // Labels
-                    var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, false, false).ToArray();
+                    var labels = layoutRule.ProvideLabels(assetPath, assetType, isFolder, address, addressRule.AddressableGroup, false, false).ToArray();
 
                     // Versions
                     var versions = new List<string>();
                     foreach (var versionRule in layoutRule.VersionRules)
                     {
-                        if (!versionRule.TryProvideVersion(assetPath, assetType, isFolder, out var version, false))
+                        if (!versionRule.TryProvideVersion(assetPath, assetType, isFolder, address, addressRule.AddressableGroup, out var version, false))
                             continue;
 
                         versions.Add(version);

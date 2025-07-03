@@ -1,5 +1,6 @@
 using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
@@ -22,7 +23,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.AddressRul
         {
             _view = view;
             _assetGroupCollectionPanelPresenter =
-                new AssetGroupCollectionPanelPresenter(view.GroupCollectionView, history, saveService);
+                new AssetGroupCollectionPanelPresenter(view.GroupCollectionView, history, saveService, RuleType.Address);
             _addressProviderPanelPresenter =
                 new AddressProviderPanelPresenter(view.AddressProviderPanelView, history, saveService);
         }

@@ -3,8 +3,8 @@
 // --------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
+using UnityEditor.AddressableAssets.Settings;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
 {
@@ -25,7 +25,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
         /// <summary>
         ///     Returns false if the AssetFilter is corrupted.
         ///     Example: When an asset referenced by the filter is deleted.
-        ///     This method will be called after <see cref="SetupForMatching"/>.
+        ///     This method will be called after <see cref="SetupForMatching" />.
         /// </summary>
         /// <returns></returns>
         bool Validate(out AssetFilterValidationError error);
@@ -39,8 +39,11 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
+        /// <param name="address">The address assigned to the addressable entry. May be null when called from AddressRule.</param>
+        /// <param name="addressableAssetGroup">The addressable asset group. May be null when called from AddressRule.</param>
         /// <returns></returns>
-        bool IsMatch(string assetPath, Type assetType, bool isFolder);
+        bool IsMatch(string assetPath, Type assetType, bool isFolder, string address,
+            AddressableAssetGroup addressableAssetGroup);
 
         /// <summary>
         ///     Get a description of this asset filter.

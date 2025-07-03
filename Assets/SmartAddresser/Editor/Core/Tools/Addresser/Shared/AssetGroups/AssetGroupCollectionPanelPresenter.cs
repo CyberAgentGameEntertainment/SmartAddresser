@@ -16,6 +16,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             new Dictionary<string, AssetGroupPanelPresenter>();
 
         private readonly AutoIncrementHistory _history;
+        private readonly RuleType? _ruleType;
         private readonly IAssetSaveService _saveService;
         private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
         private readonly AssetGroupCollectionPanelView _view;
@@ -24,11 +25,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
         private IObservableList<AssetGroup> _groups;
 
         public AssetGroupCollectionPanelPresenter(AssetGroupCollectionPanelView view, AutoIncrementHistory history,
-            IAssetSaveService saveService)
+            IAssetSaveService saveService, RuleType? ruleType = null)
         {
             _view = view;
             _history = history;
             _saveService = saveService;
+            _ruleType = ruleType;
 
             SetupViewEventHandlers();
         }
@@ -78,7 +80,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             void AddGroupView(AssetGroup group, int index)
             {
                 var groupPanelView = _view.AddGroupPanelView(group, index);
-                var groupPanelPresenter = new AssetGroupPanelPresenter(groupPanelView, _history, _saveService);
+                var groupPanelPresenter = new AssetGroupPanelPresenter(groupPanelView, _history, _saveService, _ruleType);
                 groupPanelPresenter.SetupView(_groups, index);
                 _groupPanelPresenters.Add(group.Id, groupPanelPresenter);
             }

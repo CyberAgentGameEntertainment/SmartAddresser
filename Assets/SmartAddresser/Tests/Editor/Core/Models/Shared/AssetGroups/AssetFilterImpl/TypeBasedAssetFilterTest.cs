@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
@@ -13,7 +14,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new TypeBasedAssetFilter();
             filter.Type.Value = TypeReference.Create(typeof(Texture2D));
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]
@@ -22,7 +23,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new TypeBasedAssetFilter();
             filter.Type.Value = TypeReference.Create(typeof(Texture));
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]
@@ -31,7 +32,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new TypeBasedAssetFilter();
             filter.Type.Value = TypeReference.Create(typeof(Texture3D));
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.False);
+            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false, null, null), Is.False);
         }
 
         [Test]
@@ -42,7 +43,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Type.AddValue(TypeReference.Create(typeof(Texture3D)));
             filter.Type.AddValue(TypeReference.Create(typeof(Texture2D)));
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]
@@ -53,7 +54,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Type.AddValue(TypeReference.Create(typeof(Texture3D)));
             filter.Type.AddValue(TypeReference.Create(typeof(Texture2D)));
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2DArray), false), Is.False);
+            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2DArray), false, null, null), Is.False);
         }
 
         [Test]
@@ -63,7 +64,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Type.Value = TypeReference.Create(typeof(Texture2D));
             filter.InvertMatch = true;
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.False);
+            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false, null, null), Is.False);
         }
 
         [Test]
@@ -73,7 +74,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Type.Value = TypeReference.Create(typeof(Texture3D));
             filter.InvertMatch = true;
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch("Assets/Test.png", typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]

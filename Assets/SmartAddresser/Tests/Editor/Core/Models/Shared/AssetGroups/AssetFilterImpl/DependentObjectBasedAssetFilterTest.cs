@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
 using UnityEditor;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -18,7 +19,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Object.Value = AssetDatabase.LoadAssetAtPath<Object>(TestAssetPaths.Shared.PrefabTex64);
             filter.SetupForMatching();
             var assetPath = TestAssetPaths.CreateAbsoluteAssetPath(relativeAssetPath);
-            return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset));
+            return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset), null, null);
         }
 
         [TestCase(TestAssetRelativePaths.Shared.Texture64, typeof(Texture2D), false, ExpectedResult = true)]
@@ -36,7 +37,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.OnlyDirectDependencies = onlyDirectDependencies;
             filter.SetupForMatching();
             var assetPath = TestAssetPaths.CreateAbsoluteAssetPath(relativeAssetPath);
-            return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset));
+            return filter.IsMatch(assetPath, assetType, assetType == typeof(DefaultAsset), null, null);
         }
 
         [Test]

@@ -1,5 +1,6 @@
 using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules;
+using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared;
 using SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups;
 using SmartAddresser.Editor.Foundation.CommandBasedUndo;
@@ -20,7 +21,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor.LabelRuleE
         {
             _view = view;
             _assetGroupCollectionPanelPresenter =
-                new AssetGroupCollectionPanelPresenter(view.GroupCollectionView, history, saveService);
+                new AssetGroupCollectionPanelPresenter(view.GroupCollectionView, history, saveService, RuleType.Label);
             _labelProviderPanelPresenter =
                 new LabelProviderPanelViewPresenter(view.LabelProviderPanelView, history, saveService);
         }

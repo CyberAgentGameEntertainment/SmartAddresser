@@ -4,6 +4,7 @@ using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
@@ -79,12 +80,14 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
         }
 
         /// <summary>
-        ///     Create a label from asset information.
+        ///     Create a label from asset information with addressable context.
         /// </summary>
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
-        /// <param name="label">If successful, assign the address. If not, null.</param>
+        /// <param name="address">The address assigned to the addressable entry.</param>
+        /// <param name="addressableAssetGroup">The addressable asset group.</param>
+        /// <param name="label">If successful, assign the label. If not, null.</param>
         /// <param name="checkIsPathValidForEntry">
         ///     If true, check if the asset path is valid for entry.
         ///     You can pass false if it is guaranteed to be valid.
@@ -94,11 +97,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
             string assetPath,
             Type assetType,
             bool isFolder,
+            string address,
+            AddressableAssetGroup addressableAssetGroup,
             out string label,
             bool checkIsPathValidForEntry = true
         )
         {
-            if (!_assetGroups.Contains(assetPath, assetType, isFolder))
+            if (!_assetGroups.Contains(assetPath, assetType, isFolder, address, addressableAssetGroup))
             {
                 label = null;
                 return false;
@@ -110,7 +115,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
                 return false;
             }
 
-            label = LabelProvider.Value.Provide(assetPath, assetType, isFolder);
+            label = LabelProvider.Value.Provide(assetPath, assetType, isFolder, address, addressableAssetGroup);
 
             if (string.IsNullOrEmpty(label))
             {

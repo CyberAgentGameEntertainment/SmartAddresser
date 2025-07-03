@@ -1,5 +1,5 @@
 using System;
-using SmartAddresser.Editor.Core.Models.Shared;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
@@ -18,11 +18,11 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.LabelRules
             set => _label = value;
         }
 
-        void IProvider<string>.Setup()
+        public void Setup()
         {
         }
 
-        string IProvider<string>.Provide(string assetPath, Type assetType, bool isFolder)
+        public string Provide(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup)
         {
             if (string.IsNullOrEmpty(_label))
                 return null;

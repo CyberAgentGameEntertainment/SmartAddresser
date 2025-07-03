@@ -679,6 +679,8 @@ public static class Example
 | Extension Filter        | アセットの拡張子を指定してフィルタリングします。<br>使用例: png あるいは jpg ファイルだけをレギュレーションの対象にする<br><br>**Extension**<br>対象の拡張子。<br>右側のトグルを切り替えることで複数指定することもできます。<br><br>**Invert Match**<br>チェックをつけると、条件にマッチしなかったアセットを対象とします。                                                                                                                                                                                                                                            |
 | Dependent Object Filter | 指定したアセットから参照されているアセットをフィルタリングします。<br>使用例: あるPrefabが参照するテクスチャを全て対象とする。<br><br>**Only Direct Dependencies**<br>直接参照しているアセットのみを対象とします。<br><br>**Object**<br>参照元のアセット。                                                                                                                                                                                                                                                                                                                                                                         |
 | Find Assets Filter      | AssetDatabase.FindAssets()を用いてアセットをフィルタリングします。<br/><br/>**Filter**<br>AssetDatabase.Find()に渡すフィルタ文字列。<br><br>**Target Folders**<br>検索対象とするフォルダ。<br>指定しない場合全てのフォルダが対象となります。                                                                                                                                                                                                                                                                                                                                                                 |
+| Address Filter | アドレスに基づいてアセットをフィルタリングします。<br>使用例: 特定のアドレスパターンにマッチするアセットのみを対象とする。<br><br>**Address (Regex)**<br>対象のアドレスパターン。<br>正規表現を使用することができます。<br>右側のトグルを切り替えることで複数指定することもできます。<br><br>**Condition**<br>Addressを複数指定する場合の取り扱い方を指定できます。<br>・Contains Matched: いずれかのアドレスがマッチしたら対象とする<br>・Match All: 全てのアドレスがマッチしたら対象とする<br>・Contains Unmatched: マッチしないアドレスが一つでもあれば対象とする<br>・Not Match All: 全てのアドレスにマッチしなかったら対象とする<br><br>**注意**: このフィルタはAddressRuleには使用できません。 |
+| Addressable Group Filter | アセットが属するAddressableアセットグループに基づいてフィルタリングします。<br>使用例: 特定のグループに属するアセットのみを対象とする。<br><br>**Addressable Asset Group**<br>対象のAddressableアセットグループ。<br>右側のトグルを切り替えることで複数指定することもできます。<br><br>**Invert Match**<br>チェックをつけると、条件にマッチしなかったアセットを対象とします。<br><br>**注意**: このフィルタはAddressRuleには使用できません。 |
 
 ### Address Provider
 
@@ -692,6 +694,8 @@ public static class Example
 |---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Constant Label Provider         | 固定値でラベルを付与します。<br><br>Label<br>付与するラベルの名前。                                                                                                                                                                                                                                  |
 | Asset Path Based Label Provider | 対象アセットのアセットパスを元にラベルを付与します。<br><br>**Source**<br>以下のパターンからラベルを指定します。<br>・File Name: 拡張子付きファイル名<br>・File Name Without Extensions: 拡張子なしアセット名<br>・Asset Path: アセットパス<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、Source を Replacement で Regex.Replace したものをラベルとします。 |
+| Address Based Label Provider | 対象アセットのアドレスを元にラベルを付与します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、アドレスを Replacement で Regex.Replace したものをラベルとします。 |
+| Addressable Asset Group Name Based Label Provider | 対象アセットが属するAddressableアセットグループ名を元にラベルを付与します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、グループ名を Replacement で Regex.Replace したものをラベルとします。 |
 
 ### Version Provider
 
@@ -699,6 +703,8 @@ public static class Example
 | --- | --- |
 | Constant Version Provider | 固定値でバージョンを付与します。<br><br>Label<br>付与するバージョンの名前。 |
 | Asset Path Based Version Provider | 対象アセットのアセットパスを元にバージョンを付与します。<br><br>**Source**<br>以下のパターンからバージョンを指定します。<br>・File Name: 拡張子付きファイル名<br>・File Name Without Extensions: 拡張子なしアセット名<br>・Asset Path: アセットパス<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、Source を Replacement で Regex.Replace したものをバージョンとします。 |
+| Address Based Version Provider | 対象アセットのアドレスを元にバージョンを付与します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、アドレスを Replacement で Regex.Replace したものをバージョンとします。 |
+| Addressable Asset Group Name Based Version Provider | 対象アセットが属するAddressableアセットグループ名を元にバージョンを付与します。<br><br>**Replace With Regex**<br>チェックをつけると、Pattern を元に正規表現を作成し、グループ名を Replacement で Regex.Replace したものをバージョンとします。 |
 
 ## 独自のアセットフィルタ、プロバイダを作成する
 
@@ -708,6 +714,7 @@ public static class Example
 ```cs
 using System;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
+using UnityEditor.AddressableAssets.Settings;
 
 public sealed class ExampleAssetFilter : AssetFilterAsset
 {
@@ -718,9 +725,11 @@ public sealed class ExampleAssetFilter : AssetFilterAsset
         // メインスレッドで実行されるため、UnityのAPIを使用する処理はIsMatchではなくここで行う
     }
 
-    public override bool IsMatch(string assetPath, Type assetType, bool isFolder)
+    public override bool IsMatch(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup)
     {
         // 引数に与えられたアセットがこのフィルタにマッチしていたらtrueを返す
+        // address: アセットに割り当てられたアドレス（AddressRuleで呼ばれる場合はnullになります）
+        // addressableAssetGroup: アセットが属するAddressableアセットグループ（AddressRuleで呼ばれる場合はnullになります）
         // 注意: このメソッドはメインスレッド外で実行される可能性があるためUnityのAPIを使用してはいけない
     }
 
@@ -745,6 +754,7 @@ public sealed class ExampleAssetFilter : AssetFilterAsset
 ```cs
 using System;
 using SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 public sealed class ExampleAddressProvider : AddressProviderAsset
@@ -756,9 +766,11 @@ public sealed class ExampleAddressProvider : AddressProviderAsset
         // メインスレッドで実行されるため、UnityのAPIを使用する処理はProvideではなくここで行う
     }
 
-    public override string Provide(string assetPath, Type assetType, bool isFolder)
+    public override string Provide(string assetPath, Type assetType, bool isFolder, string address, AddressableAssetGroup addressableAssetGroup)
     {
         // 引数に与えられたアセットに対応するアドレスを返す
+        // address: アセットに割り当てられたアドレス
+        // addressableAssetGroup: アセットが属するAddressableアセットグループ
         // 該当するアドレスが無い場合にはnullを返す
         // 注意: このメソッドはメインスレッド外で実行される可能性があるためUnityのAPIを使用してはいけない
     }

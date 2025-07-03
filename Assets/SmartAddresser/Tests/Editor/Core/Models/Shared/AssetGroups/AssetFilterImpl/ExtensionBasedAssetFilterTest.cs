@@ -4,6 +4,7 @@
 
 using NUnit.Framework;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
@@ -16,7 +17,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new ExtensionBasedAssetFilter();
             filter.Extension.Value = "png";
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]
@@ -25,7 +26,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new ExtensionBasedAssetFilter();
             filter.Extension.Value = ".png";
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]
@@ -34,7 +35,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             var filter = new ExtensionBasedAssetFilter();
             filter.Extension.Value = "jpg";
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false), Is.False);
+            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false, null, null), Is.False);
         }
 
         [Test]
@@ -45,7 +46,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Extension.AddValue("png");
             filter.Extension.AddValue("jpg");
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]
@@ -56,7 +57,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Extension.AddValue("jpg");
             filter.Extension.AddValue("exr");
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false), Is.False);
+            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false, null, null), Is.False);
         }
 
         [Test]
@@ -66,7 +67,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Extension.Value = "png";
             filter.InvertMatch = true;
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false), Is.False);
+            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false, null, null), Is.False);
         }
 
         [Test]
@@ -76,7 +77,7 @@ namespace SmartAddresser.Tests.Editor.Core.Models.Shared.AssetGroups.AssetFilter
             filter.Extension.Value = "jpg";
             filter.InvertMatch = true;
             filter.SetupForMatching();
-            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false), Is.True);
+            Assert.That(filter.IsMatch("Test.png", typeof(Texture2D), false, null, null), Is.True);
         }
 
         [Test]

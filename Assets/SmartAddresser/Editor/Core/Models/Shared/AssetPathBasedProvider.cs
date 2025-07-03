@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SmartAddresser.Editor.Core.Models.Shared
 {
     [Serializable]
-    public abstract class AssetPathBasedProvider : IProvider<string>
+    public abstract class AssetPathBasedProvider
     {
         [SerializeField] private PartialAssetPathType _source = PartialAssetPathType.AssetPath;
         [SerializeField] private bool _replaceWithRegex;
@@ -50,7 +50,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared
             set => _replacement = value;
         }
 
-        void IProvider<string>.Setup()
+        public void Setup()
         {
             if (!_replaceWithRegex)
                 return;
@@ -65,7 +65,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared
             }
         }
 
-        string IProvider<string>.Provide(string assetPath, Type assetType, bool isFolder)
+        public string Provide(string assetPath, Type assetType, bool isFolder)
         {
             if (_replaceWithRegex && _regex == null)
                 return null;
@@ -81,7 +81,7 @@ namespace SmartAddresser.Editor.Core.Models.Shared
             }
         }
 
-        string IProvider<string>.GetDescription()
+        public string GetDescription()
         {
             var result = $"Source: {_source.ToString()}";
             if (_replaceWithRegex)

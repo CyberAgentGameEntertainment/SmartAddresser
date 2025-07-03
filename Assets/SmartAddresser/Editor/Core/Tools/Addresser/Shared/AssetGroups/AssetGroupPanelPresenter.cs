@@ -20,6 +20,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
             new Dictionary<string, AssetFilterViewPresenter>();
 
         private readonly AutoIncrementHistory _history;
+        private readonly RuleType? _ruleType;
         private readonly IAssetSaveService _saveService;
         private readonly CompositeDisposable _setupViewDisposables = new CompositeDisposable();
         private readonly AssetGroupPanelView _view;
@@ -29,11 +30,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
         private IList<AssetGroup> _groups;
 
         public AssetGroupPanelPresenter(AssetGroupPanelView view, AutoIncrementHistory history,
-            IAssetSaveService saveService)
+            IAssetSaveService saveService, RuleType? ruleType = null)
         {
             _view = view;
             _history = history;
             _saveService = saveService;
+            _ruleType = ruleType;
 
             SetupViewEventHandlers();
         }
@@ -246,6 +248,18 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
                     .Where(x => !typeof(AssetFilterAsset).IsAssignableFrom(x))
                     .Where(x => x.GetCustomAttribute<IgnoreAssetFilterAttribute>() == null);
 
+                // Filter by rule context if set
+                if (_ruleType.HasValue)
+                    types = types.Where(type =>
+                    {
+                        var restrictedAttribute = type.GetCustomAttribute<RestrictedToRulesAttribute>();
+                        // If no restriction attribute, allow for all rules
+                        if (restrictedAttribute == null)
+                            return true;
+                        // If restriction attribute exists, check if current rule type is allowed
+                        return restrictedAttribute.AllowedRuleTypes.Contains(_ruleType.Value);
+                    });
+
                 // Show filter selection menu.
                 var menu = new GenericMenu();
                 foreach (var type in types)
@@ -394,7 +408,9 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.Shared.AssetGroups
                 return Array.Empty<int>();
 
             var index = _groups.IndexOf(_group);
-            return index == _groups.Count - 1 ? Array.Empty<int>() : Enumerable.Range(1, _groups.Count - index - 1).ToArray();
+            return index == _groups.Count - 1
+                ? Array.Empty<int>()
+                : Enumerable.Range(1, _groups.Count - index - 1).ToArray();
         }
     }
 }

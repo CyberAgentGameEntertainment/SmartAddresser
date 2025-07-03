@@ -4,6 +4,7 @@ using SmartAddresser.Editor.Core.Models.Shared.AssetGroups;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableCollection;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
@@ -78,12 +79,14 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
         }
 
         /// <summary>
-        ///     Create a version from asset information.
+        ///     Create a version from asset information with addressable context.
         /// </summary>
         /// <param name="assetPath"></param>
         /// <param name="assetType"></param>
         /// <param name="isFolder"></param>
-        /// <param name="version">If successful, assign the address. If not, null.</param>
+        /// <param name="address">The address assigned to the addressable entry.</param>
+        /// <param name="addressableAssetGroup">The addressable asset group.</param>
+        /// <param name="version">If successful, assign the version. If not, null.</param>
         /// <param name="checkIsPathValidForEntry">
         ///     If true, check if the asset path is valid for entry.
         ///     You can pass false if it is guaranteed to be valid.
@@ -93,11 +96,13 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
             string assetPath,
             Type assetType,
             bool isFolder,
+            string address,
+            AddressableAssetGroup addressableAssetGroup,
             out string version,
             bool checkIsPathValidForEntry = true
         )
         {
-            if (!_assetGroups.Contains(assetPath, assetType, isFolder))
+            if (!_assetGroups.Contains(assetPath, assetType, isFolder, address, addressableAssetGroup))
             {
                 version = null;
                 return false;
@@ -109,7 +114,7 @@ namespace SmartAddresser.Editor.Core.Models.LayoutRules.VersionRules
                 return false;
             }
 
-            version = VersionProvider.Value.Provide(assetPath, assetType, isFolder);
+            version = VersionProvider.Value.Provide(assetPath, assetType, isFolder, address, addressableAssetGroup);
 
             if (string.IsNullOrEmpty(version))
             {

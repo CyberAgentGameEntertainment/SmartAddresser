@@ -26,7 +26,8 @@ namespace Development.Editor.Core.Tools.Addresser.Shared.AssetGroups
                 _groupCollection.Add(new AssetGroup());
 
             _view = new AssetGroupPanelView();
-            _presenter = new AssetGroupPanelPresenter(_view, _history, _assetSaveService);
+            // Use Address rule type for development window
+            _presenter = new AssetGroupPanelPresenter(_view, _history, _assetSaveService, RuleType.Address);
             _presenter.SetupView(_groupCollection, 0);
         }
 

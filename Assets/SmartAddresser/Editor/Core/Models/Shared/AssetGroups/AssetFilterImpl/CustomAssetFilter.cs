@@ -1,5 +1,6 @@
 using System;
 using SmartAddresser.Editor.Core.Models.Shared.AssetGroups.ValidationError;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
@@ -40,12 +41,13 @@ namespace SmartAddresser.Editor.Core.Models.Shared.AssetGroups.AssetFilterImpl
             return assetFilter.Validate(out error);
         }
 
-        public bool IsMatch(string assetPath, Type assetType, bool isFolder)
+        public bool IsMatch(string assetPath, Type assetType, bool isFolder, string address,
+            AddressableAssetGroup addressableAssetGroup)
         {
             if (assetFilter == null)
                 return false;
-            
-            return assetFilter.IsMatch(assetPath, assetType, isFolder);
+
+            return assetFilter.IsMatch(assetPath, assetType, isFolder, address, addressableAssetGroup);
         }
 
         public string GetDescription()
