@@ -20,6 +20,7 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
         )
         {
             var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
+            var beforeHash = addressableSettings.currentHash;
 
             // Check this because AddressableAssetSettingsDefaultObject.Settings may be null at this point when the Library folder is deleted.
             if (addressableSettings == null)
@@ -57,16 +58,19 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
             foreach (var importedAssetPath in importedAssetPaths)
             {
                 var guid = AssetDatabase.AssetPathToGUID(importedAssetPath);
-                applyService.Apply(guid, false, true);
+                applyService.Apply(guid, false, false);
             }
 
             foreach (var movedAssetPath in movedAssetPaths)
             {
                 var guid = AssetDatabase.AssetPathToGUID(movedAssetPath);
-                applyService.Apply(guid, false, true);
+                applyService.Apply(guid, false, false);
             }
 
-            applyService.InvokeBatchModificationEvent();
+            if (beforeHash != addressableSettings.currentHash)
+            {
+                applyService.InvokeBatchModificationEvent();
+            }
         }
 
         private static bool ShouldProcess(
