@@ -91,15 +91,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             // AssetGroupの並び順反映
             if (e == AddressableAssetSettings.ModificationEvent.GroupMoved)
             {
-                _presenter.ApplyGroupsToTreeView();
-            }
-            
-            // コールバックを末尾に登録しなおす
-            // AssetGroupの並び順はOnModificationコールバック内でシリアライズされるので、それより後に更新しないと反映できないため
-            if (_addressableAssetSettings)
-            {
-                _addressableAssetSettings.OnModification -= OnAddressableAssetSettingsModified;
-                _addressableAssetSettings.OnModification += OnAddressableAssetSettingsModified;
+                EditorApplication.delayCall += () => _presenter.ApplyGroupsToTreeView();
             }
         }
     }

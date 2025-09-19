@@ -142,11 +142,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         )
         {
             if (e == AddressableAssetSettings.ModificationEvent.GroupAdded
-                || e == AddressableAssetSettings.ModificationEvent.GroupMoved
                 || e == AddressableAssetSettings.ModificationEvent.GroupRemoved
                 || e == AddressableAssetSettings.ModificationEvent.GroupRenamed)
                 // If the addressable asset group is changed, reload.
                 SetupActiveView(_editingData.Value);
+            else if (e == AddressableAssetSettings.ModificationEvent.GroupMoved)
+                EditorApplication.delayCall += () => SetupActiveView(_editingData.Value);
         }
 
         public void CleanupView()
