@@ -9,6 +9,8 @@ using SmartAddresser.Editor.Core.Tools.Shared;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -47,13 +49,6 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             _editingData.Dispose();
         }
 
-        private void AddGroupView(Group group, bool reload = true)
-        {
-            _view.TreeView.AddGroup(group);
-            if (reload)
-                _view.TreeView.Reload();
-        }
-
         public void SetupView(ILayoutRuleDataRepository dataRepository)
         {
             _setupViewDisposables.Clear();
@@ -84,9 +79,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             layout.Validate(false, validationSettings.DuplicateAddresses, validationSettings.DuplicateAssetPaths,
                 validationSettings.EntryHasMultipleVersions);
             _layout = layout;
-            foreach (var group in layout.Groups)
-                AddGroupView(group);
-            _view.TreeView.Reload();
+            ApplyGroupsToTreeView();
             _view.ActiveMode.Value = LayoutViewerView.Mode.Viewer;
             _view.ActiveAssetName.Value = data.name;
 
@@ -185,13 +178,30 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                     validationSettings.EntryHasMultipleVersions);
                 _layout = layout;
 
-                _view.TreeView.ClearItems();
-                foreach (var group in layout.Groups)
-                    AddGroupView(group);
-                _view.TreeView.Reload();
+                ApplyGroupsToTreeView();
             }
 
             #endregion
+        }
+
+        public void ApplyGroupsToTreeView()
+        {
+            _view.TreeView.ClearItems();
+
+            if (_layout == null)
+            {
+                return;
+            }
+
+            var addressableAssetSettings = AddressableAssetSettingsDefaultObject.Settings;
+            var orderSettings = AddressableAssetGroupSortSettings.GetSettings(addressableAssetSettings);
+            foreach (var group in _layout.Groups.OrderBy(g =>
+                         Array.IndexOf(orderSettings.sortOrder, g.AddressableGroup.Guid)))
+            {
+                _view.TreeView.AddGroup(group);
+            }
+
+            _view.TreeView.Reload();
         }
 
         private void CleanupViewEventHandlers()

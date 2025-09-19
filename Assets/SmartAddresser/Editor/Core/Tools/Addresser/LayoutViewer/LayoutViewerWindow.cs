@@ -5,6 +5,8 @@ using SmartAddresser.Editor.Foundation.AssetDatabaseAdapter;
 using SmartAddresser.Editor.Foundation.EditorSplitView;
 using SmartAddresser.Editor.Foundation.TinyRx;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
@@ -21,14 +23,28 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
         private LayoutViewerPresenter _presenter;
         private LayoutViewerView _view;
 
+        private AddressableAssetSettings _addressableAssetSettings;
+
         private void OnEnable()
         {
             minSize = new Vector2(600, 200);
             Setup();
+            
+            _addressableAssetSettings = AddressableAssetSettingsDefaultObject.Settings;
+            if (_addressableAssetSettings)
+            {
+                _addressableAssetSettings.OnModification += OnAddressableAssetSettingsModified;
+            }
         }
 
         private void OnDisable()
         {
+            if (_addressableAssetSettings)
+            {
+                _addressableAssetSettings.OnModification -= OnAddressableAssetSettingsModified;
+                _addressableAssetSettings = null;
+            }
+            
             _presenter?.Dispose();
             _view?.Dispose();
         }
@@ -65,6 +81,26 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
         public static void Open()
         {
             GetWindow<LayoutViewerWindow>(WindowName);
+        }
+
+        private void OnAddressableAssetSettingsModified(
+            AddressableAssetSettings settings,
+            AddressableAssetSettings.ModificationEvent e,
+            object obj)
+        {
+            // AssetGroupの並び順反映
+            if (e == AddressableAssetSettings.ModificationEvent.GroupMoved)
+            {
+                _presenter.ApplyGroupsToTreeView();
+            }
+            
+            // コールバックを末尾に登録しなおす
+            // AssetGroupの並び順はOnModificationコールバック内でシリアライズされるので、それより後に更新しないと反映できないため
+            if (_addressableAssetSettings)
+            {
+                _addressableAssetSettings.OnModification -= OnAddressableAssetSettingsModified;
+                _addressableAssetSettings.OnModification += OnAddressableAssetSettingsModified;
+            }
         }
     }
 }

@@ -112,7 +112,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             _assetSaveService.SetAsset(data);
 
             var groups = addressableAssetSettings.groups;
-            
+
 #if AAS_SORT_ORDER
             var orderSettings = AddressableAssetGroupSortSettings.GetSettings(addressableAssetSettings);
             groups = addressableAssetSettings.groups
