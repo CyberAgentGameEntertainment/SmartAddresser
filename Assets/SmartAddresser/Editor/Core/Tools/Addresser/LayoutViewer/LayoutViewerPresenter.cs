@@ -193,6 +193,7 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
                 return;
             }
 
+#if AAS_SORT_ORDER
             var addressableAssetSettings = AddressableAssetSettingsDefaultObject.Settings;
             var orderSettings = AddressableAssetGroupSortSettings.GetSettings(addressableAssetSettings);
             foreach (var group in _layout.Groups.OrderBy(g =>
@@ -200,6 +201,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutViewer
             {
                 _view.TreeView.AddGroup(group);
             }
+#else
+            foreach (var group in _layout.Groups)
+            {
+                _view.TreeView.AddGroup(group);
+            }
+#endif
 
             _view.TreeView.Reload();
         }
