@@ -17,6 +17,7 @@ using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 
 namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
@@ -110,7 +111,16 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
             _editingData.Value = data;
             _assetSaveService.SetAsset(data);
 
-            if (data.LayoutRule.SyncAddressRulesWithAddressableAssetGroups(addressableAssetSettings.groups))
+            var groups = addressableAssetSettings.groups;
+
+#if AAS_SORT_ORDER
+            var orderSettings = AddressableAssetGroupSortSettings.GetSettings(addressableAssetSettings);
+            groups = addressableAssetSettings.groups
+                .OrderBy(g => Array.IndexOf(orderSettings.sortOrder, g.Guid))
+                .ToList();
+#endif
+
+            if (data.LayoutRule.SyncAddressRulesWithAddressableAssetGroups(groups))
                 _assetSaveService.MarkAsDirty();
 
             _addressRuleEditorPresenter.SetupView(data.LayoutRule.AddressRules);
@@ -132,11 +142,12 @@ namespace SmartAddresser.Editor.Core.Tools.Addresser.LayoutRuleEditor
         )
         {
             if (e == AddressableAssetSettings.ModificationEvent.GroupAdded
-                || e == AddressableAssetSettings.ModificationEvent.GroupMoved
                 || e == AddressableAssetSettings.ModificationEvent.GroupRemoved
                 || e == AddressableAssetSettings.ModificationEvent.GroupRenamed)
                 // If the addressable asset group is changed, reload.
                 SetupActiveView(_editingData.Value);
+            else if (e == AddressableAssetSettings.ModificationEvent.GroupMoved)
+                EditorApplication.delayCall += () => SetupActiveView(_editingData.Value);
         }
 
         public void CleanupView()
