@@ -20,11 +20,12 @@ namespace SmartAddresser.Editor.Core.Tools.Importer
         )
         {
             var addressableSettings = AddressableAssetSettingsDefaultObject.Settings;
-            var beforeHash = addressableSettings.currentHash;
 
             // Check this because AddressableAssetSettingsDefaultObject.Settings may be null at this point when the Library folder is deleted.
             if (addressableSettings == null)
                 return;
+
+            var beforeHash = addressableSettings.currentHash;
 
             if (!ShouldProcess(importedAssetPaths, deletedAssetPaths, movedAssetPaths, movedFromAssetPaths))
                 return;
