@@ -16,7 +16,7 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         public string Address => _entry.address;
 
         /// <inheritdoc />
-        public HashSet<string> Labels => _entry.labels;
+        public ISet<string> Labels => _entry.labels;
         
         /// <inheritdoc />
         public string GroupName => _entry.parentGroup.Name;

@@ -7,6 +7,9 @@ using SmartAddresser.Editor.Foundation.TinyRx.ObservableProperty;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
+// Conflict class name to Addressables on v4.0.0
+using AddressableAssetUtility = SmartAddresser.Editor.Core.Models.Shared.AddressableAssetUtility;
+
 namespace SmartAddresser.Editor.Core.Models.LayoutRules.AddressRules
 {
     /// <summary>

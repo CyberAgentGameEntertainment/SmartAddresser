@@ -16,7 +16,7 @@ namespace SmartAddresser.Editor.Foundation.AddressableAdapter
         /// <summary>
         ///     The set of labels for this entry.
         /// </summary>
-        HashSet<string> Labels { get; }
+        ISet<string> Labels { get; }
 
         /// <summary>
         ///     Name of the parent addressable group.
