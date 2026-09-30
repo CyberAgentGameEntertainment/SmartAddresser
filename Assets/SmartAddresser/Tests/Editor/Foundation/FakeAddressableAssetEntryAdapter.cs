@@ -7,14 +7,15 @@ namespace SmartAddresser.Tests.Editor.Foundation
     {
         public FakeAddressableAssetEntryAdapter(IEnumerable<string> labels = null)
         {
-            Labels = labels == null ? new HashSet<string>() : new HashSet<string>(labels);
+            _labels = labels == null ? new SortedSet<string>() : new SortedSet<string>(labels);
         }
 
         /// <inheritdoc />
         public string Address { get; private set; }
 
         /// <inheritdoc />
-        public HashSet<string> Labels { get; }
+        public ISet<string> Labels => _labels;
+        private SortedSet<string> _labels;
 
         public string GroupName { get; private set; }
 
@@ -28,8 +29,8 @@ namespace SmartAddresser.Tests.Editor.Foundation
         public bool SetLabel(string label, bool enable, bool _)
         {
             if (enable)
-                return Labels.Add(label);
-            return Labels.Remove(label);
+                return _labels.Add(label);
+            return _labels.Remove(label);
         }
         
         internal void SetGroup(string groupName)
